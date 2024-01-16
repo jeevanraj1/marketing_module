@@ -73,7 +73,7 @@ export default function CustomerDT() {
     }
 
     const handleClick = () => {
-        navigate("/customer/CustomerCreate")
+        navigate("/customer/CreateCustomer")
     }
 
     const status = [

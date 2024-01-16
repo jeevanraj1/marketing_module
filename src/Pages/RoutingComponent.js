@@ -6,6 +6,12 @@ import CustomerPage from './MarketingModule/Master/Customer/CustomerPage';
 import CustomerDT from './MarketingModule/Master/Customer/CustomerDT';
 import SignIn from './Signin';
 import Customer from './MarketingModule/Master/Customer/Customer';
+import RealationShipPage from './MarketingModule/Master/RealationShip/RealationShipPage';
+import RealationShipDT from './MarketingModule/Master/RealationShip/RealationShipDT';
+import PaymodePage from './MarketingModule/Master/PayMode/PaymodePage';
+import PayModeDT from './MarketingModule/Master/PayMode/PayModeDT';
+import StatusPage from './MarketingModule/Master/Status/StatusPage';
+import StatusDT from './MarketingModule/Master/Status/StatusDT';
 
 export default function RoutingComponent() {
   const location = useLocation()
@@ -17,7 +23,19 @@ export default function RoutingComponent() {
 
         <Route path='/customer' element={<ErrorBoundary key={location.pathname} componentName="customer"><CustomerPage /></ErrorBoundary>} >
           <Route index element={<CustomerDT />} />
-          <Route path='/customer/CustomerCreate'  element={<ErrorBoundary key={location.pathname} componentName="CustomerCreate"><Customer/></ErrorBoundary>} />
+          <Route path='/customer/CreateCustomer' element={<ErrorBoundary key={location.pathname} componentName="CustomerCreate"><Customer /></ErrorBoundary>} />
+        </Route>
+
+        <Route path='/realation' element={<ErrorBoundary key={location.pathname} componentName="Realation"><RealationShipPage /></ErrorBoundary>}>
+          <Route index element={<RealationShipDT />} />
+        </Route>
+
+        <Route path='/Paymode' element={<ErrorBoundary key={location.pathname} componentName="Paymode"><PaymodePage /></ErrorBoundary>}>
+          <Route index element={<PayModeDT />} />
+        </Route>
+
+        <Route path='/Status' element={<ErrorBoundary key={location.pathname} componentName="Status"><StatusPage/></ErrorBoundary>}>
+          <Route index element={<StatusDT/>} />
         </Route>
       </Routes>
     </>

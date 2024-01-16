@@ -1,4 +1,4 @@
-import { Grid, Paper, TextField, Autocomplete, Typography, Box, Button, Modal, Stack, autocompleteClasses } from '@mui/material'
+import { Grid, Paper, TextField, Autocomplete, Typography, Box, Button, Modal, Stack, } from '@mui/material'
 import React from 'react'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -39,20 +39,37 @@ const textFiledStyle = {
 }
 
 const autoCompleteStyle = {
+  // "& .MuiOutlinedInput-root": {
+  //   "& fieldset": {
+  //     borderColor: "black",
+  //     borderWidth: "2px",
+  //   },
+  // },
+  // "& .MuiInputLabel-root": {
+  //   color: "black",
+  //   "&.Mui-focused": {
+  //     transform: "translate(14px, -8px)",
+  //   },
+  // },
+  // "& input, & label": {
+  //   height: "14px",
+  //   display: "flex",
+  //   alignItems: "center",
+  //   fontSize: 12,
+  //   fontWeight: "bold",
+  // },
+  width: "100%",
   "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "black",
-      borderWidth: "2px",
-    },
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
   "& .MuiInputLabel-root": {
     color: "black",
     "&.Mui-focused": {
-      transform: "translate(14px, -8px)",
+      transform: "translate(14px, -5px)",
     },
   },
   "& input, & label": {
-    height: "14px",
+    height: "15px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
@@ -155,18 +172,7 @@ export default function Customer() {
           <Grid item md={3} lg={3} sm={12} xs={12}>
             <TextField
               id="outlined-basic"
-              label="Customer Alise"
-              variant="outlined"
-              size='small'
-              fullWidth
-              sx={textFiledStyle}
-            />
-          </Grid>
-          {/* =========================Father/husbanName======================== */}
-          <Grid item md={3} lg={3} sm={12} xs={12}>
-            <TextField
-              id="outlined-basic"
-              label="Father/husbanName"
+              label="Customer Alias"
               variant="outlined"
               size='small'
               fullWidth
@@ -183,6 +189,49 @@ export default function Customer() {
               renderInput={(params) => <TextField
                 {...params}
                 label="Status"
+                size='small'
+                fullWidth
+                sx={autoCompleteStyle}
+              />}
+            />
+          </Grid>
+          {/* =========================Relation Type======================== */}
+          <Grid item md={3} lg={3} sm={12} xs={12}>
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={status}
+              getOptionLabel={(options) => options.name}
+              renderInput={(params) => <TextField
+                {...params}
+                label="Relation Type"
+                size='small'
+                fullWidth
+                sx={autoCompleteStyle}
+              />}
+            />
+          </Grid>
+          {/* =========================Relationship Name======================== */}
+          <Grid item md={3} lg={3} sm={12} xs={12}>
+            <TextField
+              id="outlined-basic"
+              label="Relationship Name"
+              variant="outlined"
+              size='small'
+              fullWidth
+              sx={textFiledStyle}
+            />
+          </Grid>
+          {/* =========================Officer Name======================== */}
+          <Grid item md={3} lg={3} sm={12} xs={12}>
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={status}
+              getOptionLabel={(options) => options.name}
+              renderInput={(params) => <TextField
+                {...params}
+                label="Officer Name"
                 size='small'
                 fullWidth
                 sx={autoCompleteStyle}
@@ -213,13 +262,34 @@ export default function Customer() {
           </Grid>
           {/* =========================Bill category======================== */}
           <Grid item md={3} lg={3} sm={12} xs={12}>
-            <TextField
-              id="outlined-basic"
-              label="Bill category"
-              variant="outlined"
-              size='small'
-              fullWidth
-              sx={textFiledStyle}
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={status}
+              getOptionLabel={(options) => options.name}
+              renderInput={(params) => <TextField
+                {...params}
+                label="Bill category"
+                size='small'
+                fullWidth
+                sx={autoCompleteStyle}
+              />}
+            />
+          </Grid>
+          {/* =========================Rate category======================== */}
+          <Grid item md={3} lg={3} sm={12} xs={12}>
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={status}
+              getOptionLabel={(options) => options.name}
+              renderInput={(params) => <TextField
+                {...params}
+                label="Rate category"
+                size='small'
+                fullWidth
+                sx={autoCompleteStyle}
+              />}
             />
           </Grid>
           {/* =========================Paymode Dropdown======================== */}
@@ -250,31 +320,56 @@ export default function Customer() {
           </Grid>
           {/* =========================Bank name======================== */}
           <Grid item md={3} lg={3} sm={12} xs={12}>
-            <TextField
-              id="outlined-basic"
-              label="Bank name"
-              variant="outlined"
-              size='small'
-              fullWidth
-              sx={textFiledStyle}
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={status}
+              getOptionLabel={(options) => options.name}
+              renderInput={(params) => <TextField
+                {...params}
+                label="Bank name"
+                size='small'
+                fullWidth
+                sx={autoCompleteStyle}
+              />}
             />
           </Grid>
           {/* =========================Branch name======================== */}
           <Grid item md={3} lg={3} sm={12} xs={12}>
-            <TextField
-              id="outlined-basic"
-              label="Branch name"
-              variant="outlined"
-              size='small'
-              fullWidth
-              sx={textFiledStyle}
+            <Autocomplete
+              disablePortal
+              id="combo-box-demo"
+              options={status}
+              getOptionLabel={(options) => options.name}
+              renderInput={(params) => <TextField
+                {...params}
+                label="Branch name"
+                size='small'
+                fullWidth
+                sx={autoCompleteStyle}
+              />}
             />
           </Grid>
+
           {/* =========================IFSC Code======================== */}
           <Grid item md={3} lg={3} sm={12} xs={12}>
             <TextField
               id="outlined-basic"
               label="IFSC Code"
+              variant="outlined"
+              size='small'
+              fullWidth
+              sx={textFiledStyle}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+          </Grid>
+          {/* =========================Account Number======================== */}
+          <Grid item md={3} lg={3} sm={12} xs={12}>
+            <TextField
+              id="outlined-basic"
+              label="Account Number"
               variant="outlined"
               size='small'
               fullWidth
@@ -292,47 +387,15 @@ export default function Customer() {
               Deposit Details
             </Typography>
           </Grid>
-          {/* =========================FD Amount======================== */}
+          {/* =========================Total Deposit Amount======================== */}
           <Grid item md={3} lg={3} sm={12} xs={12}>
             <TextField
               id="outlined-basic"
-              label="FD Amount"
+              label="Total Deposit Amount"
               variant="outlined"
               size='small'
               fullWidth
-              sx={textFiledStyle}
-            />
-          </Grid>
-          {/* =========================Bank Guarantee======================== */}
-          <Grid item md={3} lg={3} sm={12} xs={12}>
-            <TextField
-              id="outlined-basic"
-              label="Bank Guarantee"
-              variant="outlined"
-              size='small'
-              fullWidth
-              sx={textFiledStyle}
-            />
-          </Grid>
-          {/* =========================Security Deposit======================== */}
-          <Grid item md={3} lg={3} sm={12} xs={12}>
-            <TextField
-              id="outlined-basic"
-              label="Security Deposit"
-              variant="outlined"
-              size='small'
-              fullWidth
-              sx={textFiledStyle}
-            />
-          </Grid>
-          {/* =========================Total Deposit======================== */}
-          <Grid item md={3} lg={3} sm={12} xs={12}>
-            <TextField
-              id="outlined-basic"
-              label="Total Deposit"
-              variant="outlined"
-              size='small'
-              fullWidth
+              disabled
               sx={textFiledStyle}
             />
           </Grid>
@@ -362,195 +425,20 @@ export default function Customer() {
               sx={textFiledStyle}
             />
           </Grid>
-          {/* =========================Add Deposite button======================== */}
+          {/* =========================Current Balance======================== */}
           <Grid item md={3} lg={3} sm={12} xs={12}>
-            <Button
-              variant='contained'
+            <TextField
+              id="outlined-basic"
+              label="Current Balance"
+              variant="outlined"
               size='small'
-              onClick={handleMobileOpen}
-            >Add Deposit
-            </Button>
-            <Modal
-              open={mobileOpen}
-              onClose={handleMobileClose}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-              BackdropProps={{ onClick: handleBackdropMobileClick }}
-            // slotProps={{
-            //   backdrop:handleBackdropMobileClick()
-            // }}
-            >
-              <Box sx={style}>
-                <Grid container spacing={2}>
-                  {/* ================ */}
-                  <Grid item xs={12} sm={12} md={12} lg={12} sx={{ textAlign: "end", width: "1000px" }}>
-                    <Button onClick={handleMobileClose} sx={{ marginTop: "-5px" }}>
-                      <HighlightOffIcon fontSize='large' />
-                    </Button>
-                  </Grid>
-                  {/* ================ */}
-                </Grid>
-                {/* ================ */}
-                <Grid container spacing={2} padding={2} >
-                  {/* =========================Customer Code======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Customer Code"
-                      variant="outlined"
-                      size='small'
-                      fullWidth
-                      sx={textFiledStyle}
-                    />
-                  </Grid>
-                  {/* =========================Customer Name======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Customer Name"
-                      variant="outlined"
-                      size='small'
-                      fullWidth
-                      sx={textFiledStyle}
-                    />
-                  </Grid>
-                  {/* =========================Paymode======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <Autocomplete
-                      disablePortal
-                      id="combo-box-demo"
-                      options={status}
-                      getOptionLabel={(options) => options.name}
-                      renderInput={(params) => <TextField
-                        {...params}
-                        label="Paymode"
-                        size='small'
-                        fullWidth
-                        sx={autoCompleteStyle}
-                      />}
-                    />
-                  </Grid>
-                  {/* =========================Deposite Type======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <Autocomplete
-                      disablePortal
-                      id="combo-box-demo"
-                      options={status}
-                      getOptionLabel={(options) => options.name}
-                      renderInput={(params) => <TextField
-                        {...params}
-                        label="Deposite Type"
-                        size='small'
-                        fullWidth
-                        sx={autoCompleteStyle}
-                      />}
-                    />
-                  </Grid>
-                  {/* =========================Bank Doc Number======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Bank Doc Number"
-                      variant="outlined"
-                      size='small'
-                      fullWidth
-                      sx={textFiledStyle}
-                    />
-                  </Grid>
-                  {/* =========================Deposit Date======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        disableFuture
-                        label="Deposit Date"
-                        sx={datePickerStyle}
-                        name="Registration_Date"
-                        slotProps={{ textField: { size: "small" } }}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  {/* =========================Expiry Date======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        disableFuture
-                        label="Expiry Date"
-                        sx={datePickerStyle}
-                        name="Registration_Date"
-                        slotProps={{ textField: { size: "small" } }}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  {/* =========================GR Number======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <TextField
-                      id="outlined-basic"
-                      label="GR Number"
-                      variant="outlined"
-                      size='small'
-                      fullWidth
-                      sx={textFiledStyle}
-                    />
-                  </Grid>
-                  {/* =========================GR Date======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                      <DatePicker
-                        disableFuture
-                        label="GR Date"
-                        sx={datePickerStyle}
-                        name="Registration_Date"
-                        slotProps={{ textField: { size: "small" } }}
-                      />
-                    </LocalizationProvider>
-                  </Grid>
-                  {/* =========================Bank Name======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Bank Name"
-                      variant="outlined"
-                      size='small'
-                      fullWidth
-                      sx={textFiledStyle}
-                    />
-                  </Grid>
-                  {/* =========================Amount======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Amount"
-                      variant="outlined"
-                      size='small'
-                      fullWidth
-                      sx={textFiledStyle}
-                    />
-                  </Grid>
-                  {/* =========================Remarks======================== */}
-                  <Grid item md={3} lg={3} sm={12} xs={12}>
-                    <TextField
-                      id="outlined-basic"
-                      label="Remarks"
-                      variant="outlined"
-                      size='small'
-                      fullWidth
-                      sx={textFiledStyle}
-                    />
-                  </Grid>
-                  {/* =========================Button======================== */}
-                  <Grid item md={12} lg={12} sm={12} xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
-                    <Stack direction="row" spacing={1}>
-                      <Button variant="contained" size='small' >Save</Button>
-                      <Button variant="contained" size='small' color="error">
-                        Clear
-                      </Button>
-                    </Stack>
-                  </Grid>
-                  {/* ================ */}
-                </Grid>
-                {/* ================ */}
-              </Box>
-            </Modal>
+              fullWidth
+              disabled
+              sx={textFiledStyle}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
           </Grid>
         </Grid>
       </Paper>
@@ -579,6 +467,17 @@ export default function Customer() {
             <TextField
               id="outlined-basic"
               label="GST Number"
+              variant="outlined"
+              size='small'
+              fullWidth
+              sx={textFiledStyle}
+            />
+          </Grid>
+          {/* =========================Aadhar Number======================== */}
+          <Grid item md={3} lg={3} sm={12} xs={12}>
+            <TextField
+              id="outlined-basic"
+              label="Aadhar Number"
               variant="outlined"
               size='small'
               fullWidth
@@ -621,6 +520,195 @@ export default function Customer() {
           {/* =========================btn======================== */}
           <Grid item md={12} lg={12} sm={12} xs={12}>
             <Stack direction="row" spacing={1}>
+              {/* =========================Add Deposite button======================== */}
+              <Button
+                variant='contained'
+                size='small'
+                onClick={handleMobileOpen}
+              >Add Deposit
+              </Button>
+              <Modal
+                open={mobileOpen}
+                onClose={handleMobileClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                BackdropProps={{ onClick: handleBackdropMobileClick }}
+              // slotProps={{
+              //   backdrop:handleBackdropMobileClick()
+              // }}
+              >
+                <Box sx={style}>
+                  <Grid container spacing={2}>
+                    {/* ================ */}
+                    <Grid item xs={12} sm={12} md={12} lg={12} sx={{ textAlign: "end", width: "1000px" }}>
+                      <Button onClick={handleMobileClose} sx={{ marginTop: "-5px" }}>
+                        <HighlightOffIcon fontSize='large' />
+                      </Button>
+                    </Grid>
+                    {/* ================ */}
+                  </Grid>
+                  {/* ================ */}
+                  <Grid container spacing={2} padding={2} >
+                    {/* =========================Customer Code======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Customer Code"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        sx={textFiledStyle}
+                      />
+                    </Grid>
+                    {/* =========================Customer Name======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Customer Name"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        sx={textFiledStyle}
+                      />
+                    </Grid>
+                    {/* =========================Paymode======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={status}
+                        getOptionLabel={(options) => options.name}
+                        renderInput={(params) => <TextField
+                          {...params}
+                          label="Paymode"
+                          size='small'
+                          fullWidth
+                          sx={autoCompleteStyle}
+                        />}
+                      />
+                    </Grid>
+                    {/* =========================Deposite Type======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        options={status}
+                        getOptionLabel={(options) => options.name}
+                        renderInput={(params) => <TextField
+                          {...params}
+                          label="Deposite Type"
+                          size='small'
+                          fullWidth
+                          sx={autoCompleteStyle}
+                        />}
+                      />
+                    </Grid>
+                    {/* =========================Bank Doc Number======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Bank Doc Number"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        sx={textFiledStyle}
+                      />
+                    </Grid>
+                    {/* =========================Deposit Date======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          disableFuture
+                          label="Deposit Date"
+                          sx={datePickerStyle}
+                          name="Registration_Date"
+                          slotProps={{ textField: { size: "small" } }}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                    {/* =========================Expiry Date======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          disableFuture
+                          label="Expiry Date"
+                          sx={datePickerStyle}
+                          name="Registration_Date"
+                          slotProps={{ textField: { size: "small" } }}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                    {/* =========================GR Number======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="GR Number"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        sx={textFiledStyle}
+                      />
+                    </Grid>
+                    {/* =========================GR Date======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          disableFuture
+                          label="GR Date"
+                          sx={datePickerStyle}
+                          name="Registration_Date"
+                          slotProps={{ textField: { size: "small" } }}
+                        />
+                      </LocalizationProvider>
+                    </Grid>
+                    {/* =========================Bank Name======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Bank Name"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        sx={textFiledStyle}
+                      />
+                    </Grid>
+                    {/* =========================Amount======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Amount"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        sx={textFiledStyle}
+                      />
+                    </Grid>
+                    {/* =========================Remarks======================== */}
+                    <Grid item md={3} lg={3} sm={12} xs={12}>
+                      <TextField
+                        id="outlined-basic"
+                        label="Remarks"
+                        variant="outlined"
+                        size='small'
+                        fullWidth
+                        sx={textFiledStyle}
+                      />
+                    </Grid>
+                    {/* =========================Button======================== */}
+                    <Grid item md={12} lg={12} sm={12} xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                      <Stack direction="row" spacing={1}>
+                        <Button variant="contained" size='small' >Save</Button>
+                        <Button variant="contained" size='small' color="error">
+                          Clear
+                        </Button>
+                      </Stack>
+                    </Grid>
+                    {/* ================ */}
+                  </Grid>
+                  {/* ================ */}
+                </Box>
+              </Modal>
+              {/* =========================btn======================== */}
               <Button
                 variant="contained"
                 size='small'
