@@ -129,6 +129,7 @@ export default function ResponsiveDrawer({ onLogout }) {
         else if (route === "/realation") navigate("/realation")
         else if (route === "/Paymode") navigate("/Paymode")
         else if (route === "/Status") navigate("/Status")
+        else if (route === "/Officer") navigate("/Officer")
 
     }
 
@@ -446,6 +447,33 @@ export default function ResponsiveDrawer({ onLogout }) {
                                             <ListItemText sx={{ opacity: open ? 1 : 0 }}
                                                 className="calibriFont"
                                                 primary="Status" />
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <ListItem disablePadding sx={{ display: 'block' }}>
+                                        <ListItemButton
+                                            sx={{
+                                                height: 30,
+                                                justifyContent: open ? 'initial' : 'center',
+                                                px: 6,
+                                                '&:hover': {
+                                                    backgroundColor: '#1976D2',
+                                                    color: 'white',
+                                                },
+                                            }}
+                                            aria-describedby={ida}
+                                            onClick={() => { handleListItemClick("/Officer") }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 0,
+                                                    mr: open ? 3 : 'auto',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                <Groups2Icon sx={{ color: "orange" }} />
+                                            </ListItemIcon>
+                                            <ListItemText sx={{ opacity: open ? 1 : 0 }}
+                                                className="calibriFont"
+                                                primary="Officer" />
                                         </ListItemButton>
                                     </ListItem>
                                 </Collapse>

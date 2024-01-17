@@ -12,6 +12,8 @@ import PaymodePage from './MarketingModule/Master/PayMode/PaymodePage';
 import PayModeDT from './MarketingModule/Master/PayMode/PayModeDT';
 import StatusPage from './MarketingModule/Master/Status/StatusPage';
 import StatusDT from './MarketingModule/Master/Status/StatusDT';
+import OfficerPage from './MarketingModule/Master/Officer/OfficerPage';
+import OfficerDT from './MarketingModule/Master/Officer/OfficerDT';
 
 export default function RoutingComponent() {
   const location = useLocation()
@@ -34,8 +36,12 @@ export default function RoutingComponent() {
           <Route index element={<PayModeDT />} />
         </Route>
 
-        <Route path='/Status' element={<ErrorBoundary key={location.pathname} componentName="Status"><StatusPage/></ErrorBoundary>}>
-          <Route index element={<StatusDT/>} />
+        <Route path='/Status' element={<ErrorBoundary key={location.pathname} componentName="Status"><StatusPage /></ErrorBoundary>}>
+          <Route index element={<StatusDT />} />
+        </Route>
+
+        <Route path='/Officer' element={<ErrorBoundary key={location.pathname} componentName="Officer"><OfficerPage/></ErrorBoundary>}>
+          <Route index element={<OfficerDT/>} />
         </Route>
       </Routes>
     </>
