@@ -1,10 +1,11 @@
 import { Grid, Paper, TextField, Autocomplete, Typography, Box, Button, Modal, Stack, } from '@mui/material'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useNavigate } from 'react-router-dom';
+import { customerApi } from '../../../Api';
 
 //inputProps={{maxLength:40}}
 
@@ -113,9 +114,9 @@ const datePickerStyle = {
 }
 export default function Customer() {
   const navigate = useNavigate()
-  React.useEffect(() => {
-    document.title = "Create Customer"
-  }, [])
+  const [officerNames,setOfficerNames] = useState([]) 
+  const [realationTypeNames,setRealationTypeNames] = useState([]) 
+  const [fetchStatusDD,setFetchStatusDD] = useState([]) 
   const status = [
     { name: "Active", },
     { name: "Inactive" }
@@ -135,6 +136,45 @@ export default function Customer() {
   const handleClose = () => {
     navigate(-1)
   }
+
+  const fetch_officerNames = async()=>{
+    try {
+      const respone = await customerApi.customerMaster().fetch_OfficerName_DD()
+      if(respone.status===200){
+        setOfficerNames(respone.data.items)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const fetch_relationType_DD = async()=>{
+    try {
+      const respone = await customerApi.customerMaster().fetch_relationType_DD()
+      if(respone.status===200){
+        setRealationTypeNames(respone.data.items)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const fetch_status_DD = async()=>{
+    try {
+      const respone = await customerApi.customerMaster().fetch_status_DD()
+      console.log(respone);
+      if(respone.status===200){
+        setFetchStatusDD(respone.data.items)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+console.log(officerNames);
+  useEffect(()=>{
+    fetch_officerNames()
+    fetch_relationType_DD()
+    fetch_status_DD()
+  },[])
   return (
     <>
       <Paper sx={{ p: 2 }} elevation={3}>
@@ -184,8 +224,8 @@ export default function Customer() {
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={status}
-              getOptionLabel={(options) => options.name}
+              options={fetchStatusDD}
+              getOptionLabel={(options) => options.status_name}
               renderInput={(params) => <TextField
                 {...params}
                 label="Status"
@@ -200,8 +240,8 @@ export default function Customer() {
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={status}
-              getOptionLabel={(options) => options.name}
+              options={realationTypeNames}
+              getOptionLabel={(options) => options.rel_name}
               renderInput={(params) => <TextField
                 {...params}
                 label="Relation Type"
@@ -227,8 +267,8 @@ export default function Customer() {
             <Autocomplete
               disablePortal
               id="combo-box-demo"
-              options={status}
-              getOptionLabel={(options) => options.name}
+              options={officerNames}
+              getOptionLabel={(options) => options.officer_name}
               renderInput={(params) => <TextField
                 {...params}
                 label="Officer Name"

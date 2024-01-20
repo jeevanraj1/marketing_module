@@ -15,3 +15,10 @@ code {
 .MuiListItemText-primary{
   font-family: 'Verdana, sans-serif'!important;
 }
+
+.row-even{
+  background-color: #00bfff;
+}
+.row-odd{
+  background-color: white;
+}

@@ -1,0 +1,5 @@
+1)handlefieldchange-localStorage.setItem("Navigation_state",false)
+2)handleedit -localStorage.setItem("Navigation_state",true)
+3)handlesave -localStorage.setItem("Navigation_state",true)
+4)handleupdate -localStorage.setItem("Navigation_state",true)
+5)handleclear -localStorage.setItem("Navigation_state",true)

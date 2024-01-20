@@ -23,14 +23,23 @@ import Button from '@mui/material/Button';
 import RoutingComponent from './RoutingComponent';
 import { Collapse } from "@mui/material";
 import Popover from '@mui/material/Popover';
-import Diversity3Icon from "@mui/icons-material/Diversity3";
 import MenuIcon from "@mui/icons-material/Menu";
 import CampaignIcon from '@mui/icons-material/Campaign';
 import Groups2Icon from '@mui/icons-material/Groups2';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import CategoryIcon from '@mui/icons-material/Category';
 import TurnSlightRightIcon from '@mui/icons-material/TurnSlightRight';
+import Swal from 'sweetalert2';
+import DatasetLinkedIcon from '@mui/icons-material/DatasetLinked';
+import PaymentIcon from '@mui/icons-material/Payment';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
+import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
+
+
+
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -98,7 +107,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-export default function ResponsiveDrawer({ onLogout }) {
+export default function ResponsiveDrawer() {
     const theme = useTheme();
     const navigate = useNavigate()
     const [open, setOpen] = React.useState(true);
@@ -113,7 +122,7 @@ export default function ResponsiveDrawer({ onLogout }) {
     };
     const handleLogout = () => {
         localStorage.removeItem("Navigation_state");
-        onLogout();
+        navigate("/")
     };
 
     const handleMarketingModuleClick = () => {
@@ -125,11 +134,40 @@ export default function ResponsiveDrawer({ onLogout }) {
     }
     const handleListItemClick = (text) => {
         const route = text
-        if (route === "/customer") navigate("/customer")
-        else if (route === "/realation") navigate("/realation")
-        else if (route === "/Paymode") navigate("/Paymode")
-        else if (route === "/Status") navigate("/Status")
-        else if (route === "/Officer") navigate("/Officer")
+        const checkEditState = localStorage.getItem("Navigation_state")
+        if (checkEditState === "true" || checkEditState === null) {
+            if (route === "/customer") navigate("customer")
+            else if (route === "/realation") navigate("realation")
+            else if (route === "/Paymode") navigate("Paymode")
+            else if (route === "/Status") navigate("Status")
+            else if (route === "/Officer") navigate("Officer")
+            else if (route === "/BillCategory") navigate("BillCategory")
+            else if (route === "/RateCategory") navigate("RateCategory")
+        }
+        else {
+            const handleNavigate = async (text) => {
+                try {
+                    const shouldNavigate = await Swal.fire({
+                        title: 'Editing of this page has started!',
+                        html: 'Would you like to close without saving press <span style="color:blue;"> OK</span>,<br> To continue the editing press <span style="color:red;"> CANCEL</span>',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'OK',
+                        cancelButtonText: 'CANCEL',
+                        reverseButtons: true,
+                        confirmButtonColor: 'blue',
+                        cancelButtonColor: 'red'
+                    });
+                    if (shouldNavigate.isConfirmed) {
+                        localStorage.setItem("Navigation_state", true);
+                        handleListItemClick(text);
+                    }
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            handleNavigate(text)
+        }
 
     }
 
@@ -325,14 +363,14 @@ export default function ResponsiveDrawer({ onLogout }) {
                                                         padding: 2,
                                                         color: "#000",
                                                         '&:hover': {
-                                                            backgroundColor: 'orange',
+                                                            backgroundColor: '#1976D2',
                                                             color: '#fff',
                                                         },
                                                     }}
                                                 >
                                                     <ListItemIcon>
                                                         <TurnSlightRightIcon
-                                                            sx={{ marginLeft: "-5px", color: "blue" }}
+                                                            sx={{ marginLeft: "-5px", color: "lightskyblue" }}
                                                         />
                                                     </ListItemIcon>
                                                     <ListItemText
@@ -388,7 +426,7 @@ export default function ResponsiveDrawer({ onLogout }) {
                                                     mr: open ? 3 : 'auto',
                                                     justifyContent: 'center',
                                                 }}>
-                                                <Groups2Icon sx={{ color: "orange" }} />
+                                                <DatasetLinkedIcon sx={{ color: "lightskyblue" }} />
                                             </ListItemIcon>
                                             <ListItemText sx={{ opacity: open ? 1 : 0 }}
                                                 className="calibriFont"
@@ -415,7 +453,7 @@ export default function ResponsiveDrawer({ onLogout }) {
                                                     mr: open ? 3 : 'auto',
                                                     justifyContent: 'center',
                                                 }}>
-                                                <Groups2Icon sx={{ color: "orange" }} />
+                                                <PaymentIcon sx={{ color: "orange" }} />
                                             </ListItemIcon>
                                             <ListItemText sx={{ opacity: open ? 1 : 0 }}
                                                 className="calibriFont"
@@ -442,7 +480,7 @@ export default function ResponsiveDrawer({ onLogout }) {
                                                     mr: open ? 3 : 'auto',
                                                     justifyContent: 'center',
                                                 }}>
-                                                <Groups2Icon sx={{ color: "orange" }} />
+                                                <CheckCircleIcon sx={{ color: "lightskyblue" }} />
                                             </ListItemIcon>
                                             <ListItemText sx={{ opacity: open ? 1 : 0 }}
                                                 className="calibriFont"
@@ -469,11 +507,65 @@ export default function ResponsiveDrawer({ onLogout }) {
                                                     mr: open ? 3 : 'auto',
                                                     justifyContent: 'center',
                                                 }}>
-                                                <Groups2Icon sx={{ color: "orange" }} />
+                                                <LocalPoliceIcon sx={{ color: "orange" }} />
                                             </ListItemIcon>
                                             <ListItemText sx={{ opacity: open ? 1 : 0 }}
                                                 className="calibriFont"
                                                 primary="Officer" />
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <ListItem disablePadding sx={{ display: 'block' }}>
+                                        <ListItemButton
+                                            sx={{
+                                                height: 30,
+                                                justifyContent: open ? 'initial' : 'center',
+                                                px: 6,
+                                                '&:hover': {
+                                                    backgroundColor: '#1976D2',
+                                                    color: 'white',
+                                                },
+                                            }}
+                                            aria-describedby={ida}
+                                            onClick={() => { handleListItemClick("/BillCategory") }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 0,
+                                                    mr: open ? 3 : 'auto',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                <PriceChangeIcon sx={{ color: "lightskyblue" }} />
+                                            </ListItemIcon>
+                                            <ListItemText sx={{ opacity: open ? 1 : 0 }}
+                                                className="calibriFont"
+                                                primary="Bill Category" />
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <ListItem disablePadding sx={{ display: 'block' }}>
+                                        <ListItemButton
+                                            sx={{
+                                                height: 30,
+                                                justifyContent: open ? 'initial' : 'center',
+                                                px: 6,
+                                                '&:hover': {
+                                                    backgroundColor: '#1976D2',
+                                                    color: 'white',
+                                                },
+                                            }}
+                                            aria-describedby={ida}
+                                            onClick={() => { handleListItemClick("/RateCategory") }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 0,
+                                                    mr: open ? 3 : 'auto',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                <CurrencyRupeeIcon sx={{ color: "orange" }} />
+                                            </ListItemIcon>
+                                            <ListItemText sx={{ opacity: open ? 1 : 0 }}
+                                                className="calibriFont"
+                                                primary="Rate Category" />
                                         </ListItemButton>
                                     </ListItem>
                                 </Collapse>
@@ -485,7 +577,9 @@ export default function ResponsiveDrawer({ onLogout }) {
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
                 <div>
-                    <RoutingComponent />
+                    <Outlet/>
+                    {/* <RoutingComponent /> */}
+                    {/* <Responsive/> */}
                 </div>
             </Box>
         </Box>
