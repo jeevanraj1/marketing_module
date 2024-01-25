@@ -20,7 +20,6 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import RoutingComponent from './RoutingComponent';
 import { Collapse } from "@mui/material";
 import Popover from '@mui/material/Popover';
 import MenuIcon from "@mui/icons-material/Menu";
@@ -37,8 +36,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
-
-
+import ErrorBoundary from './ErrorBoundary';
+import { useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -110,6 +109,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function ResponsiveDrawer() {
     const theme = useTheme();
     const navigate = useNavigate()
+    const location = useLocation()
     const [open, setOpen] = React.useState(true);
     const [openMarketingModule, setOpenMarketingModule] = React.useState(false);
     const [openMaster, setopenMaster] = React.useState(false);
@@ -143,6 +143,9 @@ export default function ResponsiveDrawer() {
             else if (route === "/Officer") navigate("Officer")
             else if (route === "/BillCategory") navigate("BillCategory")
             else if (route === "/RateCategory") navigate("RateCategory")
+            else if (route === "/CustomerType") navigate("CustomerType")
+            else if (route === "/BankMaster") navigate("BankMaster")
+            else if (route === "/BranchMaster") navigate("BranchMaster")
         }
         else {
             const handleNavigate = async (text) => {
@@ -568,6 +571,87 @@ export default function ResponsiveDrawer() {
                                                 primary="Rate Category" />
                                         </ListItemButton>
                                     </ListItem>
+                                    <ListItem disablePadding sx={{ display: 'block' }}>
+                                        <ListItemButton
+                                            sx={{
+                                                height: 30,
+                                                justifyContent: open ? 'initial' : 'center',
+                                                px: 6,
+                                                '&:hover': {
+                                                    backgroundColor: '#1976D2',
+                                                    color: 'white',
+                                                },
+                                            }}
+                                            aria-describedby={ida}
+                                            onClick={() => { handleListItemClick("/CustomerType") }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 0,
+                                                    mr: open ? 3 : 'auto',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                <CurrencyRupeeIcon sx={{ color: "orange" }} />
+                                            </ListItemIcon>
+                                            <ListItemText sx={{ opacity: open ? 1 : 0 }}
+                                                className="calibriFont"
+                                                primary="Customer Type" />
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <ListItem disablePadding sx={{ display: 'block' }}>
+                                        <ListItemButton
+                                            sx={{
+                                                height: 30,
+                                                justifyContent: open ? 'initial' : 'center',
+                                                px: 6,
+                                                '&:hover': {
+                                                    backgroundColor: '#1976D2',
+                                                    color: 'white',
+                                                },
+                                            }}
+                                            aria-describedby={ida}
+                                            onClick={() => { handleListItemClick("/BankMaster") }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 0,
+                                                    mr: open ? 3 : 'auto',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                <CurrencyRupeeIcon sx={{ color: "orange" }} />
+                                            </ListItemIcon>
+                                            <ListItemText sx={{ opacity: open ? 1 : 0 }}
+                                                className="calibriFont"
+                                                primary="Bank Master" />
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <ListItem disablePadding sx={{ display: 'block' }}>
+                                        <ListItemButton
+                                            sx={{
+                                                height: 30,
+                                                justifyContent: open ? 'initial' : 'center',
+                                                px: 6,
+                                                '&:hover': {
+                                                    backgroundColor: '#1976D2',
+                                                    color: 'white',
+                                                },
+                                            }}
+                                            aria-describedby={ida}
+                                            onClick={() => { handleListItemClick("/BranchMaster") }}
+                                        >
+                                            <ListItemIcon
+                                                sx={{
+                                                    minWidth: 0,
+                                                    mr: open ? 3 : 'auto',
+                                                    justifyContent: 'center',
+                                                }}>
+                                                <CurrencyRupeeIcon sx={{ color: "orange" }} />
+                                            </ListItemIcon>
+                                            <ListItemText sx={{ opacity: open ? 1 : 0 }}
+                                                className="calibriFont"
+                                                primary="Branch Master" />
+                                        </ListItemButton>
+                                    </ListItem>
                                 </Collapse>
                             </ListItem>
                         </Collapse>
@@ -576,11 +660,9 @@ export default function ResponsiveDrawer() {
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
-                <div>
-                    <Outlet/>
-                    {/* <RoutingComponent /> */}
-                    {/* <Responsive/> */}
-                </div>
+                <Box>
+                    <ErrorBoundary key={location.pathname} componentName="outlet" ><Outlet /></ErrorBoundary>
+                </Box>
             </Box>
         </Box>
     );

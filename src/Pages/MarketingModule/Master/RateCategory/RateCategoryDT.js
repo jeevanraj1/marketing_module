@@ -5,7 +5,6 @@ import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRound
 import Swal from 'sweetalert2';
 import { RateCategoryApi } from '../../../Api';
 
-
 const textFiledStyle = {
   width: "100%",
   "& .MuiOutlinedInput-root": {
@@ -26,27 +25,7 @@ const textFiledStyle = {
   },
 }
 
-const autoCompleteStyle = {
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "black",
-      borderWidth: "2px",
-    },
-  },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "14px",
-    display: "flex",
-    alignItems: "center",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-}
+
 
 export default function RateCategoryDT() {
 
@@ -103,7 +82,7 @@ export default function RateCategoryDT() {
   const validation = () => {
     const newErrors = {}
     if (formData.catagName === "") {
-      newErrors.catagName = "* Required "
+      newErrors.catagName = "Required "
 
     } else if (formData.catagName.length > 5) {
       newErrors.catagName = errors.catagName
@@ -141,7 +120,7 @@ export default function RateCategoryDT() {
   };
   useEffect(() => {
     fetchData();
-    document.title = 'RateCategory'
+    document.title = 'Rate Category'
   }, []);
 
   const handleSubmit = async (e) => {
@@ -251,7 +230,7 @@ export default function RateCategoryDT() {
     },
     {
       field: 'catag_name',
-      headerName: 'Catag Name',
+      headerName: 'Catagory Name',
       width: 160,
 
     },

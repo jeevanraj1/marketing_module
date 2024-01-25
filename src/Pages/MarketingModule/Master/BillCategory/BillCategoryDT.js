@@ -69,7 +69,7 @@ export default function BillCategoryDT() {
 
 
   const handleFieldChange = (fieldName, value) => {
-    localStorage.setItem("Navigation_state",false)
+    localStorage.setItem("Navigation_state", false)
     setErrors((prevErrors) => ({
       ...prevErrors,
       [fieldName]: "",
@@ -149,7 +149,7 @@ export default function BillCategoryDT() {
           Swal.fire("sucess", "Saved Sucessfully", "success")
           handelClear()
           fetchData()
-          localStorage.setItem("Navigation_state",true)
+          localStorage.setItem("Navigation_state", true)
         } else {
           Swal.fire('Error' `${respone.data.Error}`, 'error')
         }
@@ -160,7 +160,6 @@ export default function BillCategoryDT() {
   }
 
   const handleEdit = (row) => {
-    console.log(row);
     setUpdateButton(true)
     setSaveButton(false)
     setBillCategoryId(row.bill_catag)
@@ -171,10 +170,10 @@ export default function BillCategoryDT() {
       setAutoCredit("N")
     }
     setFormData({ billCategoryName: row.bill_catag_name })
-    localStorage.setItem("Navigation_state",true)
+    localStorage.setItem("Navigation_state", true)
   }
 
-  const handleUpdate = async(e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault()
     const validationErorrs = validation()
     setErrors(validationErorrs)
@@ -186,13 +185,13 @@ export default function BillCategoryDT() {
           auto_credit: autoCredit.trim()
         }
         console.log(newRecord);
-        const respone = await billCategoryApi.BillCategory_Master().update(BillCategoryId,newRecord)
+        const respone = await billCategoryApi.BillCategory_Master().update(BillCategoryId, newRecord)
         console.log(respone);
         if (respone.data.Status === 1) {
           Swal.fire("sucess", "Updated Sucessfully", "success")
           handelClear()
           fetchData()
-          localStorage.setItem("Navigation_state",true)
+          localStorage.setItem("Navigation_state", true)
         } else {
           Swal.fire('Error' `${respone.data.Error}`, 'error')
         }
@@ -207,7 +206,7 @@ export default function BillCategoryDT() {
     setFormData({ billCategoryName: "" })
     setErrors({ billCategoryName: "", autoCredit: "" })
     setAutoCredit("N")
-    localStorage.setItem("Navigation_state",true)
+    localStorage.setItem("Navigation_state", true)
   }
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
     bill_catag: false
@@ -226,7 +225,6 @@ export default function BillCategoryDT() {
     } catch (error) {
       Swal.fire('error', 'Error while fetching data', 'error')
     }
-
   }
   rows.forEach(item => {
     if (item.auto_credit === "Y") {
@@ -321,23 +319,19 @@ export default function BillCategoryDT() {
                   options={autoCreditOptions}
                   getOptionLabel={(options) => options.Name}
                   autoHighlight
-                  value={autoCreditOptions.find(
-                    (option) => option.value === autoCredit
-                  ) || null}
+                  value={autoCreditOptions.find((option) => option.value === autoCredit) || null}
                   onChange={(event, value) => handleFieldChange("autoCredit", (value?.value || ''))}
+                  sx={autoCompleteStyle}
                   renderInput={(params) => (
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <TextField
-                        {...params}
-                        size="small"
-                        id="outlined-basic"
-                        label="Auto Credit"
-                        name=''
-                        sx={autoCompleteStyle}
-                        error={Boolean(errors.autoCredit)}
-                        helperText={errors.autoCredit}
-                      />
-                    </div>
+                    <TextField
+                      {...params}
+                      size="small"
+                      id="outlined-basic"
+                      label="Auto Credit"
+                      name=''
+                      error={Boolean(errors.autoCredit)}
+                      helperText={errors.autoCredit}
+                    />
                   )}
                 />
 
@@ -381,7 +375,7 @@ export default function BillCategoryDT() {
           <Paper elevation={3} sx={{ width: "100%", marginTop: 3, }}>
             {/* ================ */}
             <Grid xs={12} sm={12} md={12} lg={12}>
-              <Box sx={{ height: 400, width: '100%' }}>
+              <Box sx={{ height: 300, width: '100%' }}>
                 <DataGrid
                   rows={rows}
                   columns={columns}

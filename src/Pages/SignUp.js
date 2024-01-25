@@ -1,13 +1,3 @@
-// import React from 'react'
-
-// export default function SignUp() {
-//   return (
-//     <div>
-//       /SignUp
-//     </div>
-//   )
-// }
-
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';

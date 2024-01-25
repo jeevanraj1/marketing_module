@@ -356,7 +356,6 @@ export default function PayModeDT() {
     const [rows, setRows] = useState([]);
     const [errors, setErrors] = useState({});
     const [pay_id, setPay_id] = useState(null);
-    //const [edit, setEdit] = useState(false);
     const [saveButton, setSaveButton] = useState(true);
     const [updateButton, setUpdateButton] = useState(false);
 
@@ -373,7 +372,7 @@ export default function PayModeDT() {
         });
         setSaveButton(false);
         setUpdateButton(true);
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
     console.log(errors);
     const getRowClassName = (params) => {
@@ -411,7 +410,7 @@ export default function PayModeDT() {
                         }
                     >
                         Edit
-                    </ModeEditOutlineRoundedIcon>                   
+                    </ModeEditOutlineRoundedIcon>
                 </>
             ),
         },
@@ -439,7 +438,7 @@ export default function PayModeDT() {
 
 
     const handleFieldChange = (fieldName, value) => {
-        localStorage.setItem("Navigation_state",false)
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
@@ -449,12 +448,12 @@ export default function PayModeDT() {
                 ...prevErrors,
                 paymode: 'Value must be within 2 characters',
             }));
-           setTimeout(()=>{
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                paymode: '',
-            }));
-           },1000)
+            setTimeout(() => {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    paymode: '',
+                }));
+            }, 1000)
         }
         else if (fieldName === "paymode" && value.length <= 2) {
 
@@ -478,7 +477,7 @@ export default function PayModeDT() {
                 ...prevdata,
                 [fieldName]: value
             }))
-            
+
         }
         else if (fieldName === "description" && value.length > 3) {
 
@@ -529,14 +528,14 @@ export default function PayModeDT() {
         e.preventDefault();
         const validationErorrs = validation()
         setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
         if (!hasErrors) {
-                const newRecord = {
-                    pay_mode: formData.paymode,
-                    description: formData.description.trim(),
-                };
-                console.log(newRecord);
-                try{ 
+            const newRecord = {
+                pay_mode: formData.paymode,
+                description: formData.description.trim(),
+            };
+            console.log(newRecord);
+            try {
                 const response = await paymode_Api.paymode().create(newRecord);
                 console.log(response.data);
                 if (response.data.Status === 1) {
@@ -547,7 +546,7 @@ export default function PayModeDT() {
                         paymode: '',
                         description: '',
                     });
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire("Error", response.data.Error, "error");
                 }
@@ -555,42 +554,42 @@ export default function PayModeDT() {
                 Swal.fire("error", `${error}`, "error");
             }
         }
-        
+
     }
 
     const HandelUpdate = async (e) => {
         e.preventDefault()
         const validationErorrs = validation()
         setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
         if (!hasErrors) {
-        
+            console.log("hi");
             const newRecord = {
                 pay_mode: formData.paymode,
                 description: formData.description.trim(),
             };
             try {
-            const response = await paymode_Api.paymode().update(pay_id, newRecord)
-            console.log(response);
-            if (response.data.Status === 1) {
-                Swal.fire("success", "Updated Successfully", "success");
-                localStorage.setItem("Navigation_state", true);
-                fetch_paymode()
-                setFormData({
-                    paymode: '',
-                    description: '',
-                });
-                localStorage.setItem("Navigation_state",true)
-                setSaveButton(true);
-                setUpdateButton(false)
-            } else {
-                Swal.fire("Error", `${response.data.Error}`, "error");
+                const response = await paymode_Api.paymode().update(pay_id, newRecord)
+                console.log(response);
+                if (response.data.Status === 1) {
+                    Swal.fire("success", "Updated Successfully", "success");
+                    localStorage.setItem("Navigation_state", true);
+                    fetch_paymode()
+                    setFormData({
+                        paymode: '',
+                        description: '',
+                    });
+                    localStorage.setItem("Navigation_state", true)
+                    setSaveButton(true);
+                    setUpdateButton(false)
+                } else {
+                    Swal.fire("Error", `${response.data.Error}`, "error");
+                }
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            console.log(error);
         }
-    }
-        
+
     }
 
     const HandleClear = () => {
@@ -607,7 +606,7 @@ export default function PayModeDT() {
             paymode: "",
             description: ""
         }));
-         localStorage.setItem("Navigation_state", true);
+        localStorage.setItem("Navigation_state", true);
     }
 
     useEffect(() => {
@@ -641,9 +640,9 @@ export default function PayModeDT() {
                                         size="small"
                                         fullWidth
                                         name="paymode"
-                                        value={formData.paymode}                                      
+                                        value={formData.paymode}
                                         required
-                                        sx={textFiledStyle}                                   
+                                        sx={textFiledStyle}
                                         error={Boolean(errors.paymode)}
                                         helperText={errors.paymode || ""}
                                         onChange={(e) => handleFieldChange("paymode", e.target.value.toUpperCase().trim())}
@@ -663,7 +662,7 @@ export default function PayModeDT() {
                                         name="description"
                                         value={formData.description}
                                         inputProps={{ maxLength: 40 }}
-                                        sx={textFiledStyle} 
+                                        sx={textFiledStyle}
                                         error={Boolean(errors.description)}
                                         helperText={errors.description || ""}
                                         onChange={(e) => handleFieldChange("description", e.target.value.toUpperCase())}
