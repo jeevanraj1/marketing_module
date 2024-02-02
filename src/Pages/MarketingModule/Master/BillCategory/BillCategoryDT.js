@@ -186,7 +186,6 @@ export default function BillCategoryDT() {
         }
         console.log(newRecord);
         const respone = await billCategoryApi.BillCategory_Master().update(BillCategoryId, newRecord)
-        console.log(respone);
         if (respone.data.Status === 1) {
           Swal.fire("sucess", "Updated Sucessfully", "success")
           handelClear()
@@ -286,7 +285,7 @@ export default function BillCategoryDT() {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item md={7} lg={7} sm={12} xs={12}>
+        <Grid item md={9} lg={9} sm={12} xs={12}>
           <Paper elevation={3} sx={{ marginTop: 1 }}>
             <Grid container spacing={2} sx={{ padding: "20px", paddingTop: "5px" }} >
               {/* ====================  */}
@@ -296,7 +295,7 @@ export default function BillCategoryDT() {
                 </Typography>
               </Grid>
               {/* ====================  */}
-              <Grid item md={5} lg={5} sm={12} xs={12}>
+              <Grid item md={6} lg={6} sm={12} xs={12}>
                 <TextField
                   size="small"
                   id="outlined-basic"
@@ -313,7 +312,7 @@ export default function BillCategoryDT() {
                 />
               </Grid>
               {/* ====================  */}
-              <Grid item md={5} lg={5} sm={12} xs={12}>
+              <Grid item md={6} lg={6} sm={12} xs={12}>
                 <Autocomplete
                   size="small"
                   options={autoCreditOptions}

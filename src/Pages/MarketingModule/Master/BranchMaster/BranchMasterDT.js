@@ -105,9 +105,9 @@ export default function BranchMasterDT() {
     }));
 
     const handleSearchDRPBankNameSelect = (event, newValue) => {
-        if (newValue!==null) {
+        if (newValue !== null) {
             setsearchbankCodeSelected(newValue.bankcode);
-        }else if(newValue === null){
+        } else if (newValue === null) {
             fetchData()
             setsearchbankCodeSelected("");
         }
@@ -451,7 +451,7 @@ export default function BranchMasterDT() {
             <Grid container spacing={2}>
                 <Grid item xs={12} sm={12} md={7} lg={7}>
                     {/* ================ */}
-                    <Paper elevation={3} sx={{ width: "100%", marginTop: 1 }}>
+                    <Paper elevation={3} sx={{ width: "100%", marginTop: 2 }}>
                         <Grid container spacing={2} sx={{ padding: "20px", paddingTop: "5px" }} >
                             {/* ================ */}
                             <Grid item md={12} lg={12} sm={12} xs={12} >
@@ -567,38 +567,38 @@ export default function BranchMasterDT() {
                 {/* =============================  */}
                 <Grid item xs={12} sm={12} md={5} lg={5}>
                     <Paper elevation={3} sx={{ width: "100%" }}>
-                        <Grid container spacing={2} marginTop={0} sx={{ padding: "20px", paddingTop: "0", paddingBottom: "75px" }}>
+                        <Grid container spacing={2} marginTop={0} sx={{ padding: "20px", paddingTop: "0", paddingBottom: "121px" }}>
                             {/* ================ */}
                             <Grid item xs={12} sm={12} md={10} lg={10}>
                                 <Typography variant="h5">Search</Typography>
                             </Grid>
                             {/* ================ */}
                             <Grid item xs={9} sm={9} md={10} lg={10}>
-                                    <Autocomplete
-                                        id="country-select-demo"
-                                        size="small"
-                                        options={bankNamesArray}
-                                        autoHighlight
-                                        getOptionLabel={(option) => option.bankname}
-                                        value={
-                                            bankNamesArray.find(
-                                                (option) => option.bankcode === searchbankCodeSelected
-                                            ) || null
-                                        }
-                                        sx={textFiledStyle}
-                                        onChange={handleSearchDRPBankNameSelect} 
-                                        renderInput={(params) => (
-                                            <TextField
-                                                size="small"
-                                                id="outlined-basic"
-                                                {...params}
-                                                label="Bank Name"
-                                                
-                                            />
-                                        )}
-                                    />
+                                <Autocomplete
+                                    id="country-select-demo"
+                                    size="small"
+                                    options={bankNamesArray}
+                                    autoHighlight
+                                    getOptionLabel={(option) => option.bankname}
+                                    value={
+                                        bankNamesArray.find(
+                                            (option) => option.bankcode === searchbankCodeSelected
+                                        ) || null
+                                    }
+                                    sx={textFiledStyle}
+                                    onChange={handleSearchDRPBankNameSelect}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            size="small"
+                                            id="outlined-basic"
+                                            {...params}
+                                            label="Bank Name"
 
-                                
+                                        />
+                                    )}
+                                />
+
+
                             </Grid>
                             {/* ================================ */}
                             <Grid item xs={3} sm={3} md={2} lg={2}>

@@ -256,7 +256,7 @@ export default function BankMasterDT() {
     return (
         <div>
             <Grid container spacing={2}>
-                <Grid item md={7} lg={7} sm={12} xs={12}>
+                <Grid item md={12} lg={12} sm={12} xs={12}>
                     <Paper elevation={3} sx={{ width: "100%" }}>
                         <Grid container spacing={2} marginTop={3}
                             sx={{ padding: "20px", paddingTop: "0" }}

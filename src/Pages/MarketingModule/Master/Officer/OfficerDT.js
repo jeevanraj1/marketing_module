@@ -198,7 +198,7 @@ export default function OfficerDT() {
         }
 
         if (formData.officerZone === "") {
-            newErrors.officerZone = "Requried"
+            newErrors.officerZone = ""
         } else if (formData.officerZone !== "") {
             newErrors.officerZone = errors.officerZone
         }
@@ -265,7 +265,7 @@ export default function OfficerDT() {
     return (
         <>
             <Grid container spacing={2}>
-                <Grid item md={7} lg={7} sm={12} xs={12}>
+                <Grid item md={8} lg={8} sm={12} xs={12}>
                     <Paper sx={{ padding: 2 }}>
                         <Grid container spacing={2}>
                             {/* =========================Relation  Master======================== */}
@@ -275,7 +275,7 @@ export default function OfficerDT() {
                                 </Typography>
                             </Grid>
                             {/* =========================Officer Name======================== */}
-                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                            <Grid item md={6} lg={6} sm={12} xs={12}>
                                 <TextField
                                     id="outlined-basic"
                                     label="Officer Name"
@@ -293,14 +293,13 @@ export default function OfficerDT() {
                                 />
                             </Grid>
                             {/* =========================Officer Zone======================== */}
-                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                            <Grid item md={6} lg={6} sm={12} xs={12}>
                                 <TextField
                                     id="outlined-basic"
                                     label="Officer Zone"
                                     variant="outlined"
                                     size='small'
                                     name='officerZone'
-                                    required
                                     fullWidth
                                     sx={textFiledStyle}
                                     value={formData.officerZone || ''}

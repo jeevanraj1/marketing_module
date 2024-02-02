@@ -12,13 +12,19 @@ code {
     monospace;
 }
 
-.MuiListItemText-primary{
-  font-family: 'Verdana, sans-serif'!important;
+.MuiListItemText-primary {
+  font-family: 'Calibri' !important;
 }
 
-.row-even{
+
+.row-even {
   background-color: #00bfff;
 }
-.row-odd{
+
+.row-odd {
   background-color: white;
+}
+
+.custom-swal-container {
+  z-index: 6969;
 }

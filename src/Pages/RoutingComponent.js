@@ -25,6 +25,9 @@ import CustomerTypePage from './MarketingModule/Master/CustomerType/CustomerType
 import CustomerTypeDT from './MarketingModule/Master/CustomerType/CustomerTypeDT';
 import BankMasterDT from './MarketingModule/Master/BankMaster/BankMasterDT';
 import BranchMasterDT from './MarketingModule/Master/BranchMaster/BranchMasterDT';
+import DistrictDT from './MarketingModule/Master/District/DistrictDT';
+import TalukaDT from './MarketingModule/Master/Taluka/TalukaDT';
+import CityDT from './MarketingModule/Master/City/CityDT';
 
 export default function RoutingComponent() {
     const location = useLocation()
@@ -57,12 +60,19 @@ export default function RoutingComponent() {
                     </Route>
                     <Route path='RateCategory' element={<RateCategoryPage />}>
                         <Route index element={<RateCategoryDT />} />
-                   </Route>
-                    <Route path='CustomerType' element={<CustomerTypePage/>}>
-                        <Route index element={<CustomerTypeDT/>} />
                     </Route>
-                    <Route path='BankMaster' element={<BankMasterDT/>}/>
-                    <Route path='BranchMaster' element={<BranchMasterDT/>}/>
+                    <Route path='CustomerType' element={<CustomerTypePage />}>
+                        <Route index element={<CustomerTypeDT />} />
+                    </Route>
+                    <Route path='BankMaster' element={<BankMasterDT />} />
+
+                    <Route path='BranchMaster' element={<BranchMasterDT />} />
+
+                    <Route path='District' element={<ErrorBoundary key={location.pathname} componentName="District" ><DistrictDT /></ErrorBoundary>} />
+
+                    <Route path='Taluka' element={<ErrorBoundary key={location.pathname} componentName="Taluka" ><TalukaDT/></ErrorBoundary>} />
+
+                    <Route path='City' element={<ErrorBoundary key={location.pathname} componentName="City" ><CityDT/></ErrorBoundary>} />
                 </Route>
 
                 <Route path='/ForgotPassword' element={<ForgotPassword />} />

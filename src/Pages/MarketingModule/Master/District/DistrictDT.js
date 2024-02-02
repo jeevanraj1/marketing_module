@@ -2,7 +2,7 @@ import React from 'react'
 import { Grid, Typography, Paper, Button, Box, TextField, Stack } from '@mui/material'
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
 import { useState, useEffect } from "react";
-import { StatusApi } from "../../../Api";
+import { DistrictAPI } from "../../../Api";
 import Swal from 'sweetalert2';
 import { DataGrid } from '@mui/x-data-grid'
 
@@ -25,166 +25,132 @@ const textFiledStyle = {
         fontWeight: "bold",
     },
 }
-export default function StatusDT() {
 
+export default function DistrictDT() {
     const [rows, setRows] = useState([]);
-    const [statusID, setstatusID] = useState([]);
     const [saveButton, setSaveButton] = useState(true);
     const [updateButton, setUpdateButton] = useState(false);
+    const [districtCode, setDistrictCode] = useState(null);
     const [columnVisibilityModel, setColumnVisibilityModel] = React.useState({
-        status_id: false
+        district_code: false
     });
+    const getRowClassName = (params) => {
+        const rowIndex = params.indexRelativeToCurrentPage;
+        return rowIndex % 2 === 0 ? "row-even" : "row-odd";
+    };
     const [formData, setFormData] = React.useState({
-        statusName: "",
+        districtName: "",
     });
     const [errors, setErrors] = React.useState({})
-
-    const handleEdit = (row) => {
-        setFormData((prevdata) => ({
-            ...prevdata,
-            statusName: row.status_name
-
-        }))
-        setstatusID(row.status_id)
-        setUpdateButton(true)
-        setSaveButton(false)
-        localStorage.setItem("Navigation_state",true)
+    const validation = () => {
+        const newErrors = {}
+        if (formData.districtName.trim() === "") newErrors.districtName = "Requried"
+        else if (formData.districtName !== "") newErrors.districtName = errors.districtName
+        return newErrors
     }
-
-    const handleFiledChange = (fieldName, value) => {
-        localStorage.setItem("Navigation_state",false)
-        setErrors((prevErrors) => ({
-            ...prevErrors,
-            [fieldName]: "",
-        }));
-        if (fieldName === "statusName" && value.length <= 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                statusName: 'Value must greater than 3 charaters',
-            }));
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
-
-        }
-        else if (fieldName === "statusName" && value.length > 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                statusName: '',
-            }));
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
-        }
-    }
-
-    const handleClear = () => {
-        setFormData((prevdata) => ({
-            ...prevdata,
-            statusName: "",
-        }))
-        setSaveButton(true)
-        setUpdateButton(false)
-        setErrors((prevdata) => ({
-            ...prevdata,
-            statusName: ""
-        }))
-        localStorage.setItem("Navigation_state",true)
-    }
-
-    const fetchData = async () => {
-        try {
-            const response = await StatusApi.Status_master().fetchAll();
-            console.log(response);
-            if (response.status === 200) {
-                setRows(response.data.items);
-
-            } else {
-                console.error("Failed to fetch data");
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-        document.title = 'Status'
-    }, []);
-
     const handleSubmit = async (e) => {
         e.preventDefault()
         const validationErorrs = validation()
-        console.log(validationErorrs);
-        setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null )
-        if (!hasErrors) {
-            try {
-                const newRecord = {
-                    status_name: formData.statusName
-                };
-                const response = await StatusApi.Status_master().create(newRecord);
-                if (response.data.Status === 1) {
-                    Swal.fire('Saved', 'Successfully', 'success');
-                    handleClear();
-                    fetchData();
-                    localStorage.setItem("Navigation_state",true)
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: `${response.data.Error}` || 'Unknown Error',
-                        icon: 'error',
-                    });
-                }
-            } catch (error) {
-                Swal.fire('Error', 'Error posting data', 'error');
-            }
-        }
-
-    }
-    const handleUpdate = async (e) => {
-        e.preventDefault()
-        const validationErorrs = validation()
-        console.log(validationErorrs);
         setErrors(validationErorrs)
         const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null)
         if (!hasErrors) {
             try {
                 const newRecord = {
-                    status_name: formData.statusName
-                };
-                const response = await StatusApi.Status_master().update(statusID, newRecord)
-                if (response.data.Status === 1) {
-                    Swal.fire('Saved', 'Updated Sucessfully', 'success');
-                    handleClear();
-                    fetchData();
-                    localStorage.setItem("Navigation_state",true)
+                    "district_name": formData.districtName.trim()
+                }
+                console.log(newRecord);
+                const respone = await DistrictAPI.DistrictAPI_master().create(newRecord)
+                if (respone.data.Status === 1) {
+                    Swal.fire("sucess", "Saved Sucessfully", "success")
+                    handleClear()
+                    fetchData()
+                    localStorage.setItem("Navigation_state", true)
                 } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: `${response.data.Error}` || 'Unknown Error',
-                        icon: 'error',
-                    });
+                    Swal.fire('Error' ,`${respone.data.Error}`, 'error')
                 }
             } catch (error) {
-                Swal.fire('Error', 'Error posting data', 'error');
+                console.log(error);
+                Swal.fire('Error' ,`error while posting`, 'error')
             }
         }
     }
-
-
-    const getRowClassName = (params) => {
-        const rowIndex = params.indexRelativeToCurrentPage;
-        return rowIndex % 2 === 0 ? "row-even" : "row-odd";
-    };
-
+    const handleUpdate = async (e) => {
+        console.log("hi");
+        e.preventDefault()
+        const validationErorrs = validation()
+        setErrors(validationErorrs)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null)
+        if (!hasErrors) {
+            try {
+                const newRecord = {
+                    "district_name": formData.districtName.trim()
+                }
+                const respone = await DistrictAPI.DistrictAPI_master().update(districtCode,newRecord)
+                if (respone.data.Status === 1) {
+                    Swal.fire("sucess", "Updated Sucessfully", "success")
+                    handleClear()
+                    fetchData()
+                    localStorage.setItem("Navigation_state", true)
+                } else {
+                    Swal.fire('Error' ,`${respone.data.Error}`, 'error')
+                }
+            } catch (error) {
+                Swal.fire('Error' ,`error while posting`, 'error')
+            }
+        }
+    }
+    const handleClear = () => {
+        setFormData({ districtName: "" })
+        setErrors({})
+        setSaveButton(true)
+        setUpdateButton(false)
+    }
+    const handleFiledChange = (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false)
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [fieldName]: "",
+        }));
+        if (fieldName === "districtName") {
+            if (value.trim() === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    districtName: "Required",
+                }));
+            }
+            else if (value.trim().length < 3) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    districtName: "Value must be Greater than 3 characters",
+                }));
+            }
+            else if (value.trim().length > 40) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    districtName: "Value must be less than 40 characters",
+                }));
+            }
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value,
+            }));
+        }
+    }
+    const fetchData = async () => {
+        try {
+            const response = await DistrictAPI.DistrictAPI_master().fetchAll()
+            if (response.status === 200) {
+                setRows(response.data.items);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const columns = [
         {
             field: "action",
             headerName: "Action",
-            width: 120,
+            width: 69,
             renderCell: (params) => (
                 <>
                     <ModeEditOutlineRoundedIcon
@@ -211,55 +177,56 @@ export default function StatusDT() {
             ),
         },
         {
-            field: "status_id",
-            headerName: "Status Id",
-            width: 120
+            field: 'district_code',
+            headerName: 'District Code',
+            width: 150,
         },
         {
-            field: "status_name",
-            headerName: "Status Name",
-            width: 200
+            field: 'district_name',
+            headerName: 'District name',
+            width: 150,
         },
     ];
-
-    const validation = () => {
-        const newErrors = {}
-        if (formData.statusName === "") {
-            newErrors.statusName = "Required "
-        } else if (formData.statusName.length <= 3) {
-            newErrors.statusName = errors.statusName
-        }
-        return newErrors
+    const handleEdit = (row) => {
+        setSaveButton(false)
+        setUpdateButton(true)
+        setFormData((prevdata) => ({
+            ...prevdata,
+            districtName: row.district_name
+        }))
+        setDistrictCode(row.district_code)
     }
-
-
+    useEffect(() => {
+        fetchData();
+        document.title = "District Master"
+    }, [])
     return (
         <>
             <Grid container spacing={2}>
                 <Grid item md={12} lg={12} sm={12} xs={12}>
                     <Paper sx={{ padding: 2 }} elevation={9}>
                         <Grid container spacing={2}>
-                            {/* =========================Relation  Master======================== */}
+                            {/* =========================District  Master======================== */}
                             <Grid item md={12} lg={12} sm={12} xs={12}>
                                 <Typography variant='h5'>
-                                    Status Master
+                                    District Master
                                 </Typography>
                             </Grid>
-                            {/* =========================Status Name======================== */}
+                            {/* =========================District Name======================== */}
                             <Grid item md={6} lg={6} sm={12} xs={12}>
                                 <TextField
                                     id="outlined-basic"
-                                    label="Status Name"
+                                    label="District Name"
                                     variant="outlined"
                                     size='small'
                                     name='statusName'
                                     required
                                     sx={textFiledStyle}
                                     fullWidth
-                                    value={formData.statusName}
-                                    onChange={(e) => handleFiledChange("statusName", e.target.value.toUpperCase().trim())}
-                                    error={Boolean(errors.statusName)}
-                                    helperText={errors.statusName}
+                                    value={formData.districtName}
+                                    onChange={(e) => handleFiledChange("districtName", e.target.value.toUpperCase())}
+                                    error={Boolean(errors.districtName)}
+                                    helperText={errors.districtName}
 
                                 />
                             </Grid>
@@ -299,11 +266,11 @@ export default function StatusDT() {
                             <DataGrid
                                 rows={rows}
                                 columns={columns}
-                                getRowId={(row) => row.status_id.toString()}
+                                getRowId={(row) => row.district_code.toString()}
                                 initialState={{
                                     pagination: {
                                         paginationModel: {
-                                            pageSize: 10,
+                                            pageSize: 5,
                                         },
                                     },
                                 }}
@@ -311,7 +278,7 @@ export default function StatusDT() {
                                 onColumnVisibilityModelChange={(newModel) =>
                                     setColumnVisibilityModel(newModel)
                                 }
-                                pageSizeOptions={[10, 20]}
+                                pageSizeOptions={[5, 10, 20]}
                                 disableRowSelectionOnClick
                                 getRowHeight={() => 35}
                                 getRowClassName={getRowClassName}

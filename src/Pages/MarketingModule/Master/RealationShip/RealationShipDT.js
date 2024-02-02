@@ -220,7 +220,7 @@ export default function RealationShipDT() {
                                 </Typography>
                             </Grid>
                             {/* =========================Relation Name======================== */}
-                            <Grid item md={3} lg={3} sm={12} xs={12}>
+                            <Grid item md={6} lg={6} sm={12} xs={12}>
                                 <TextField
                                     id="outlined-basic"
                                     label="Relation Name"

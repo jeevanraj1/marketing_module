@@ -633,7 +633,7 @@ export default function PayModeDT() {
                                 </Grid>
                                 {/* ====================  */}
 
-                                <Grid item xs={12} sm={12} md={3} lg={3}>
+                                <Grid item xs={12} sm={12} md={4} lg={4}>
                                     <TextField id="outlined-basic"
                                         label="Pay Mode"
                                         variant="outlined"
@@ -670,14 +670,10 @@ export default function PayModeDT() {
                                 </Grid>
 
 
-
-                                <Grid item xs={12} sm={12} md={1} lg={1}>
-                                </Grid>
-
                                 {/* ================ */}
 
                                 {saveButton && (
-                                    <Grid item xs={12} sm={12} md={1} lg={1}>
+                                    <Grid item xs={12} sm={12} md={2} lg={2}>
                                         <Stack spacing={4} direction="row">
                                             <Button
                                                 variant="contained"
@@ -694,7 +690,7 @@ export default function PayModeDT() {
                                 {/* ================ */}
 
                                 {updateButton && (
-                                    <Grid item xs={12} sm={12} md={1} lg={1}>
+                                    <Grid item xs={12} sm={12} md={2} lg={2}>
                                         <Stack spacing={4} direction="row" >
                                             <Button
                                                 variant="contained"
@@ -709,7 +705,7 @@ export default function PayModeDT() {
 
                                 {/* ================ */}
 
-                                <Grid item xs={12} sm={12} md={1} lg={1} sx={{ marginLeft: -1 }} >
+                                <Grid item xs={12} sm={12} md={2} lg={2} sx={{ marginLeft: -1 }} >
                                     <Stack spacing={2} direction="row">
                                         <Button
                                             variant="contained"

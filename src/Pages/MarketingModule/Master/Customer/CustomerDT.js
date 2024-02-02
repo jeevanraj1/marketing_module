@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import { Grid, Paper, Typography } from '@mui/material';
@@ -10,56 +10,186 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
+import { customerApi } from '../../../Api';
+import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
 
 
 export default function CustomerDT() {
     const navigate = useNavigate()
     const [searchByCode, setSearchByCode] = React.useState(true)
     const [searchByName, setSearchByName] = React.useState(false)
+    const [Rows, setRows] = useState([]);
     const columns = [
-        { field: 'id', headerName: 'ID', width: 90 },
         {
-            field: 'firstName',
-            headerName: 'First name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'lastName',
-            headerName: 'Last name',
-            width: 150,
-            editable: true,
-        },
-        {
-            field: 'age',
-            headerName: 'Age',
-            type: 'number',
-            width: 110,
-            editable: true,
-        },
-        {
-            field: 'fullName',
-            headerName: 'Full name',
-            description: 'This column has a value getter and is not sortable.',
-            sortable: false,
-            width: 160,
-            valueGetter: (params) =>
-                `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-        },
-    ];
+            field: "action",
+            headerName: "Action",
+            width: 69,
+            renderCell: (params) => (
+                <>
+                    <ModeEditOutlineRoundedIcon
+                        sx={{ color: "blue", marginRight: 2 }}
+                        style={{
+                            cursor: "pointer",
+                            opacity: 1,
+                            transition: "opacity 0.3s",
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.opacity = 0.7;
+                            e.currentTarget.style.color = "lightblue";
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.opacity = 1;
+                            e.currentTarget.style.color = "blue";
+                        }}
+                        onClick={() => { handleEdit(params.row) }}
+                    >
+                        Edit
+                    </ModeEditOutlineRoundedIcon>
 
-    const rows = [
-        { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-        { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-        { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-        { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-        { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-        { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-        { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-        { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-        { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-    ];
+                </>
+            ),
+        },
+        {
+            field: 'customer_code',
+            headerName: 'Customer Code',
+            width: 90
+        },
+        {
+            field: 'user_code',
+            headerName: 'Customer Code',
+            width: 150,
+        },
+        {
+            field: 'customer_name',
+            headerName: 'Customer Name',
+            width: 150,
+        },
+        {
+            field: 'customer_alias',
+            headerName: 'Customer Alias',
+            width: 150,
+        },
+        {
+            field: 'status_id',
+            headerName: 'Status Id',
+            width: 150,
+        },
+        {
+            field: 'rel_type_id',
+            headerName: 'Relation Type ID',
+            width: 150,
+        },
+        {
+            field: 'rel_name',
+            headerName: 'Relation Name',
+            width: 150,
+        },
+        {
+            field: 'customer_type',
+            headerName: 'Customer Type',
+            width: 150,
+        },
+        {
+            field: 'bill_catag',
+            headerName: 'Bill Catageory',
+            width: 150,
+        },
+        {
+            field: 'rate_catag',
+            headerName: 'Rate Catageory',
+            width: 150,
+        },
+        {
+            field: 'pay_mode',
+            headerName: 'Pay Mode',
+            width: 150,
+        },
+        {
+            field: 'bank_code',
+            headerName: 'Bank Code',
+            width: 150,
+        },
+        {
+            field: 'branch_code',
+            headerName: 'Branch Code',
+            width: 150,
+        },
+        {
+            field: 'account_no',
+            headerName: 'Account Number',
+            width: 150,
+        },
+        {
+            field: 'fd_lock',
+            headerName: 'FD Lock',
+            width: 150,
+        },
+        {
+            field: 'fd_limit',
+            headerName: 'FD Limit',
+            width: 150,
+        },
+        {
+            field: 'balance',
+            headerName: 'Balance',
+            width: 150,
+        },
+        {
+            field: 'pan_no',
+            headerName: 'Pan Number',
+            width: 150,
+        },
+        {
+            field: 'gst_no',
+            headerName: 'Gst Number',
+            width: 150,
+        },
+        {
+            field: 'aadhar_no',
+            headerName: 'Aadhar Number',
+            width: 150,
+        },
+        {
+            field: 'mobile',
+            headerName: 'Mobile Number',
+            width: 150,
+        },
+        {
+            field: 'email',
+            headerName: 'Email',
+            width: 150,
+        },
+        {
+            field: 'officer_code',
+            headerName: 'Officer Code',
+            width: 150,
+        },
+        {
+            field: 'registration_date',
+            headerName: 'Registration Date',
+            width: 150,
+        },
+        {
+            field: 'tcs_perc',
+            headerName: 'TCS Percentage',
+            width: 150,
+        },
+        {
+            field: 'alternate_ph_no',
+            headerName: 'Alternate Phone Number',
+            width: 150,
+        },
 
+    ];
+    const getRowClassName = (params) => {
+        const rowIndex = params.indexRelativeToCurrentPage;
+        return rowIndex % 2 === 0 ? "row-even" : "row-odd";
+    };
+    const [columnVisibilityModel, setColumnVisibilityModel] = React.useState({
+        deposit_id: false,
+        customer_code: false,
+        dep_paymode_id: false,
+    })
     const handleSearch = (e) => {
         const { value } = e.target;
 
@@ -71,9 +201,21 @@ export default function CustomerDT() {
             setSearchByName(true);
         }
     }
-
+    const handleEdit = (row) => {
+        console.log(row);
+    }
     const handleClick = () => {
         navigate("CreateCustomer")
+    }
+    const FetchData = async () => {
+        try {
+            const respone = await customerApi.customerMaster().FetchAll()
+            if (respone.status === 200) {
+                setRows(respone.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const status = [
@@ -82,14 +224,16 @@ export default function CustomerDT() {
     ]
     React.useEffect(() => {
         document.title = 'Customer'
+        FetchData()
     }, [])
+    console.log(Rows);
     return (
         <>
             <Grid container spacing={2}>
                 <Grid item md={12} lg={12} sm={12} xs={12}>
                     <Paper sx={{ padding: 2 }}>
                         <Grid container spacing={2}>
-                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                            <Grid item md={12} lg={12} sm={12} xs={12} width={1000}>
                                 <Typography variant='h5'>
                                     Customer  Master
                                 </Typography>
@@ -192,14 +336,14 @@ export default function CustomerDT() {
                                     />
                                 </Grid>
                             )}
-                            <Grid item md={3} lg={3} sm={12} xs={12}>
+                            <Grid item md={2} lg={2} sm={12} xs={12}>
                                 <Button variant="contained"
                                     size='small'
                                     sx={{ marginTop: 0.5, marginLeft: "-10px" }}
                                 >Search
                                 </Button>
                             </Grid>
-                            <Grid item md={3} lg={3} sm={12} xs={12} sx={{ textAlign: "end" }}>
+                            <Grid item md={4} lg={4} sm={12} xs={12} sx={{ textAlign: "end" }}>
                                 <Button
                                     variant="contained"
                                     onClick={() => handleClick()}
@@ -213,8 +357,9 @@ export default function CustomerDT() {
                         <Grid item md={12} lg={12} sm={12} xs={12}>
                             <Box sx={{ height: 400, marginTop: 2 }}>
                                 <DataGrid
-                                    rows={rows}
+                                    rows={Rows}
                                     columns={columns}
+                                    getRowId={(row) => row.customer_code.toString()}
                                     initialState={{
                                         pagination: {
                                             paginationModel: {
@@ -222,9 +367,14 @@ export default function CustomerDT() {
                                             },
                                         },
                                     }}
-                                    pageSizeOptions={[5]}
-                                    checkboxSelection
+                                    columnVisibilityModel={columnVisibilityModel}
+                                    onColumnVisibilityModelChange={(newModel) =>
+                                        setColumnVisibilityModel(newModel)
+                                    }
+                                    pageSizeOptions={[5, 10, 20]}
                                     disableRowSelectionOnClick
+                                    getRowHeight={() => 35}
+                                    getRowClassName={getRowClassName}
                                 />
                             </Box>
                         </Grid>

@@ -1,0 +1,23 @@
+{
+    "user_code": "A0",
+    "customer_name": "JEEVAN",
+    "customer_alias": "JEEVAN",
+    "status_id": 2,
+    "rel_type_id": 1,
+    "rel_name": "AMMA",
+    "customer_type": 1,
+    "rate_catag": 1,
+    "bill_catag": 1,
+    "pay_mode": "C",
+    "bank_code": 1,
+    "branch_code": 1,
+    "account_no": "ghasgdsd",
+    "fd_lock": "Y",
+    "fd_limit": 45645213,
+    "pan_no": "hjkashdjh",
+    "gst_no": "asdkas",
+    "aadhar_no": 456512,
+    "mobile": 5456454,
+    "email": "test",
+    "officer_code": 1
+}

@@ -239,7 +239,7 @@ export default function RateCategoryDT() {
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item md={7} lg={7} sm={12} xs={12}>
+        <Grid item md={8} lg={8} sm={12} xs={12}>
           <Paper elevation={3} sx={{ width: "100%", marginTop: 1 }}>
             <Grid container spacing={2} sx={{ padding: "20px", paddingTop: "5px" }} >
               {/* ====================  */}
@@ -247,7 +247,7 @@ export default function RateCategoryDT() {
                 <Typography variant="h5">Rate Category Master</Typography>
               </Grid>
               {/* ====================  */}
-              <Grid item  md={6} lg={6} sm={12} xs={12}>
+              <Grid item  md={8} lg={8} sm={12} xs={12}>
                 <TextField
                   size="small"
                   id="outlined-basic"
