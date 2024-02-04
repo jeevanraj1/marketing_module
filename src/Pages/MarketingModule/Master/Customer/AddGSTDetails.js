@@ -76,7 +76,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
         gst_cancel_date: "",
         status: "I",
     });
-    const [customerCodeForGst, setCustomerCodeForGst] = useState(1);
+    const [customerCodeForGst, setCustomerCodeForGst] = useState(customerCode);
     const [maxGstCancleDate, setMaxGstCancleDate] = useState(null);
     const [errors, setErrors] = useState({});
     const [GSTID, setGSTID] = useState(null);
@@ -372,8 +372,8 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
             }))
         }
     }
-    const handleClear = ()=>{
-        setFormData({gst_cancel_date:"",gst_reg_date:"",status:"I"})
+    const handleClear = () => {
+        setFormData({ gst_cancel_date: "", gst_reg_date: "", status: "I" })
         setSaveButton(true)
         setUpdateButton(false)
         setErrors({})

@@ -43,7 +43,6 @@ export default function StatusDT() {
         setFormData((prevdata) => ({
             ...prevdata,
             statusName: row.status_name
-
         }))
         setstatusID(row.status_id)
         setUpdateButton(true)

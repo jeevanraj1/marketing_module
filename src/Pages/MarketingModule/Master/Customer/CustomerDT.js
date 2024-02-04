@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
 import { customerApi } from '../../../Api';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-
+import dayjs from 'dayjs';
 
 export default function CustomerDT() {
     const navigate = useNavigate()
@@ -202,7 +202,45 @@ export default function CustomerDT() {
         }
     }
     const handleEdit = (row) => {
-        console.log(row);
+        const values = {
+            // ======================================Personal Details===============================
+            customerCode: row.user_code,
+            customerName: row.customer_name,
+            customerAlias: row.customer_alias,
+            customerStatus: row.status_id,
+            relationType: row.rel_type_id,
+            relationName: row.rel_name,
+            officerName: row.officer_code,
+            registrationDate:row.registration_date,
+            // ======================================Customer Category===============================
+            customerType: row.customer_type,
+            billCategory: row.bill_catag,
+            rateCategory: row.rate_catag,
+            paymode: row.pay_mode,
+            // ======================================Bank Details====================================
+            bankName: row.bank_code,
+            branchName: row.branch_code,
+            ifscCode: '',
+            accNumber: row.account_no,
+            // ======================================Deposit Details=================================
+            totalDepositeAmount: 0,
+            FdLock: row.fd_lock,
+            creditLimit: row.fd_limit,
+            currentBalance: row.balance,
+            // ======================================Tax Details=====================================
+            panNumber: row.pan_no,
+            gstNumber: row.gst_no,
+            aadharNumber: row.aadhar_no,
+            tcsPercentage: row.tcs_perc,
+            // ======================================Contact Details=================================
+            phoneNumber: row.mobile,
+            emailId: row.email,
+            alternatePhoneNumber: row.alternate_ph_no,
+
+            // ==================================================================================
+            customer_code:row.customer_code,
+        }
+        navigate("CreateCustomer",{state:values})
     }
     const handleClick = () => {
         navigate("CreateCustomer")

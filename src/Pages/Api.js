@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { Axios } from "axios";
 
  const baseurl = `http://172.16.17.2:8080/ords/market/tbl/`
 // const baseurl = `http://103.21.232.59:8080/ords/market/tbl/`
@@ -48,6 +48,12 @@ export const customerApi = {
             AddDeposit: (newRecord) => axios.post(baseurl + 'customer_deposit', newRecord),
             FetchDepositeDetails: (id) => axios.get(baseurl + `customer_deposit?customer_code=${id}`),
 
+            DD_fetch_cityName:()=>axios.get(baseurl + "dd_city"),
+            DD_fetch_TalukaName:()=>axios.get(baseurl + "dd_taluka"),
+            DD_fetch_DistrictName:()=>axios.get(baseurl+"district"),
+            addressFetchAll:(id)=>axios.get(baseurl+`address?customer_code=${id}`),
+            addAddress:(newRecord)=>axios.post(baseurl+"address",newRecord),
+            AddressUpdate:(id,newRecord)=>axios.put(baseurl)
             
         }
     }

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { customerApi } from '../../../Api';
 import Swal from 'sweetalert2';
 import DepositDetails from './DepositDetails';
@@ -100,6 +100,7 @@ const datePickerStyle = {
 
 export default function Customer() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [updateButton, setUpdateButton] = useState(false);
   const [saveButton, setSaveButton] = useState(true);
   const [officerNames, setOfficerNames] = useState([])
@@ -111,7 +112,7 @@ export default function Customer() {
   const [fetchBankMasterDD, setFetchBankMasterDD] = useState([]);
   const [fetchBranchMasterDD, setFetchBranchMasterDD] = useState([]);
   const [fetchCustomerTypeDD, setFetchCustomerTypeDD] = useState([]);
-  const [formData, setFormData] = useState({
+  const initialState = location.state || {
     // ======================================Personal Details===============================
     customerCode: '',
     customerName: '',
@@ -145,14 +146,15 @@ export default function Customer() {
     phoneNumber: '',
     emailId: '',
     alternatePhoneNumber: "",
-  });
+  }
+  const [formData, setFormData] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [mobileOpen, setMobileOpen] = useState(false);
   const [GSTDeatils, setGSTDeatils] = useState(false);
   const [AddressDetails, setAddressDetails] = useState(false);
   const [AddDocements, setAddDocements] = useState(false);
   const [customerCode, setcustomerCode] = useState(null);
-  const [extraDetails, setExtraDetails] = useState(true);
+  const [extraDetails, setExtraDetails] = useState(false);
   const [bankDetailsShow, setBankDetailsShow] = useState(false);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
@@ -702,6 +704,38 @@ export default function Customer() {
         }))
       }
     }
+    // ======================================alternatePhoneNumber=================================
+    if (fieldName === "alternatePhoneNumber") {
+      setFormData((prevdata) => ({
+        ...prevdata,
+        [fieldName]: value
+      }))
+      if (value.trim().length < 10) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          alternatePhoneNumber: "Invalid Number",
+        }))
+      }
+      else if (value.trim().length > 10) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          alternatePhoneNumber: "Invalid Number",
+        }))
+        value = value.substring(0, 10)
+        setTimeout(() => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            alternatePhoneNumber: "",
+          }))
+        }, 1000)
+      }
+      else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          alternatePhoneNumber: "",
+        }))
+      }
+    }
     // ======================================bankName===============================
     if (fieldName === 'bankName') {
       if (value === "") {
@@ -783,8 +817,6 @@ export default function Customer() {
 
   }
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     const validationErorrs = validation()
@@ -792,56 +824,56 @@ export default function Customer() {
     console.log(validationErorrs);
     const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
     console.log(hasErrors);
-    // if (!hasErrors) {
-    //   console.log("hi");
-    //   const newRecord = {
-    //     "user_code": formData.customerCode,
-    //     "customer_name": formData.customerName,
-    //     "customer_alias": formData.customerAlias,
-    //     "status_id": Number(formData.customerStatus),
-    //     "rel_type_id": Number(formData.relationType),
-    //     "rel_name": formData.relationName,
-    //     "customer_type": Number(formData.customerType),
-    //     "rate_catag": Number(formData.rateCategory),
-    //     "bill_catag": Number(formData.billCategory),
-    //     "pay_mode": Number(formData.paymode),
-    //     "bank_code": Number(formData.bankName),
-    //     "branch_code": Number(formData.branchName),
-    //     "account_no": formData.accNumber,
-    //     "fd_lock": formData.FdLock,
-    //     "fd_limit": formData.creditLimit,
-    //     "pan_no": formData.panNumber,
-    //     "gst_no": formData.gstNumber,
-    //     "aadhar_no": Number(formData.aadharNumber),
-    //     "mobile": Number(formData.phoneNumber),
-    //     "email": formData.emailId,
-    //     "officer_code": Number(formData.officerName),
-    //   }
-    //   try {
-    //     const response = await customerApi.customerMaster().create(newRecord)
-    //     if (response.data.Status === 1) {
-    //       Swal.fire('Saved', 'Saved Sucessfully', 'success');
-    //       setUpdateButton(true)
-    //       setSaveButton(false)
-    //       setcustomerCode(response.data.customer_code)
-    //       setExtraDetails(true)
-    //       localStorage.setItem("Navigation_state", true)
-    //     } else {
-    //       Swal.fire({
-    //         title: 'Error',
-    //         text: `${response.data.Error}` || 'Unknown Error',
-    //         icon: 'error',
-    //       });
-    //     }
-    //   } catch (error) {
-    //     Swal.fire({
-    //       title: 'Error',
-    //       text: 'Unknown Error',
-    //       icon: 'error',
-    //     });
-    //   }
+    if (!hasErrors) {
+      console.log("hi");
+      const newRecord = {
+        "user_code": formData.customerCode,
+        "customer_name": formData.customerName,
+        "customer_alias": formData.customerAlias,
+        "status_id": Number(formData.customerStatus),
+        "rel_type_id": Number(formData.relationType),
+        "rel_name": formData.relationName,
+        "customer_type": Number(formData.customerType),
+        "rate_catag": Number(formData.rateCategory),
+        "bill_catag": Number(formData.billCategory),
+        "pay_mode": Number(formData.paymode),
+        "bank_code": Number(formData.bankName),
+        "branch_code": Number(formData.branchName),
+        "account_no": formData.accNumber,
+        "fd_lock": formData.FdLock,
+        "fd_limit": formData.creditLimit,
+        "pan_no": formData.panNumber,
+        "gst_no": formData.gstNumber,
+        "aadhar_no": Number(formData.aadharNumber),
+        "mobile": Number(formData.phoneNumber),
+        "email": formData.emailId,
+        "officer_code": Number(formData.officerName),
+      }
+      try {
+        // const response = await customerApi.customerMaster().create(newRecord)
+        // if (response.data.Status === 1) {
+        //   Swal.fire('Saved', 'Saved Sucessfully', 'success');
+        //   setUpdateButton(true)
+        //   setSaveButton(false)
+        //   setcustomerCode(response.data.customer_code)
+        //   setExtraDetails(true)
+        //   localStorage.setItem("Navigation_state", true)
+        // } else {
+        //   Swal.fire({
+        //     title: 'Error',
+        //     text: `${response.data.Error}` || 'Unknown Error',
+        //     icon: 'error',
+        //   });
+        // }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Unknown Error',
+          icon: 'error',
+        });
+      }
 
-    // }
+    }
 
   }
 
@@ -950,6 +982,13 @@ export default function Customer() {
     }
   }
   useEffect(() => {
+    if (location.state !== null) {
+      setUpdateButton(true)
+      setSaveButton(false)
+      setExtraDetails(true)
+      const { customer_code } = location.state
+      setcustomerCode(customer_code)
+    }
     fetch_officerNames()
     fetch_relationType_DD()
     fetch_status_DD()
@@ -1515,15 +1554,15 @@ export default function Customer() {
               size='small'
               fullWidth
               sx={textFiledStyle}
-              value={formData.phoneNumber}
-              onChange={(e) => handleFieldChange("phoneNumber", e.target.value.replace(/[^0-9]/g, ''))}
+              value={formData.alternatePhoneNumber}
+              onChange={(e) => handleFieldChange("alternatePhoneNumber", e.target.value.replace(/[^0-9]/g, ''))}
               error={Boolean(errors.phoneNumber)}
               helperText={errors.phoneNumber}
             />
           </Grid>
           {/* =========================btn======================== */}
           <Grid item md={12} lg={12} sm={12} xs={12}>
-            <Stack direction="row" spacing={1}>
+            <Stack spacing={{ xs: 1, sm: 1, md: 1 }} direction={{ xs: 'column', sm: 'row' }}>
               {/* =========================Add Deposite button======================== */}
               {extraDetails && (<>
                 <Button

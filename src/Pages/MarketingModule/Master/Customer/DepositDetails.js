@@ -84,7 +84,7 @@ const datePickerStyle = {
         marginTop: "-1px",
     },
 }
-export default function DepositDetails({ closeDepositeDetails }) {
+export default function DepositDetails({ closeDepositeDetails,customerCode,userCode,customerName }) {
     const [Errors, setErrors] = useState({});
     const [gridBankDocNumber, setGridBankDocNumber] = useState(false);
     const [gridDepositeDate, setGridDepositeDate] = useState(false);
@@ -113,7 +113,7 @@ export default function DepositDetails({ closeDepositeDetails }) {
         billNumber: "",
         billDate: "",
     });
-    const [CustomerCode, setCustomerCode] = useState(1);
+    const [CustomerCode, setCustomerCode] = useState(customerCode);
     const [rows, setRows] = useState([]);
     const [columnVisibilityModel, setColumnVisibilityModel] = React.useState({
         deposit_id: false,
@@ -764,13 +764,13 @@ export default function DepositDetails({ closeDepositeDetails }) {
                 {/* ================================================= */}
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                     <Typography component="h5" style={{ borderBottom: "1px dashed #000" }}>
-                        Customer Code : 4586
+                        Customer Code : {userCode}
                     </Typography>
                 </Grid>
                 {/* ================================================= */}
                 <Grid item xs={12} sm={12} md={6} lg={6} >
                     <Typography component="h5" style={{ borderBottom: "1px dashed #000" }}>
-                        Customer Name : JOHN
+                        Customer Name : {customerName}
                     </Typography>
                 </Grid>
                 {/* ================================================= */}
