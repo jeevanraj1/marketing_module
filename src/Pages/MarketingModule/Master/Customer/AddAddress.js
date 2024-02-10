@@ -57,7 +57,7 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
     const [DDCityNames, setDDCityNames] = useState([]);
     const [DDTalukaNames, setDDTalukaNames] = useState([]);
     const [DDDistrictNames, setDDDistrictNames] = useState([]);
-    const [CustomerCodeForAddress, setCustomerCodeForAddress] = useState(1);
+    const [CustomerCodeForAddress, setCustomerCodeForAddress] = useState(customerCode);
     const [formdata, setFormdata] = useState({
         addressType: '',
         address1: "",
@@ -421,7 +421,9 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
                 "addr_status": formdata.status,
             }
             try {
-                const response = await customerApi.customerMaster().addAddress(newRecord)
+                console.log(addressId);
+                const response = await customerApi.customerMaster().AddressUpdate(addressId,newRecord)
+                console.log(response);
                 if (response.data.Status === 1) {
                     Swal.fire({
                         title: 'Saved',
@@ -550,6 +552,11 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
             width: 150,
         },
         {
+            field: 'address_type',
+            headerName: 'Address Type',
+            width: 150,
+        },
+        {
             field: 'address1',
             headerName: 'Address 1',
             width: 150,
@@ -562,11 +569,6 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
         {
             field: 'address3',
             headerName: 'Address 3',
-            width: 150,
-        },
-        {
-            field: 'address_type',
-            headerName: 'Address Type',
             width: 150,
         },
         {
@@ -602,7 +604,6 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
 
     ];
     const handleEdit = (row) => {
-        console.log(row);
         setSaveButton(false)
         setUpdateButton(true)
         setErrors({})
@@ -625,6 +626,7 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
             location: row.location,
             status:addr_status,
         }))
+        setAddressId(row.address_id)
     }
     useEffect(() => {
         dd_Fetch_cityName()

@@ -1,5 +1,14 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
+const ErrorBoundaryCommonLogic = () => {
+  const navigate = useNavigate()
+  useEffect(() => {
+    const loginStatus = localStorage.getItem('login');
+    if (loginStatus !== "Success") navigate("/")
+  }, [])
+  return null
+}
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +32,12 @@ class ErrorBoundary extends Component {
         </div>
       );
     }
-    return this.props.children;
+    return (
+      <>
+        <ErrorBoundaryCommonLogic />
+        {this.props.children}
+      </>
+    )
   }
 }
 

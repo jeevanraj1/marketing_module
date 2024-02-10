@@ -14,11 +14,34 @@ import { customerApi } from '../../../Api';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
 import dayjs from 'dayjs';
 
+const autocompleteStyle = {
+    width: "100%",
+    "& .MuiOutlinedInput-root": {
+        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+    },
+    "& .MuiInputLabel-root": {
+        color: "black",
+        "&.Mui-focused": {
+            transform: "translate(14px, -10px)",
+        },
+    },
+    "& input, & label": {
+        height: "15px",
+        display: "flex",
+        alignItems: "center",
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+}
 export default function CustomerDT() {
     const navigate = useNavigate()
     const [searchByCode, setSearchByCode] = React.useState(true)
     const [searchByName, setSearchByName] = React.useState(false)
     const [Rows, setRows] = useState([]);
+    const [DDCusomerName, setDDCusomerName] = useState([]);
+    const [DDCustomerCode, setDDCustomerCode] = useState([]);
+    const [customerCode, setCustomerCode] = useState(null);
+
     const columns = [
         {
             field: "action",
@@ -75,8 +98,18 @@ export default function CustomerDT() {
             width: 150,
         },
         {
+            field: 'status_name',
+            headerName: 'Status Name',
+            width: 150,
+        },
+        {
             field: 'rel_type_id',
             headerName: 'Relation Type ID',
+            width: 150,
+        },
+        {
+            field: 'rel_name2',
+            headerName: 'Relation Type Name',
             width: 150,
         },
         {
@@ -90,8 +123,18 @@ export default function CustomerDT() {
             width: 150,
         },
         {
+            field: 'customer_type_name',
+            headerName: 'Customer Type Name',
+            width: 150,
+        },
+        {
             field: 'bill_catag',
             headerName: 'Bill Catageory',
+            width: 150,
+        },
+        {
+            field: 'bill_catag_name',
+            headerName: 'Bill Catageory Name',
             width: 150,
         },
         {
@@ -100,7 +143,17 @@ export default function CustomerDT() {
             width: 150,
         },
         {
+            field: 'catag_name',
+            headerName: 'Rate Catageory Name',
+            width: 150,
+        },
+        {
             field: 'pay_mode',
+            headerName: 'Pay Mode',
+            width: 150,
+        },
+        {
+            field: 'description',
             headerName: 'Pay Mode',
             width: 150,
         },
@@ -110,14 +163,25 @@ export default function CustomerDT() {
             width: 150,
         },
         {
+            field: 'bank_name',
+            headerName: 'Bank Name',
+            width: 150,
+        },
+        {
             field: 'branch_code',
             headerName: 'Branch Code',
+            width: 150,
+        },
+        {
+            field: 'branch_name',
+            headerName: 'Branch Name',
             width: 150,
         },
         {
             field: 'account_no',
             headerName: 'Account Number',
             width: 150,
+            type:'number'
         },
         {
             field: 'fd_lock',
@@ -128,6 +192,7 @@ export default function CustomerDT() {
             field: 'fd_limit',
             headerName: 'FD Limit',
             width: 150,
+            type:'number'
         },
         {
             field: 'balance',
@@ -148,11 +213,13 @@ export default function CustomerDT() {
             field: 'aadhar_no',
             headerName: 'Aadhar Number',
             width: 150,
+            align:'right'
         },
         {
             field: 'mobile',
             headerName: 'Mobile Number',
             width: 150,
+            align:'right'
         },
         {
             field: 'email',
@@ -162,6 +229,11 @@ export default function CustomerDT() {
         {
             field: 'officer_code',
             headerName: 'Officer Code',
+            width: 150,
+        },
+        {
+            field: 'officer_name',
+            headerName: 'Officer Name',
             width: 150,
         },
         {
@@ -178,6 +250,7 @@ export default function CustomerDT() {
             field: 'alternate_ph_no',
             headerName: 'Alternate Phone Number',
             width: 150,
+            align:'right'
         },
 
     ];
@@ -186,13 +259,21 @@ export default function CustomerDT() {
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
     };
     const [columnVisibilityModel, setColumnVisibilityModel] = React.useState({
-        deposit_id: false,
         customer_code: false,
-        dep_paymode_id: false,
+        status_id: false,
+        rel_type_id: false,
+        customer_type: false,
+        bill_catag: false,
+        rate_catag: false,
+        pay_mode: false,
+        bank_code: false,
+        branch_code: false,
+        officer_code: false,
+        fd_lock: false,
+        registration_date: false,
     })
-    const handleSearch = (e) => {
+    const handleRadio = (e) => {
         const { value } = e.target;
-
         if (value === 'Code') {
             setSearchByCode(true);
             setSearchByName(false);
@@ -202,6 +283,7 @@ export default function CustomerDT() {
         }
     }
     const handleEdit = (row) => {
+        console.log(dayjs(row.registration_date).format("DD/MMM/YYYY"));
         const values = {
             // ======================================Personal Details===============================
             customerCode: row.user_code,
@@ -238,16 +320,42 @@ export default function CustomerDT() {
             alternatePhoneNumber: row.alternate_ph_no,
 
             // ==================================================================================
-            customer_code:row.customer_code,
+            customer_code: row.customer_code,
         }
-        navigate("CreateCustomer",{state:values})
+        navigate("CreateCustomer", { state: values })
     }
     const handleClick = () => {
         navigate("CreateCustomer")
     }
-    const FetchData = async () => {
+
+    const handlefieldChange = async (fieldname, value) => {
+        if (fieldname === "CustomerName") {
+            if (value === "") {
+                setCustomerCode("")
+                FetchData()
+            }
+            else if (value) {
+                setCustomerCode(value)
+            }
+        }
+        if (fieldname === "CustomerCode") {
+            if (value === "") {
+                setCustomerCode("")
+                FetchData()
+            }
+            else if (value) {
+                setCustomerCode(value)
+            }
+        }
+    }
+    const handleSearch = () => {
+        if(customerCode === "") FetchData()
+        else if (customerCode !== "") fetchCustomerDeatils(customerCode)
+    }
+    const fetchCustomerDeatils = async (id) => {
         try {
-            const respone = await customerApi.customerMaster().FetchAll()
+            const respone = await customerApi.customerMaster().fetchByCustomerCode(id)
+            console.log(respone);
             if (respone.status === 200) {
                 setRows(respone.data.items)
             }
@@ -255,16 +363,44 @@ export default function CustomerDT() {
             console.log(error);
         }
     }
-
-    const status = [
-        { name: "Active", },
-        { name: "Inactive" }
-    ]
+    const FetchData = async () => {
+        try {
+            const respone = await customerApi.customerMaster().FetchAll()
+            console.log(respone);
+            if (respone.status === 200) {
+                setRows(respone.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    const fectchCustomerName = async () => {
+        try {
+            const response = await customerApi.customerMaster().dd_CustomerName()
+            if (response.status === 200) {
+                setDDCusomerName(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const fectchCustomercode = async () => {
+        try {
+            const response = await customerApi.customerMaster().dd_UserCode()
+            if (response.status === 200) {
+                setDDCustomerCode(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
     React.useEffect(() => {
-        document.title = 'Customer'
+        document.title = 'Customer Master'
         FetchData()
+        fectchCustomerName()
+        fectchCustomercode()
     }, [])
-    console.log(Rows);
     return (
         <>
             <Grid container spacing={2}>
@@ -276,23 +412,23 @@ export default function CustomerDT() {
                                     Customer  Master
                                 </Typography>
                             </Grid>
-                            <Grid item md={3} lg={3} sm={12} xs={12}>
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
                                 <FormControl>
                                     <RadioGroup
                                         row
                                         aria-labelledby="demo-controlled-radio-buttons-group"
                                         name="Search"
-                                        onChange={(e) => { handleSearch(e) }}
+                                        onChange={(e) => { handleRadio(e) }}
                                     >
                                         <FormControlLabel
                                             value="Code"
                                             control={<Radio checked={searchByCode} />}
-                                            label="User Code"
+                                            label="Customer Code"
                                         />
                                         <FormControlLabel
                                             value="Name"
                                             control={<Radio checked={searchByName} />}
-                                            label="User Name"
+                                            label="Customer Name"
                                         />
 
                                     </RadioGroup>
@@ -303,36 +439,18 @@ export default function CustomerDT() {
                                     <Autocomplete
                                         disablePortal
                                         id="combo-box-demo"
-                                        options={status}
-                                        getOptionLabel={(options) => options.name}
-                                        renderInput={(params) => <TextField
-                                            {...params}
-                                            label="Code"
-                                            size='small'
-                                            fullWidth
-                                            sx={{
-                                                marginTop: 0.5,
-                                                "& .MuiOutlinedInput-root": {
-                                                    "& fieldset": {
-                                                        borderColor: "black",
-                                                        borderWidth: "2px",
-                                                    },
-                                                },
-                                                "& .MuiInputLabel-root": {
-                                                    color: "black",
-                                                    "&.Mui-focused": {
-                                                        transform: "translate(14px, -8px)",
-                                                    },
-                                                },
-                                                "& input, & label": {
-                                                    height: "14px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    fontSize: 12,
-                                                    fontWeight: "bold",
-                                                },
-                                            }}
-                                        />}
+                                        options={DDCustomerCode}
+                                        getOptionLabel={(options) => options.user_code}
+                                        isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
+                                        onChange={(event, value) => handlefieldChange("CustomerCode", value?.customer_code || "")}
+                                        size='small'
+                                        fullWidth
+                                        sx={autocompleteStyle}
+                                        renderInput={(params) =>
+                                            <TextField
+                                                {...params}
+                                                label="customer Code"
+                                            />}
                                     />
                                 </Grid>
                             )}
@@ -341,59 +459,41 @@ export default function CustomerDT() {
                                     <Autocomplete
                                         disablePortal
                                         id="combo-box-demo"
-                                        options={status}
-                                        getOptionLabel={(options) => options.name}
-                                        renderInput={(params) => <TextField
-                                            {...params}
-                                            label="Name"
-                                            size='small'
-                                            fullWidth
-                                            sx={{
-                                                marginTop: 0.5,
-                                                "& .MuiOutlinedInput-root": {
-                                                    "& fieldset": {
-                                                        borderColor: "black",
-                                                        borderWidth: "2px",
-                                                    },
-                                                },
-                                                "& .MuiInputLabel-root": {
-                                                    color: "black",
-                                                    "&.Mui-focused": {
-                                                        transform: "translate(14px, -8px)",
-                                                    },
-                                                },
-                                                "& input, & label": {
-                                                    height: "14px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    fontSize: 12,
-                                                    fontWeight: "bold",
-                                                },
-                                            }}
-                                        />}
+                                        options={DDCusomerName}
+                                        getOptionLabel={(options) => options.customer_name}
+                                        isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
+                                        onChange={(event, value) => handlefieldChange("CustomerName", value?.customer_code || "")}
+                                        size='small'
+                                        fullWidth
+                                        sx={autocompleteStyle}
+                                        renderInput={(params) =>
+                                            <TextField
+                                                {...params}
+                                                label="customer Name"
+                                            />}
                                     />
                                 </Grid>
                             )}
                             <Grid item md={2} lg={2} sm={12} xs={12}>
                                 <Button variant="contained"
                                     size='small'
-                                    sx={{ marginTop: 0.5, marginLeft: "-10px" }}
-                                >Search
+                                    onClick={handleSearch}
+                                >
+                                    Search
                                 </Button>
                             </Grid>
-                            <Grid item md={4} lg={4} sm={12} xs={12} sx={{ textAlign: "end" }}>
+                            <Grid item md={3} lg={3} sm={12} xs={12} sx={{ textAlign: "end" }}>
                                 <Button
                                     variant="contained"
                                     onClick={() => handleClick()}
                                     size='small'
-                                    sx={{ marginTop: 0.5 }}
                                 >Create
                                 </Button>
                             </Grid>
                         </Grid>
 
                         <Grid item md={12} lg={12} sm={12} xs={12}>
-                            <Box sx={{ height: 400, marginTop: 2 }}>
+                            <Box sx={{ height: 315, marginTop: 2 }}>
                                 <DataGrid
                                     rows={Rows}
                                     columns={columns}

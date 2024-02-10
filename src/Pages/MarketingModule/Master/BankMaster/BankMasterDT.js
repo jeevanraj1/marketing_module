@@ -33,8 +33,6 @@ export default function BankMasterDT() {
     const [kannadaText, setKannadaText] = useState("");
     const [saveButton, setSavebutton] = useState(true);
     const [Updatebutton, setUpdateButton] = useState(false);
-    const location = useLocation();
-    const navigate = useNavigate();
     const [rows, setRows] = useState([]);
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({ bank_code: false });
     const [bankcode, setBankcode] = useState("");
@@ -42,6 +40,7 @@ export default function BankMasterDT() {
     const [errors, setErrors] = React.useState({
         englishText: null,
     });
+
     const fetchData = async () => {
         try {
             const response = await BankMasterApi.bankmaster().fetchAll();
@@ -127,8 +126,6 @@ export default function BankMasterDT() {
 
         localStorage.setItem("Navigation_state", false);
         const newEnglishText = event.target.value.toUpperCase();
-
-
         if (newEnglishText.length <= 3) {
             setErrors({
                 englishText: "Minimum 4 Characters Required"
@@ -200,14 +197,13 @@ export default function BankMasterDT() {
                     setKannadaText("");
                     localStorage.setItem("Navigation_state", true);
                     Swal.fire('Saved', 'Successfully', 'success');
+                    fetchData()
                 } else {
                     Swal.fire({
                         title: 'Error',
                         text: response.data.Error || 'Unknown Error',
                         icon: 'error',
                     });
-                    // Error: Something went wrong
-                    //console.error("Failed to post data");
                 }
             } catch (error) {
                 // console.error("Error posting data:", error);

@@ -1,10 +1,9 @@
-import React from 'react'
-import { Grid, Typography, Paper, Button, Box, TextField, Stack } from '@mui/material'
+import React, { useEffect, useState } from 'react'
+import { DataGrid } from "@mui/x-data-grid";
+import { Paper, Box, Stack, TextField, Button, Grid, Typography } from "@mui/material";
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-import { useState, useEffect } from "react";
-import { StatusApi } from "../../../Api";
 import Swal from 'sweetalert2';
-import { DataGrid } from '@mui/x-data-grid'
+import { ContractorTypeApi } from '../../../Api';
 
 const textFiledStyle = {
     width: "100%",
@@ -14,7 +13,7 @@ const textFiledStyle = {
     "& .MuiInputLabel-root": {
         color: "black",
         "&.Mui-focused": {
-            transform: "translate(16px, -10px)",
+            transform: "translate(14px, -10px)",
         },
     },
     "& input, & label": {
@@ -25,77 +24,90 @@ const textFiledStyle = {
         fontWeight: "bold",
     },
 }
-export default function StatusDT() {
 
+export default function ContractorType() {
     const [rows, setRows] = useState([]);
-    const [statusID, setstatusID] = useState([]);
+    const [customerTypeId, setCustomerTypeId] = useState();
     const [saveButton, setSaveButton] = useState(true);
-    const [updateButton, setUpdateButton] = useState(false);
-    const [columnVisibilityModel, setColumnVisibilityModel] = React.useState({
-        status_id: false
-    });
+    const [updateButton, setUpdateButton] = useState();
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState({ customer_type_id: false });
+
     const [formData, setFormData] = React.useState({
-        statusName: "",
+        contractorTypeName: "",
     });
     const [errors, setErrors] = React.useState({})
 
     const handleEdit = (row) => {
         setFormData((prevdata) => ({
             ...prevdata,
-            statusName: row.status_name
+            contractorTypeName: row.customer_type_name
         }))
-        setstatusID(row.status_id)
+        setCustomerTypeId(row.customer_type_id)
         setUpdateButton(true)
         setSaveButton(false)
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
 
-    const handleFiledChange = (fieldName, value) => {
-        localStorage.setItem("Navigation_state",false)
+    const handleFieldChange = (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
         }));
-        if (fieldName === "statusName" && value.length <= 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                statusName: 'Value must greater than 3 charaters',
-            }));
+        if (fieldName === "contractorTypeName") {
+            if (value.trim().length > 15) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    contractorTypeName: 'Must be less than 15 Characters'
+                }))
+                value = value.substring(0, 15)
+                setTimeout(() => {
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        contractorTypeName: ''
+                    }))
+                }, 1000)
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    contractorTypeName: ''
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
             }))
+        }
+    }
 
+    const validation = () => {
+        const newErrors = {}
+        if (formData.contractorTypeName === "") {
+            newErrors.contractorTypeName = "Required "
+        } else if (formData.contractorTypeName.trim().length > 15) {
+            newErrors.contractorTypeName = "Value Must Be Less Than 15 Charaters"
         }
-        else if (fieldName === "statusName" && value.length > 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                statusName: '',
-            }));
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
-        }
+        return newErrors
     }
 
     const handleClear = () => {
         setFormData((prevdata) => ({
             ...prevdata,
-            statusName: "",
+            contractorTypeName: "",
         }))
         setSaveButton(true)
         setUpdateButton(false)
         setErrors((prevdata) => ({
             ...prevdata,
-            statusName: ""
+            contractorTypeName: ""
         }))
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
 
     const fetchData = async () => {
         try {
-            const response = await StatusApi.Status_master().fetchAll();
+            const response = await ContractorTypeApi.ContractorTypeApi_master().fetchAll();
             console.log(response);
             if (response.status === 200) {
                 setRows(response.data.items);
@@ -107,10 +119,9 @@ export default function StatusDT() {
             console.error("Error fetching data:", error);
         }
     };
-
     useEffect(() => {
         fetchData();
-        document.title = 'Status Master'
+        document.title = 'Customer Type Master'
     }, []);
 
     const handleSubmit = async (e) => {
@@ -118,18 +129,18 @@ export default function StatusDT() {
         const validationErorrs = validation()
         console.log(validationErorrs);
         setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null )
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null)
         if (!hasErrors) {
             try {
                 const newRecord = {
-                    status_name: formData.statusName
+                    customer_type_name: formData.contractorTypeName.trim()
                 };
-                const response = await StatusApi.Status_master().create(newRecord);
+                const response = await CustomerTypeApi.CustomerTypeApi_master().create(newRecord);
                 if (response.data.Status === 1) {
                     Swal.fire('Saved', 'Successfully', 'success');
                     handleClear();
                     fetchData();
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -143,6 +154,7 @@ export default function StatusDT() {
         }
 
     }
+
     const handleUpdate = async (e) => {
         e.preventDefault()
         const validationErorrs = validation()
@@ -152,14 +164,14 @@ export default function StatusDT() {
         if (!hasErrors) {
             try {
                 const newRecord = {
-                    status_name: formData.statusName
+                    customer_type_name: formData.contractorTypeName
                 };
-                const response = await StatusApi.Status_master().update(statusID, newRecord)
+                const response = await CustomerTypeApi.CustomerTypeApi_master().update(customerTypeId, newRecord)
                 if (response.data.Status === 1) {
                     Swal.fire('Saved', 'Updated Sucessfully', 'success');
                     handleClear();
                     fetchData();
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -173,11 +185,11 @@ export default function StatusDT() {
         }
     }
 
-
     const getRowClassName = (params) => {
         const rowIndex = params.indexRelativeToCurrentPage;
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
     };
+
 
     const columns = [
         {
@@ -208,62 +220,51 @@ export default function StatusDT() {
 
                 </>
             ),
+
+        },
+
+        {
+            field: 'contractor_type_id',
+            headerName: 'Customer Type Code',
+            width: 120,
+
         },
         {
-            field: "status_id",
-            headerName: "Status Id",
-            width: 120
-        },
-        {
-            field: "status_name",
-            headerName: "Status Name",
-            width: 200
+            field: 'contractor_type_name',
+            headerName: 'Contractor Type Name',
+            width: 160,
+
         },
     ];
-
-    const validation = () => {
-        const newErrors = {}
-        if (formData.statusName === "") {
-            newErrors.statusName = "Required "
-        } else if (formData.statusName.length <= 3) {
-            newErrors.statusName = errors.statusName
-        }
-        return newErrors
-    }
-
-
     return (
         <>
             <Grid container spacing={2}>
-                <Grid item md={12} lg={12} sm={12} xs={12}>
-                    <Paper sx={{ padding: 2 }} elevation={9}>
-                        <Grid container spacing={2}>
-                            {/* =========================Relation  Master======================== */}
-                            <Grid item md={12} lg={12} sm={12} xs={12}>
-                                <Typography variant='h5'>
-                                    Status Master
-                                </Typography>
+                <Grid item md={8} lg={8} sm={12} xs={12}>
+                    <Paper elevation={3} sx={{ width: "100%", marginTop: 1 }}>
+                        <Grid container spacing={2} sx={{ padding: "20px", paddingTop: "5px" }} >
+                            {/* ====================  */}
+                            <Grid item md={12} lg={12} sm={12} xs={12} >
+                                <Typography variant="h5">Contractor Type Master</Typography>
                             </Grid>
-                            {/* =========================Status Name======================== */}
-                            <Grid item md={6} lg={6} sm={12} xs={12}>
+                            {/* ====================  */}
+                            <Grid item md={8} lg={8} sm={12} xs={12}>
                                 <TextField
+                                    size="small"
                                     id="outlined-basic"
-                                    label="Status Name"
+                                    label="Contractor Type Name"
                                     variant="outlined"
-                                    size='small'
-                                    name='statusName'
+                                    fullWidth
                                     required
                                     sx={textFiledStyle}
-                                    fullWidth
-                                    value={formData.statusName}
-                                    onChange={(e) => handleFiledChange("statusName", e.target.value.toUpperCase().trim())}
-                                    error={Boolean(errors.statusName)}
-                                    helperText={errors.statusName}
-
+                                    value={formData.contractorTypeName}
+                                    onChange={(e) => handleFieldChange("contractorTypeName", e.target.value.toUpperCase())}
+                                    error={Boolean(errors.contractorTypeName)}
+                                    helperText={errors.contractorTypeName}
                                 />
                             </Grid>
-                            {/* =========================Button======================== */}
-                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                            {/* ====================  */}
+                            {/* ================ */}
+                            <Grid item md={12} lg={12} sm={12} xs={12} sx={{ textAlign: "left" }}>
                                 <Stack direction="row" spacing={2}>
                                     {saveButton && (
                                         <Button
@@ -283,7 +284,8 @@ export default function StatusDT() {
                                             Update
                                         </Button>
                                     )}
-                                    <Button variant="contained"
+                                    <Button
+                                        variant="contained"
                                         onClick={handleClear}
                                         color="error"
                                         size='small'>
@@ -291,32 +293,38 @@ export default function StatusDT() {
                                     </Button>
                                 </Stack>
                             </Grid>
+                            {/* ================================ */}
                         </Grid>
                     </Paper>
-                    <Grid xs={12} sm={12} md={12} lg={12}>
-                        <Box sx={{ height: 300, width: '100%', marginTop: '20px' }}>
-                            <DataGrid
-                                rows={rows}
-                                columns={columns}
-                                getRowId={(row) => row.status_id.toString()}
-                                initialState={{
-                                    pagination: {
-                                        paginationModel: {
-                                            pageSize: 10,
+                    {/* grid End */}
+                    <Paper elevation={3} sx={{ width: "100%", marginTop: 3, }}>
+                        {/* ================ */}
+                        <Grid item md={12} lg={12} sm={12} xs={12}>
+                            <Box sx={{ height: 300, width: '100%' }}>
+                                <DataGrid
+                                    rows={rows}
+                                    columns={columns}
+                                    getRowId={(row) => row.customer_type_id.toString()}
+                                    initialState={{
+                                        pagination: {
+                                            paginationModel: {
+                                                pageSize: 5,
+                                            },
                                         },
-                                    },
-                                }}
-                                columnVisibilityModel={columnVisibilityModel}
-                                onColumnVisibilityModelChange={(newModel) =>
-                                    setColumnVisibilityModel(newModel)
-                                }
-                                pageSizeOptions={[10, 20]}
-                                disableRowSelectionOnClick
-                                getRowHeight={() => 35}
-                                getRowClassName={getRowClassName}
-                            />
-                        </Box>
-                    </Grid>
+                                    }}
+                                    columnVisibilityModel={columnVisibilityModel}
+                                    onColumnVisibilityModelChange={(newModel) =>
+                                        setColumnVisibilityModel(newModel)
+                                    }
+                                    pageSizeOptions={[5, 10, 20]}
+                                    disableRowSelectionOnClick
+                                    getRowHeight={() => 35}
+                                    getRowClassName={getRowClassName}
+                                />
+                            </Box>
+                        </Grid>
+                        {/* ================ */}
+                    </Paper>
                 </Grid>
             </Grid>
         </>

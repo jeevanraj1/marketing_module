@@ -1,0 +1,63 @@
+if (fieldName === "usersCode") {
+      if (value?.trim() === "") {
+        setMasterErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "Required"
+        }))
+      }
+      else if (value?.trim().length > 5) {
+        setMasterErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "Value Must Be less than 5 Charaters"
+        }))
+        value = value.substring(0, 5)
+        setTimeout(() => {
+          setMasterErrors((prevErrors) => ({
+            ...prevErrors,
+            [fieldName]: ""
+          }))
+        }, [])
+      }
+      setMasterFormData((prevdata) => ({
+        ...prevdata,
+        [fieldName]: value
+      }))
+    }
+
+
+if (fieldName === "tds") {
+      if (value === "") {
+        setMasterErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "Required"
+        }))
+      }
+      else if (value) {
+      }
+      setMasterFormData((prevdata) => ({
+        ...prevdata,
+        [fieldName]: value
+      }))
+    }
+
+
+e.target.value.replace(/[^0-9.]/g, '').replace(/(\.\d{2})\d*$/, '$1')
+if (fieldName === 'tdsPercentage') {
+      setMasterFormData((prevdata) => ({
+        ...prevdata,
+        [fieldName]: value
+      }))
+      if (value === '') {
+        setMasterErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "Required",
+        }));
+      }
+      else if (!/^\d{0,3}(\.\d{1,3})?$/.test(value)) {
+        setMasterErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "Invalid Percentage",
+        }))
+      }
+
+    }

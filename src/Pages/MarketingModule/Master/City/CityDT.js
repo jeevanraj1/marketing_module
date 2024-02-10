@@ -50,7 +50,8 @@ export default function CityDT() {
     const [saveButton, setSaveButton] = useState(true);
     const [updateButton, setUpdateButton] = useState(false);
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-        city_code: false
+        city_code: false,
+        taluka_code: false,
     });
     const [fetchTalukaName, setFetchTalukaName] = useState([]);
     const [cityCode, setCityCode] = useState(null);
@@ -231,6 +232,11 @@ export default function CityDT() {
             headerName: 'Taluka Code',
             width: 110,
         },
+        {
+            field: 'taluka_name',
+            headerName: 'Taluka Name',
+            width: 200,
+        },
     ];
     const handleEdit = (row) => {
         setSaveButton(false)
@@ -262,6 +268,7 @@ export default function CityDT() {
     useEffect(() => {
         fetchTalukaNames()
         fetchData()
+        document.title="City Master"
     }, [])
     return (
         <>

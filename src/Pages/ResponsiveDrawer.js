@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React,{useState,useEffect} from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -73,7 +73,6 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'flex-end',
     padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
     ...theme.mixins.toolbar,
 }));
 
@@ -116,9 +115,9 @@ export default function ResponsiveDrawer() {
     const theme = useTheme();
     const navigate = useNavigate()
     const location = useLocation()
-    const [open, setOpen] = React.useState(true);
-    const [openMarketingModule, setOpenMarketingModule] = React.useState(false);
-    const [openMaster, setopenMaster] = React.useState(false);
+    const [open, setOpen] = useState(true);
+    const [openMarketingModule, setOpenMarketingModule] = useState(false);
+    const [openMaster, setopenMaster] = useState(false);
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -127,7 +126,7 @@ export default function ResponsiveDrawer() {
         setOpen(false);
     };
     const handleLogout = () => {
-        localStorage.removeItem("Navigation_state");
+        localStorage.clear();
         navigate("/")
     };
 
@@ -143,7 +142,7 @@ export default function ResponsiveDrawer() {
         const checkEditState = localStorage.getItem("Navigation_state")
         if (checkEditState === "true" || checkEditState === null) {
             if (route === "/customer") { navigate("customer"); handleClose() }
-            else if (route === "/realation") navigate("realation")
+            else if (route === "/relation") navigate("relation")
             else if (route === "/Paymode") navigate("Paymode")
             else if (route === "/Status") navigate("Status")
             else if (route === "/Officer") navigate("Officer")
@@ -155,6 +154,10 @@ export default function ResponsiveDrawer() {
             else if (route === "/District") navigate("District")
             else if (route === "/Taluka") navigate("Taluka")
             else if (route === "/City") navigate("City")
+            else if (route === "/DistributionRoute") navigate("DistributionRoute")
+            else if (route === "/DistrubutionBatch") navigate("DistrubutionBatch")
+            else if (route === "/Contractor") navigate("Contractor")
+            else if (route === "/ContractorType") navigate("ContractorType")
         }
         else {
             const handleNavigate = async (text) => {
@@ -183,9 +186,9 @@ export default function ResponsiveDrawer() {
 
     }
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const [backgroundColor, setBackgroundColor] = React.useState('#fff');
-    const [textColor, setTextColor] = React.useState('#000');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const [backgroundColor, setBackgroundColor] = useState('#fff');
+    const [textColor, setTextColor] = useState('#000');
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -438,7 +441,7 @@ export default function ResponsiveDrawer() {
                                                     },
                                                 }}
                                                 aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/realation") }}
+                                                onClick={() => { handleListItemClick("/relation") }}
                                             >
                                                 <ListItemIcon
                                                     sx={{
@@ -678,7 +681,7 @@ export default function ResponsiveDrawer() {
                                             </ListItemButton>
                                         </ListItem>
                                         {/* ======== Branch Master end =========== */}
-                                        {/* ======== District Master end =========== */}
+                                        {/* ======== District Master start =========== */}
                                         <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
@@ -707,7 +710,7 @@ export default function ResponsiveDrawer() {
                                             </ListItemButton>
                                         </ListItem>
                                         {/* ======== District Master end =========== */}
-                                        {/* ======== Taluka Master end =========== */}
+                                        {/* ======== Taluka Master start =========== */}
                                         <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
@@ -735,7 +738,7 @@ export default function ResponsiveDrawer() {
                                                     primary="Taluk" />
                                             </ListItemButton>
                                         </ListItem>
-                                        {/* ======== City Master end =========== */}
+                                        {/* ======== City Master start =========== */}
                                         <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
@@ -764,6 +767,122 @@ export default function ResponsiveDrawer() {
                                             </ListItemButton>
                                         </ListItem>
                                         {/* ======== City Master end =========== */}
+                                        {/* ======== Distribution Route Start =========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/DistributionRoute") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Distribution Route" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Distribution Route end =========== */}
+                                        {/* ======== Distribution batch Start =========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/DistrubutionBatch") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Distribution Batch" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Distribution batch end =========== */}
+                                        {/* ======== Contractor Start =========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/Contractor") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Contractor" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Contractor end =========== */}
+                                         {/* ======== Contractor Start =========== */}
+                                         <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/ContractorType") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Contractor Type" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Contractor end =========== */}
                                     </Collapse>
                                 </ListItem>
                             </Collapse>

@@ -6,6 +6,7 @@ import { TalukaAPI } from "../../../Api";
 import Swal from 'sweetalert2';
 import { DataGrid } from '@mui/x-data-grid'
 
+
 const textFiledStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
@@ -52,9 +53,10 @@ export default function TalukaDT() {
     const [saveButton, setSaveButton] = useState(true);
     const [updateButton, setUpdateButton] = useState(false);
     const [fetchDistrictNamesDD, setFetchDistrictNamesDD] = useState([]);
-    const [errors, setErrors] = React.useState({})
+    const [errors, setErrors] = useState({})
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-        taluka_code: false
+        taluka_code: false,
+        district_code: false
     });
     const [formData, setFormData] = React.useState({
         talukaName: "",
@@ -117,15 +119,15 @@ export default function TalukaDT() {
                     handleClear()
                     fetchData()
                     localStorage.setItem("Navigation_state", true)
-                } 
+                }
                 else if (respone.data.Status === 0) {
-                    Swal.fire('Error' ,`${respone.data.Error}`, 'error')
+                    Swal.fire('Error', `${respone.data.Error}`, 'error')
                 }
             } catch (error) {
-                Swal.fire('Error' ,`${error}`, 'error')
+                Swal.fire('Error', `${error}`, 'error')
             }
 
-            
+
         }
     }
     const handleFieldChange = (fieldName, value) => {
@@ -235,17 +237,22 @@ export default function TalukaDT() {
         {
             field: 'taluka_code',
             headerName: 'Taluka Code',
-            width: 150,
+            width: 200,
         },
         {
             field: 'taluka_name',
             headerName: 'Taluka Name',
-            width: 150,
+            width: 200,
+        },
+        {
+            field: 'district_name',
+            headerName: 'District Name',
+            width: 200,
         },
         {
             field: 'district_code',
             headerName: 'District Code',
-            width: 110,
+            width: 200,
         },
 
     ];
@@ -264,7 +271,7 @@ export default function TalukaDT() {
     useEffect(() => {
         fetchDistrictNameDD()
         fetchData()
-        document.title="Taluka Master"
+        document.title = "Taluka Master"
     }, [])
     return (
         <>

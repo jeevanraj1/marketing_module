@@ -1,0 +1,382 @@
+import React from 'react'
+import { Grid, Typography, Paper, Button, Box, TextField, Stack, Autocomplete } from '@mui/material'
+import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { useState, useEffect } from "react";
+import { TalukaAPI } from "../../../Api";
+import Swal from 'sweetalert2';
+import { DataGrid } from '@mui/x-data-grid'
+
+const textFiledStyle = {
+    width: "100%",
+    "& .MuiOutlinedInput-root": {
+        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+    },
+    "& .MuiInputLabel-root": {
+        color: "black",
+        "&.Mui-focused": {
+            transform: "translate(16px, -10px)",
+        },
+    },
+    "& input, & label": {
+        height: "15px",
+        display: "flex",
+        alignItems: "center",
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+}
+
+const autoCompleteStyle = {
+    width: "100%",
+    "& .MuiOutlinedInput-root": {
+        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+    },
+    "& .MuiInputLabel-root": {
+        color: "black",
+        "&.Mui-focused": {
+            transform: "translate(14px, -10px)",
+        },
+    },
+    "& input, & label": {
+        height: "15px",
+        display: "flex",
+        alignItems: "center",
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+}
+export default function DistributionRouteDT() {
+    const [rows, setRows] = useState([]);
+    const [saveButton, setSaveButton] = useState(true);
+    const [updateButton, setUpdateButton] = useState(false);
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+        taluka_code: false
+    });
+ 
+    
+    const getRowClassName = (params) => {
+        const rowIndex = params.indexRelativeToCurrentPage;
+        return rowIndex % 2 === 0 ? "row-even" : "row-odd";
+    };
+    const validation = ()=>{
+
+    }
+    const handleClear = () => { }
+    const handleUpdate = async (e) => { }
+    const handleSubmit = async (e) => { }
+    const columns = [
+        {
+            field: "action",
+            headerName: "Action",
+            width: 69,
+            renderCell: (params) => (
+                <>
+                    <ModeEditOutlineRoundedIcon
+                        sx={{ color: "blue", marginRight: 2 }}
+                        style={{
+                            cursor: "pointer",
+                            opacity: 1,
+                            transition: "opacity 0.3s",
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.opacity = 0.7;
+                            e.currentTarget.style.color = "lightblue";
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.opacity = 1;
+                            e.currentTarget.style.color = "blue";
+                        }}
+                        onClick={() => { handleEdit(params.row) }}
+                    >
+                        Edit
+                    </ModeEditOutlineRoundedIcon>
+                    <DeleteForeverIcon
+                        sx={{ color: "red" }}
+                        style={{
+                            cursor: "pointer",
+                            opacity: 1,
+                            transition: "opacity 0.3s",
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.opacity = 0.7;
+                            e.currentTarget.style.color = "rgba(255, 0, 0, 0.7)";
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.opacity = 1;
+                            e.currentTarget.style.color = "red";
+                        }}
+                        onClick={() => handleDeleteButtonClick(params.row)}
+                    >
+                        Delete
+                    </DeleteForeverIcon>
+                </>
+
+            ),
+        },
+        {
+            field: 'taluka_code',
+            headerName: 'Taluka Code',
+            width: 150,
+        },
+        {
+            field: 'taluka_name',
+            headerName: 'Taluka Name',
+            width: 150,
+        },
+        {
+            field: 'district_code',
+            headerName: 'District Code',
+            width: 110,
+        },
+
+    ];
+    const handleEdit = (row) => { }
+    const handleDeleteButtonClick = (row) => { }
+    useEffect(() => {
+        document.title = "Distribution Route Master"
+    }, [])
+    return (
+        <>
+            <Grid container spacing={2}>
+                <Grid item md={8} lg={8} sm={12} xs={12}>
+                    <Paper sx={{ padding: 2 }} elevation={3}>
+                        <Grid container spacing={2}>
+                            {/* =========================Taluk  Master======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Typography variant='h5'>
+                                    Distribution Routes 
+                                </Typography>
+                            </Grid>
+                            {/* =========================Distribution Batch Name======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    size='small'
+                                    fullWidth
+                                    //options={fetchDistrictNamesDD}
+                                    sx={autoCompleteStyle}
+                                    // getOptionLabel={(options) => options.district_name}
+                                    // isOptionEqualToValue={(option, value) => option.district_code === value.district_code}
+                                    // value={fetchDistrictNamesDD.find(option => option.district_code === formData.districtName) || null}
+                                    //onChange={(e, v) => handleFieldChange("districtName", v?.district_code || "")}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
+                                            label="Distribution Batch Name"
+                                            required
+                                        //error={Boolean(errors.districtName)}
+                                        //helperText={errors.districtName}
+                                        />}
+                                />
+                            </Grid>
+                            {/* =========================Route Code======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Route Code"
+                                    variant="outlined"
+                                    size='small'
+                                    name='statusName'
+                                    required
+                                    sx={textFiledStyle}
+                                    fullWidth
+                                //value={formData.talukaName}
+                                //onChange={(e) => handleFieldChange("talukaName", e.target.value.toUpperCase())}
+                                // error={Boolean(errors.talukaName)}
+                                //helperText={errors.talukaName}
+
+                                />
+                            </Grid>
+                            {/* =========================Route Name======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Route Name"
+                                    variant="outlined"
+                                    size='small'
+                                    name='statusName'
+                                    required
+                                    sx={textFiledStyle}
+                                    fullWidth
+                                //value={formData.talukaName}
+                                //onChange={(e) => handleFieldChange("talukaName", e.target.value.toUpperCase())}
+                                // error={Boolean(errors.talukaName)}
+                                //helperText={errors.talukaName}
+
+                                />
+                            </Grid>
+                            {/* =========================Contractor Name======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    size='small'
+                                    fullWidth
+                                    //options={fetchDistrictNamesDD}
+                                    sx={autoCompleteStyle}
+                                    // getOptionLabel={(options) => options.district_name}
+                                    // isOptionEqualToValue={(option, value) => option.district_code === value.district_code}
+                                    // value={fetchDistrictNamesDD.find(option => option.district_code === formData.districtName) || null}
+                                    //onChange={(e, v) => handleFieldChange("districtName", v?.district_code || "")}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
+                                            label="Contractor Name"
+                                            required
+                                        //error={Boolean(errors.districtName)}
+                                        //helperText={errors.districtName}
+                                        />}
+                                />
+                            </Grid>
+                            {/* =========================Vehicle Number======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Vehicle Number"
+                                    variant="outlined"
+                                    size='small'
+                                    name='statusName'
+                                    required
+                                    sx={textFiledStyle}
+                                    fullWidth
+                                //value={formData.talukaName}
+                                //onChange={(e) => handleFieldChange("talukaName", e.target.value.toUpperCase())}
+                                // error={Boolean(errors.talukaName)}
+                                //helperText={errors.talukaName}
+
+                                />
+                            </Grid>
+                            {/* =========================Active======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    size='small'
+                                    fullWidth
+                                    //options={fetchDistrictNamesDD}
+                                    sx={autoCompleteStyle}
+                                    // getOptionLabel={(options) => options.district_name}
+                                    // isOptionEqualToValue={(option, value) => option.district_code === value.district_code}
+                                    // value={fetchDistrictNamesDD.find(option => option.district_code === formData.districtName) || null}
+                                    //onChange={(e, v) => handleFieldChange("districtName", v?.district_code || "")}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
+                                            label="Active"
+                                        //error={Boolean(errors.districtName)}
+                                        //helperText={errors.districtName}
+                                        />}
+                                />
+                            </Grid>
+                            {/* =========================Route Alias======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Route Alias"
+                                    variant="outlined"
+                                    size='small'
+                                    name='statusName'
+                                    sx={textFiledStyle}
+                                    fullWidth
+                                //value={formData.talukaName}
+                                //onChange={(e) => handleFieldChange("talukaName", e.target.value.toUpperCase())}
+                                // error={Boolean(errors.talukaName)}
+                                //helperText={errors.talukaName}
+
+                                />
+                            </Grid>
+                            {/* =========================Route Length======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Route Length"
+                                    variant="outlined"
+                                    size='small'
+                                    name='statusName'
+                                    sx={textFiledStyle}
+                                    fullWidth
+                                //value={formData.talukaName}
+                                //onChange={(e) => handleFieldChange("talukaName", e.target.value.toUpperCase())}
+                                // error={Boolean(errors.talukaName)}
+                                //helperText={errors.talukaName}
+
+                                />
+                            </Grid>
+                            {/* =========================Cut Off Time======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Cut Off Time"
+                                    variant="outlined"
+                                    size='small'
+                                    sx={textFiledStyle}
+                                    fullWidth
+                                //value={formData.talukaName}
+                                //onChange={(e) => handleFieldChange("talukaName", e.target.value.toUpperCase())}
+                                // error={Boolean(errors.talukaName)}
+                                //helperText={errors.talukaName}
+
+                                />
+                            </Grid>
+                            {/* =========================Button======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Stack direction="row" spacing={2}>
+                                    {saveButton && (
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleSubmit}
+                                            type='submit'
+                                            size='small'>
+                                            Save
+                                        </Button>
+                                    )}
+                                    {updateButton && (
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleUpdate}
+                                            type='submit'
+                                            size='small'>
+                                            Update
+                                        </Button>
+                                    )}
+                                    <Button variant="contained"
+                                        onClick={handleClear}
+                                        color="error"
+                                        size='small'>
+                                        Clear
+                                    </Button>
+                                </Stack>
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                    <Grid xs={12} sm={12} md={12} lg={12}>
+                        <Box sx={{ height: 300, width: '100%', marginTop: '20px' }}>
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.taluka_code.toString()}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: 5,
+                                        },
+                                    },
+                                }}
+                                columnVisibilityModel={columnVisibilityModel}
+                                onColumnVisibilityModelChange={(newModel) =>
+                                    setColumnVisibilityModel(newModel)
+                                }
+                                pageSizeOptions={[5, 10, 20]}
+                                disableRowSelectionOnClick
+                                getRowHeight={() => 35}
+                                getRowClassName={getRowClassName}
+                            />
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </>
+    )
+}

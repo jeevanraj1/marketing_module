@@ -391,6 +391,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
     useEffect(() => {
         fetchData(customerCodeForGst)
         getMaxGstCancleDate(customerCodeForGst)
+        console.log(customerCodeForGst);
     }, [])
     return (
         <>

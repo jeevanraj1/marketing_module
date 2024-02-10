@@ -28,6 +28,13 @@ import BranchMasterDT from './MarketingModule/Master/BranchMaster/BranchMasterDT
 import DistrictDT from './MarketingModule/Master/District/DistrictDT';
 import TalukaDT from './MarketingModule/Master/Taluka/TalukaDT';
 import CityDT from './MarketingModule/Master/City/CityDT';
+import DistributionRoutePage from './MarketingModule/Master/DistributionRoute/DistributionRoutePage';
+import DistributionRouteDT from './MarketingModule/Master/DistributionRoute/DistributionRouteDT';
+import DistrubutionBatch from './MarketingModule/Master/Distribution/DistrubutionBatch';
+import ContractorPage from './MarketingModule/Master/Contractor/ContractorPage';
+import ContractorDT from './MarketingModule/Master/Contractor/ContractorDT';
+import ContractorType from './MarketingModule/Master/ContractorType/ContractorType';
+
 
 export default function RoutingComponent() {
     const location = useLocation()
@@ -43,36 +50,58 @@ export default function RoutingComponent() {
                         <Route index element={<CustomerDT />} />
                         <Route path='CreateCustomer' element={<ErrorBoundary key={location.pathname} componentName="Customer" ><Customer /></ErrorBoundary>} />
                     </Route>
-                    <Route path='realation' element={<ErrorBoundary key={location.pathname} componentName="RealationShipPage" ><RealationShipPage /></ErrorBoundary>}>
+
+                    <Route path='relation' element={<ErrorBoundary key={location.pathname} componentName="RealationShipPage" ><RealationShipPage /></ErrorBoundary>}>
                         <Route index element={<RealationShipDT />} />
                     </Route>
+
                     <Route path='Paymode' element={<ErrorBoundary key={location.pathname} componentName="signin" ><PaymodePage /></ErrorBoundary>}>
                         <Route index element={<PayModeDT />} />
                     </Route>
+
                     <Route path='Status' element={<StatusPage />}>
                         <Route index element={<StatusDT />} />
                     </Route>
+
                     <Route path='Officer' element={<OfficerPage />}>
                         <Route index element={<OfficerDT />} />
                     </Route>
+
                     <Route path='BillCategory' element={<BillCategoryPage />}>
                         <Route index element={<BillCategoryDT />} />
                     </Route>
+
                     <Route path='RateCategory' element={<RateCategoryPage />}>
                         <Route index element={<RateCategoryDT />} />
                     </Route>
+
                     <Route path='CustomerType' element={<CustomerTypePage />}>
                         <Route index element={<CustomerTypeDT />} />
                     </Route>
+
                     <Route path='BankMaster' element={<BankMasterDT />} />
 
                     <Route path='BranchMaster' element={<BranchMasterDT />} />
 
                     <Route path='District' element={<ErrorBoundary key={location.pathname} componentName="District" ><DistrictDT /></ErrorBoundary>} />
 
-                    <Route path='Taluka' element={<ErrorBoundary key={location.pathname} componentName="Taluka" ><TalukaDT/></ErrorBoundary>} />
+                    <Route path='Taluka' element={<ErrorBoundary key={location.pathname} componentName="Taluka" ><TalukaDT /></ErrorBoundary>} />
 
-                    <Route path='City' element={<ErrorBoundary key={location.pathname} componentName="City" ><CityDT/></ErrorBoundary>} />
+                    <Route path='City' element={<ErrorBoundary key={location.pathname} componentName="City" ><CityDT /></ErrorBoundary>} />
+
+                    <Route path='DistributionRoute' element={<ErrorBoundary key={location.pathname} componentName="DistributionRoute" ><DistributionRoutePage/></ErrorBoundary>}>
+                        <Route index element={<DistributionRouteDT />} />
+                    </Route>
+
+                    <Route path='DistrubutionBatch' element={<ErrorBoundary key={location.pathname} componentName="DistrubutionBatch" ><DistrubutionBatch /></ErrorBoundary>} />
+
+                    <Route path='Contractor' element={<ErrorBoundary key={location.pathname} componentName="Contractor" ><ContractorPage/></ErrorBoundary>}>
+                        <Route index element={<ContractorDT />} />
+                    </Route>
+
+                    <Route path='ContractorType' element={<ErrorBoundary key={location.pathname} componentName="ContractorType" ><ContractorType /></ErrorBoundary>} />
+
+
                 </Route>
 
                 <Route path='/ForgotPassword' element={<ForgotPassword />} />

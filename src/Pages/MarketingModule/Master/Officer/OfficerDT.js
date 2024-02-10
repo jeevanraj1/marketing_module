@@ -260,7 +260,7 @@ export default function OfficerDT() {
 
     React.useEffect(() => {
         fetchData()
-        document.title = "Officer"
+        document.title = "Officer Master"
     }, [])
     return (
         <>

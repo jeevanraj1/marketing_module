@@ -120,7 +120,7 @@ export default function RateCategoryDT() {
   };
   useEffect(() => {
     fetchData();
-    document.title = 'Rate Category'
+    document.title = 'Rate Category Master'
   }, []);
 
   const handleSubmit = async (e) => {

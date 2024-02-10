@@ -11,8 +11,6 @@ import AddGSTDetails from './AddGSTDetails';
 import dayjs from 'dayjs';
 import AddAddress from './AddAddress';
 
-
-//inputProps={{maxLength:40}}
 const style = {
   position: 'absolute',
   top: '50%',
@@ -112,7 +110,7 @@ export default function Customer() {
   const [fetchBankMasterDD, setFetchBankMasterDD] = useState([]);
   const [fetchBranchMasterDD, setFetchBranchMasterDD] = useState([]);
   const [fetchCustomerTypeDD, setFetchCustomerTypeDD] = useState([]);
-  const initialState = location.state || {
+  const [formData, setFormData] = useState({
     // ======================================Personal Details===============================
     customerCode: '',
     customerName: '',
@@ -146,8 +144,7 @@ export default function Customer() {
     phoneNumber: '',
     emailId: '',
     alternatePhoneNumber: "",
-  }
-  const [formData, setFormData] = useState(initialState);
+  });
   const [errors, setErrors] = useState({});
   const [mobileOpen, setMobileOpen] = useState(false);
   const [GSTDeatils, setGSTDeatils] = useState(false);
@@ -155,6 +152,7 @@ export default function Customer() {
   const [AddDocements, setAddDocements] = useState(false);
   const [customerCode, setcustomerCode] = useState(null);
   const [extraDetails, setExtraDetails] = useState(false);
+  const [showGSTDetails, setShowGSTDetails] = useState(false);
   const [bankDetailsShow, setBankDetailsShow] = useState(false);
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
@@ -180,10 +178,10 @@ export default function Customer() {
     else if (formData.customerCode.trim().length > 10) newErrors.customerCode = errors.customerCode
     // ======================================customerCode=================================
     if (formData.customerName.trim() === "") newErrors.customerName = "Required"
-    else if (formData.customerName.length.trim() > 50) newErrors.customerName = errors.customerName
+    else if (formData.customerName.trim().length > 50) newErrors.customerName = errors.customerName
     // ======================================customerAlias=================================
-    if (formData.customerAlias.trim() === "") newErrors.customerAlias = ""
-    else if (formData.customerAlias.trim().length > 20) newErrors.customerAlias = errors.customerAlias
+    if (formData.customerAlias === "") newErrors.customerAlias = ""
+    else if (formData.customerAlias !== "") newErrors.customerAlias = errors.customerAlias
     // ======================================customerStatus=================================
     if (formData.customerStatus === '') newErrors.customerStatus = 'Required'
     else if (formData.customerStatus !== "") newErrors.customerStatus = errors.customerStatus
@@ -191,8 +189,8 @@ export default function Customer() {
     if (formData.relationType === '') newErrors.relationType = ''
     else if (formData.relationType !== "") newErrors.relationType = errors.relationType
     // ======================================relationName=================================
-    if (formData.relationName.trim() === '') newErrors.relationName = ''
-    else if (formData.relationName.trim().length > 40) newErrors.relationName = errors.relationName
+    if (formData.relationName === '') newErrors.relationName = ''
+    else if (formData.relationName !== "") newErrors.relationName = errors.relationName
     // ======================================officerName=================================
     if (formData.officerName === '') newErrors.officerName = 'Required'
     else if (formData.officerName !== "") newErrors.officerName = errors.officerName
@@ -611,20 +609,6 @@ export default function Customer() {
             ...prevErrors,
             gstNumber: "Invalid GST Number",
           }))
-        } else {
-          if (value.length > 14) {
-            if (!(formData.panNumber === value.substring(2, 12))) {
-              setErrors((prevErrors) => ({
-                ...prevErrors,
-                gstNumber: "PAN and GSt not matching",
-              }))
-            }
-          } else {
-            setErrors((prevErrors) => ({
-              ...prevErrors,
-              gstNumber: "",
-            }))
-          }
         }
       }
     }
@@ -831,40 +815,44 @@ export default function Customer() {
         "customer_name": formData.customerName,
         "customer_alias": formData.customerAlias,
         "status_id": Number(formData.customerStatus),
-        "rel_type_id": Number(formData.relationType),
+        "rel_type_id": formData.relationType !== "" ? Number(formData.relationType) : null,
         "rel_name": formData.relationName,
         "customer_type": Number(formData.customerType),
         "rate_catag": Number(formData.rateCategory),
         "bill_catag": Number(formData.billCategory),
-        "pay_mode": Number(formData.paymode),
+        "pay_mode": formData.paymode,
         "bank_code": Number(formData.bankName),
         "branch_code": Number(formData.branchName),
         "account_no": formData.accNumber,
         "fd_lock": formData.FdLock,
         "fd_limit": formData.creditLimit,
-        "pan_no": formData.panNumber,
-        "gst_no": formData.gstNumber,
-        "aadhar_no": Number(formData.aadharNumber),
-        "mobile": Number(formData.phoneNumber),
-        "email": formData.emailId,
+        "pan_no": formData.panNumber !== "" ? formData.panNumber : null,
+        "gst_no": formData.gstNumber !== "" ? formData.gstNumber : null,
+        "aadhar_no": formData.aadharNumber !== "" ? Number(formData.aadharNumber) : null,
+        "mobile": formData.phoneNumber !== "" ? Number(formData.phoneNumber) : null,
+        "email": formData.emailId !== "" ? formData.emailId : null,
         "officer_code": Number(formData.officerName),
+        "alternate_ph_no": Number(formData.alternatePhoneNumber),
+        "registration_date": dayjs(formData.registrationDate)
       }
       try {
-        // const response = await customerApi.customerMaster().create(newRecord)
-        // if (response.data.Status === 1) {
-        //   Swal.fire('Saved', 'Saved Sucessfully', 'success');
-        //   setUpdateButton(true)
-        //   setSaveButton(false)
-        //   setcustomerCode(response.data.customer_code)
-        //   setExtraDetails(true)
-        //   localStorage.setItem("Navigation_state", true)
-        // } else {
-        //   Swal.fire({
-        //     title: 'Error',
-        //     text: `${response.data.Error}` || 'Unknown Error',
-        //     icon: 'error',
-        //   });
-        // }
+        const response = await customerApi.customerMaster().create(newRecord)
+        console.log(response);
+        if (response.data.Status === 1) {
+          Swal.fire('Saved', 'Saved Sucessfully', 'success');
+          setUpdateButton(true)
+          setSaveButton(false)
+          setcustomerCode(response.data.customer_code)
+          setExtraDetails(true)
+          localStorage.setItem("Navigation_state", true)
+          if (formData.gstNumber?.substring(2, 12).trim().toUpperCase() === formData.panNumber?.trim().toUpperCase() && formData.gstNumber && formData.panNumber) setShowGSTDetails(true)
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: `${response.data.Error}` || 'Unknown Error',
+            icon: 'error',
+          });
+        }
       } catch (error) {
         Swal.fire({
           title: 'Error',
@@ -877,7 +865,69 @@ export default function Customer() {
 
   }
 
+  const handleUpdate = async (e) => {
+    e.preventDefault()
+    const validationErorrs = validation()
+    setErrors(validationErorrs)
+    console.log(validationErorrs);
+    const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
+    console.log(hasErrors);
+    if (!hasErrors) {
+      console.log("hi");
+      const newRecord = {
+        "user_code": formData.customerCode,
+        "customer_name": formData.customerName,
+        "customer_alias": formData.customerAlias,
+        "status_id": Number(formData.customerStatus),
+        "rel_type_id": formData.relationType !== "" ? Number(formData.relationType) : null,
+        "rel_name": formData.relationName,
+        "customer_type": Number(formData.customerType),
+        "rate_catag": Number(formData.rateCategory),
+        "bill_catag": Number(formData.billCategory),
+        "pay_mode": formData.paymode,
+        "bank_code": Number(formData.bankName),
+        "branch_code": Number(formData.branchName),
+        "account_no": formData.accNumber,
+        "fd_lock": formData.FdLock,
+        "fd_limit": formData.creditLimit,
+        "pan_no": formData.panNumber !== "" ? formData.panNumber : null,
+        "gst_no": formData.gstNumber !== "" ? formData.gstNumber : null,
+        "aadhar_no": formData.aadharNumber !== "" ? Number(formData.aadharNumber) : null,
+        "mobile": formData.phoneNumber !== "" ? Number(formData.phoneNumber) : null,
+        "email": formData.emailId !== "" ? formData.emailId : null,
+        "officer_code": Number(formData.officerName),
+        "alternate_ph_no": Number(formData.alternatePhoneNumber),
+        "registration_date": dayjs(formData.registrationDate)
+      }
+      try {
+        const response = await customerApi.customerMaster().update(customerCode, newRecord)
+        console.log(response);
+        if (response.data.Status === 1) {
+          Swal.fire('Saved', 'Updated Sucessfully', 'success');
+          setUpdateButton(true)
+          setSaveButton(false)
+          setcustomerCode(response.data.customer_code)
+          setExtraDetails(true)
+          localStorage.setItem("Navigation_state", true)
+          if (formData.gstNumber?.substring(2, 12).trim().toUpperCase() === formData.panNumber?.trim().toUpperCase() && formData.gstNumber && formData.panNumber) setShowGSTDetails(true)
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: `${response.data.Error}` || 'Unknown Error',
+            icon: 'error',
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Unknown Error',
+          icon: 'error',
+        });
+      }
 
+    }
+
+  }
 
 
   const handleBackdropMobileClick = (event) => {
@@ -986,9 +1036,84 @@ export default function Customer() {
       setUpdateButton(true)
       setSaveButton(false)
       setExtraDetails(true)
-      const { customer_code } = location.state
+      const {
+        customer_code,
+        // ======================================Personal Details===============================
+        customerCode,
+        customerName,
+        customerAlias,
+        customerStatus,
+        relationType,
+        relationName,
+        officerName,
+        registrationDate,
+        // ======================================Customer Category===============================
+        customerType,
+        billCategory,
+        rateCategory,
+        paymode,
+        // ======================================Bank Details====================================
+        bankName,
+        branchName,
+        ifscCode,
+        accNumber,
+        // ======================================Deposit Details=================================
+        totalDepositeAmount,
+        FdLock,
+        creditLimit,
+        currentBalance,
+        // ======================================Tax Details=====================================
+        panNumber,
+        gstNumber,
+        aadharNumber,
+        tcsPercentage,
+        // ======================================Contact Details=================================
+        phoneNumber,
+        emailId,
+        alternatePhoneNumber
+      } = location.state
       setcustomerCode(customer_code)
+      setFormData((prev) => ({
+        ...prev,
+        // ======================================Personal Details===============================
+        customerCode: customerCode,
+        customerName: customerName,
+        customerAlias: customerAlias,
+        customerStatus: customerStatus,
+        relationType: relationType,
+        relationName: relationName,
+        officerName: officerName,
+        registrationDate: dayjs(registrationDate),
+        // ======================================Customer Category===============================
+        customerType: customerType,
+        billCategory: billCategory,
+        rateCategory: rateCategory,
+        paymode: paymode,
+        // ======================================Bank Details====================================
+        bankName: bankName,
+        branchName: branchName,
+        ifscCode: ifscCode,
+        accNumber: accNumber,
+        // ======================================Deposit Details=================================
+        totalDepositeAmount: totalDepositeAmount,
+        FdLock: FdLock,
+        creditLimit: creditLimit,
+        currentBalance: currentBalance,
+        // ======================================Tax Details=====================================
+        panNumber: panNumber,
+        gstNumber: gstNumber,
+        aadharNumber: aadharNumber,
+        tcsPercentage,
+        // ======================================Contact Details=================================
+        phoneNumber,
+        emailId,
+        alternatePhoneNumber,
+      }))
+      if ((gstNumber?.substring(2, 12).trim().toUpperCase() === panNumber?.trim().toUpperCase()) && gstNumber && panNumber) {
+        setShowGSTDetails(true)
+      }
     }
+
     fetch_officerNames()
     fetch_relationType_DD()
     fetch_status_DD()
@@ -1148,12 +1273,11 @@ export default function Customer() {
           <Grid item md={3} lg={3} sm={12} xs={12}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                disableFuture
                 label="Registration Date"
                 sx={datePickerStyle}
                 format='DD/MM/YYYY'
-                value={formData.registrationDate}
-                onChange={(value) => handleFieldChange("registrationDate", value)}
+                value={formData.registrationDate || null}
+                onChange={(date) => handleFieldChange("registrationDate", dayjs(date).format('DD/MMM/YYYY'))}
                 slotProps={
                   {
                     textField:
@@ -1468,7 +1592,7 @@ export default function Customer() {
               size='small'
               fullWidth
               sx={textFiledStyle}
-              value={formData.gstNumber}
+              value={formData.gstNumber || ""}
               onChange={(e) => handleFieldChange("gstNumber", e.target.value.toUpperCase())}
               error={Boolean(errors.gstNumber)}
               helperText={errors.gstNumber}
@@ -1556,8 +1680,8 @@ export default function Customer() {
               sx={textFiledStyle}
               value={formData.alternatePhoneNumber}
               onChange={(e) => handleFieldChange("alternatePhoneNumber", e.target.value.replace(/[^0-9]/g, ''))}
-              error={Boolean(errors.phoneNumber)}
-              helperText={errors.phoneNumber}
+              error={Boolean(errors.alternatePhoneNumber)}
+              helperText={errors.alternatePhoneNumber}
             />
           </Grid>
           {/* =========================btn======================== */}
@@ -1572,13 +1696,17 @@ export default function Customer() {
                 >
                   Add Deposit
                 </Button>
-                <Button
-                  variant='contained'
-                  size='small'
-                  onClick={HandleGSTDeatilsOpen}
-                >
-                  GST Details
-                </Button>
+                {showGSTDetails &&
+                  (
+                    <Button
+                      variant='contained'
+                      size='small'
+                      onClick={HandleGSTDeatilsOpen}
+                    >
+                      GST Details
+                    </Button>
+                  )
+                }
                 <Button
                   variant='contained'
                   size='small'
@@ -1656,6 +1784,7 @@ export default function Customer() {
                 <Button
                   variant="contained"
                   size='small'
+                  onClick={(e) => handleUpdate(e)}
                 >Update
                 </Button>
               )}

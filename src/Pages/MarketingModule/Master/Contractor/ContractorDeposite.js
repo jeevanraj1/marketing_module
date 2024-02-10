@@ -9,7 +9,6 @@ import { DataGrid } from '@mui/x-data-grid'
 import { customerApi } from '../../../Api';
 import dayjs from 'dayjs';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 
 const textFiledStyle = {
     width: "100%",
@@ -85,7 +84,8 @@ const datePickerStyle = {
         marginTop: "-1px",
     },
 }
-export default function DepositDetails({ closeDepositeDetails, customerCode, userCode, customerName }) {
+
+export default function ContractorDeposite({ closeContractorDeposit, contractorCode }) {
     const [Errors, setErrors] = useState({});
     const [gridBankDocNumber, setGridBankDocNumber] = useState(false);
     const [gridDepositeDate, setGridDepositeDate] = useState(false);
@@ -114,9 +114,9 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         billNumber: "",
         billDate: "",
     });
-    const [CustomerCode, setCustomerCode] = useState(customerCode);
+    const [ContractorCode, setContractorCode] = useState(contractorCode);
     const [rows, setRows] = useState([]);
-    const [columnVisibilityModel, setColumnVisibilityModel] = React.useState({
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState({
         deposit_id: false,
         customer_code: false,
         dep_paymode_id: false,
@@ -219,7 +219,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         if (!hasErrors) {
             try {
                 const newRecord = {
-                    "customer_code": customerCode,
+                    "customer_code": ContractorCode,
                     "dep_paymode_id": Number(formData.paymode),
                     "deposit_type": formData.depositType !== "" ? (Number(formData.depositType)) : null,
                     "deposit_date": formData.depositDate !== "" ? formData.depositDate : null,
@@ -245,7 +245,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             container: 'custom-swal-container'
                         }
                     });
-                    await fetchData(CustomerCode)
+                    await fetchData(ContractorCode)
                     handleClear();
                     localStorage.setItem("Navigation_state", true)
                 } else {
@@ -653,8 +653,8 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
     useEffect(() => {
         fetch_DepositePaymode_DD()
         fetch_DepositeType_DD()
-        fetchData(CustomerCode)
-        console.log(customerCode);
+        fetchData(ContractorCode)
+        console.log(ContractorCode);
     }, [])
     const columns = [
         {
@@ -682,25 +682,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     >
                         Edit
                     </ModeEditOutlineRoundedIcon>
-                    <DeleteForeverIcon
-                        sx={{ color: "red" }}
-                        style={{
-                            cursor: "pointer",
-                            opacity: 1,
-                            transition: "opacity 0.3s",
-                        }}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.opacity = 0.7;
-                            e.currentTarget.style.color = "rgba(255, 0, 0, 0.7)";
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.opacity = 1;
-                            e.currentTarget.style.color = "red";
-                        }}
-                        onClick={() => handleDeleteButtonClick(params.row)}
-                    >
-                        Delete
-                    </DeleteForeverIcon>
+
                 </>
             ),
         },
@@ -779,9 +761,6 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
     const handleEdit = (row) => {
         console.log(row);
     }
-    const handleDeleteButtonClick = (row)=>{
-        console.log(row);
-    }
     return (
         <>
             <Grid container spacing={2} paddingLeft={2} paddingTop={1}>
@@ -793,7 +772,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                 </Grid>
                 {/* ================ */}
                 <Grid item xs={2} sm={2} md={2} lg={2} sx={{ textAlign: "end", width: "1000px", borderBottom: "1px solid #000" }}>
-                    <Button onClick={closeDepositeDetails} sx={{ marginTop: "-5px" }}>
+                    <Button onClick={closeContractorDeposit} sx={{ marginTop: "-5px" }}>
                         <HighlightOffIcon fontSize='large' />
                     </Button>
                 </Grid>
@@ -803,16 +782,39 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                 {/* ================================================= */}
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                     <Typography component="h5" style={{ borderBottom: "1px dashed #000" }}>
-                        Customer Code : {userCode}
+                        Contractor Code : C010
                     </Typography>
                 </Grid>
                 {/* ================================================= */}
                 <Grid item xs={12} sm={12} md={6} lg={6} >
                     <Typography component="h5" style={{ borderBottom: "1px dashed #000" }}>
-                        Customer Name : {customerName}
+                        Contractor Name : JOHN
                     </Typography>
                 </Grid>
                 {/* ================================================= */}
+                {/* =========================Route Name========================= */}
+                <Grid item md={3} lg={3} sm={12} xs={12}>
+                    <Autocomplete
+                        disablePortal
+                        id="combo-box-demo"
+                        size='small'
+                        fullWidth
+                        //options={fetchDistrictNamesDD}
+                        sx={autoCompleteStyle}
+                        // getOptionLabel={(options) => options.district_name}
+                        // isOptionEqualToValue={(option, value) => option.district_code === value.district_code}
+                        // value={fetchDistrictNamesDD.find(option => option.district_code === formData.districtName) || null}
+                        //onChange={(e, v) => handleFieldChange("districtName", v?.district_code || "")}
+                        renderInput={(params) =>
+                            <TextField
+                                {...params}
+                                label="Route Name"
+                                required
+                            //error={Boolean(errors.districtName)}
+                            //helperText={errors.districtName}
+                            />}
+                    />
+                </Grid>
                 {/* =========================Paymode======================== */}
                 <Grid item md={3} lg={3} sm={12} xs={12}>
                     <Autocomplete
@@ -1064,7 +1066,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                 </Grid>
                 {/* =========================datagrid start======================== */}
                 <Grid item md={12} lg={12} sm={12} xs={12}>
-                    <Box sx={{ height: 310, width: '100%', marginTop: '20px' }}>
+                    <Box sx={{ height: 300, width: '100%', marginTop: '20px' }}>
                         <DataGrid
                             rows={rows}
                             columns={columns}
@@ -1091,7 +1093,6 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
 
                 {/* ================ */}
             </Grid>
-            {/* ================ */}
         </>
     )
 }

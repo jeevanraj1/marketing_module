@@ -92,7 +92,6 @@ export default function BranchMasterDT() {
                 setBanknames(response.data.items);
             } else {
                 alert(response.data.Error);
-                //console.error("Failed to fetch data");
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -335,44 +334,6 @@ export default function BranchMasterDT() {
     };
     console.log(rows);
 
-
-    const handleDeleteConfirm = async (row) => {
-        try {
-            const shouldDelete = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'You will not be able to recover this employee!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'No, keep it',
-                reverseButtons: true,
-            });
-
-            if (shouldDelete.isConfirmed) {
-
-                //const response = await BankMasterApi.bankmaster().delete(row.bank_code);
-                const response = await BranchMasterApi.BranchMaster().delete(row.branch_code);
-
-                if (response.data.Status === '1') {
-                    Swal.fire(`Deleted Successfully`, '', 'success');
-                    setEdit(false);
-                    fetchData();
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: response.data.Error || 'Unknown Error',
-                        icon: 'error',
-                    });
-                }
-            }
-        } catch (error) {
-            Swal.fire('Error', 'Error Deleting Data', 'error');
-        }
-    };
-
-
-
-
     const handleButtonClose = () => {
         setBankCodeSelected("");
         setEnglishText("");
@@ -530,12 +491,12 @@ export default function BranchMasterDT() {
                             {/* ================ */}
                             {/* ================ */}
                             <Grid item xs={12} sm={12} md={5} sx={{ textAlign: "left" }}>
-                                <Stack direction="row">
+                                <Stack direction="row" spacing={2}>
                                     {saveButton && (
                                         <Button
                                             variant="contained"
                                             onClick={handleSubmit}
-                                            sx={{ marginRight: 2 }}
+                                            type="small"
                                         >
                                             Save
                                         </Button>
@@ -544,7 +505,7 @@ export default function BranchMasterDT() {
                                         <Button
                                             variant="contained"
                                             onClick={handleUpdate}
-                                            sx={{ marginRight: 2 }}
+                                            type="small"
                                         >
                                             Update
                                         </Button>
@@ -552,7 +513,8 @@ export default function BranchMasterDT() {
                                     <Button
                                         variant="contained"
                                         onClick={handleButtonClose}
-                                        sx={{ marginRight: 2, backgroundColor: "red" }}
+                                        type="small"
+                                        color="error"
                                     >
                                         CLEAR
                                     </Button>
