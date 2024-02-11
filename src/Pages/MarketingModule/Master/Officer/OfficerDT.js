@@ -310,7 +310,7 @@ export default function OfficerDT() {
                             </Grid>
                             {/* =========================Button======================== */}
                             <Grid item md={12} lg={12} sm={12} xs={12}>
-                                <Stack direction="row" spacing={2}>
+                                <Stack spacing={{ xs: 1, sm: 1, md: 1 }} direction={{ xs: 'column', sm: 'row' }}>
                                     {saveButton && (
                                         <Button
                                             variant="contained"

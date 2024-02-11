@@ -415,7 +415,6 @@ export default function PayModeDT() {
                                 <DataGrid
                                     rows={rows}
                                     columns={columns}
-                                    format="DD/MMM/YYYY"
                                     getRowId={(row) => row.pay_id.toString()}
                                     initialState={{
                                         pagination: {

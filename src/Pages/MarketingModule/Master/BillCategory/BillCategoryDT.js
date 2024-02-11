@@ -337,7 +337,7 @@ export default function BillCategoryDT() {
               </Grid>
               {/* ================ */}
               <Grid item xs={12} sm={12} md={12} lg={12} sx={{ textAlign: "left" }}>
-                <Stack direction="row" spacing={2}>
+                <Stack spacing={{ xs: 1, sm: 1, md: 1 }} direction={{ xs: 'column', sm: 'row' }}>
                   {saveButton && (
                     <Button
                       variant="contained"

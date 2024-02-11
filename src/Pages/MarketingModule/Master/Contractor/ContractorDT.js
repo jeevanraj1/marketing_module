@@ -472,12 +472,13 @@ export default function ContractorDT() {
     })
     setMasterSaveButton(true)
     setMasterUpdateButton(false)
+    setBranchNames([])
   }
   const MasterHandleUpdate = async (e) => {
     e.preventDefault()
     const validationErorrs = Mastervalidation()
     setMasterErrors(validationErorrs)
-    const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error!=undefined)
+    const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
     if (!hasErrors) {
       const newRecord = {
         "contractor_name": masterFormData.contractorName.trim(),
@@ -495,7 +496,7 @@ export default function ContractorDT() {
         "tds_prc": Number(masterFormData.tdsPercentage)
       }
       try {
-        const response = await ContractorAPi.ContractorAPi_master().update(contractorCode,newRecord)
+        const response = await ContractorAPi.ContractorAPi_master().update(contractorCode, newRecord)
         console.log(response);
         if (response.data.Status === 1) {
           Swal.fire({
@@ -538,7 +539,7 @@ export default function ContractorDT() {
     const validationErorrs = Mastervalidation()
     setMasterErrors(validationErorrs)
     console.log(validationErorrs);
-    const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error!=undefined)
+    const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
     if (!hasErrors) {
       const newRecord = {
         "contractor_name": masterFormData.contractorName.trim(),
@@ -729,7 +730,7 @@ export default function ContractorDT() {
     } catch (error) {
       console.log(error);
     }
-   
+
   }
   const fetchBankNames = async () => {
     try {
@@ -1460,7 +1461,9 @@ export default function ContractorDT() {
         onClose={handleContractorDepositeClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
-        BackdropProps={{ onClick: handleBackdropMobileClick }}
+        slotProps={{
+          onClick: handleBackdropMobileClick
+        }}
       >
         <Box sx={style}>
           <ContractorDeposite

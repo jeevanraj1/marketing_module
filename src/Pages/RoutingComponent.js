@@ -89,13 +89,13 @@ export default function RoutingComponent() {
 
                     <Route path='City' element={<ErrorBoundary key={location.pathname} componentName="City" ><CityDT /></ErrorBoundary>} />
 
-                    <Route path='DistributionRoute' element={<ErrorBoundary key={location.pathname} componentName="DistributionRoute" ><DistributionRoutePage/></ErrorBoundary>}>
+                    <Route path='DistributionRoute' element={<ErrorBoundary key={location.pathname} componentName="DistributionRoute" ><DistributionRoutePage /></ErrorBoundary>}>
                         <Route index element={<DistributionRouteDT />} />
                     </Route>
 
                     <Route path='DistrubutionBatch' element={<ErrorBoundary key={location.pathname} componentName="DistrubutionBatch" ><DistrubutionBatch /></ErrorBoundary>} />
 
-                    <Route path='Contractor' element={<ErrorBoundary key={location.pathname} componentName="Contractor" ><ContractorPage/></ErrorBoundary>}>
+                    <Route path='Contractor' element={<ErrorBoundary key={location.pathname} componentName="Contractor" ><ContractorPage /></ErrorBoundary>}>
                         <Route index element={<ContractorDT />} />
                     </Route>
 
@@ -107,6 +107,7 @@ export default function RoutingComponent() {
                 <Route path='/ForgotPassword' element={<ForgotPassword />} />
                 <Route path='/SignUp' element={<SignUp />} />
 
+                <Route path='*' element={<>{"page not found"}</>} />
 
             </Routes>
         </>

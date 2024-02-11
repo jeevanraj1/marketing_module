@@ -3,7 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Paper, Box, Stack, TextField, Button, Grid, Typography } from "@mui/material";
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
 import Swal from 'sweetalert2';
-import { ContractorTypeApi } from '../../../Api';
+import { ContractorTypeApi ,CustomerTypeApi} from '../../../Api';
 
 const textFiledStyle = {
     width: "100%",

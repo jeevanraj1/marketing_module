@@ -56,6 +56,7 @@ export default function DistributionRouteDT() {
     const [updateButton, setUpdateButton] = useState(false);
     const [distributionBatchNames, setDistributionBatchNames] = useState([]);
     const [contractorCodeNames, setContractorCodeNames] = useState([]);
+    const [contractorCodeForDisplay, setContractorCodeForDisplay] = useState("");
 
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
         taluka_code: false
@@ -64,9 +65,9 @@ export default function DistributionRouteDT() {
         distrubutionBatchName: "",
         routeCode: "",
         routeName: "",
-        contractorCode: "",
+        contractorName: "",
         vehicleNumber: '',
-        active: '',
+        active: 'N',
         routeAlias: '',
         routelenght: '',
         cutoffTime: ''
@@ -78,9 +79,155 @@ export default function DistributionRouteDT() {
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
     };
     const validation = () => {
+        const newErrors = {}
+        //====================================distrubutionBatchName==================================
+        if (formData.distrubutionBatchName === "") newErrors.distrubutionBatchName = "Required"
+        else if (formData.distrubutionBatchName !== "") newErrors.distrubutionBatchName = errors.distrubutionBatchName
+        //====================================routeCode============================================
+        if (formData.routeCode === "") newErrors.routeCode = "Required"
+        else if (formData.routeCode !== "") newErrors.routeCode = errors.routeCode
+        //====================================routeName============================================
+        if (formData.routeName === "") newErrors.routeName = "Required"
+        else if (formData.routeName !== "") newErrors.routeName = errors.routeName
+        //====================================contractorName============================================
+        if (formData.contractorName === "") newErrors.contractorName = "Required"
+        else if (formData.contractorName !== "") newErrors.contractorName = errors.contractorName
+        //====================================vehicleNumber============================================
+        if (formData.vehicleNumber === "") newErrors.vehicleNumber = "Required"
+        else if (formData.vehicleNumber !== "") newErrors.vehicleNumber = errors.vehicleNumber
+        //====================================active============================================
+        if (formData.active === "") newErrors.active = ""
+        else if (formData.active !== "") newErrors.active = errors.active
+        //====================================routeAlias============================================
+        if (formData.routeAlias === "") newErrors.routeAlias = ""
+        else if (formData.routeAlias !== "") newErrors.routeAlias = errors.routeAlias
+        //====================================routelenght============================================
+        if (formData.routelenght === "") newErrors.routelenght = ""
+        else if (formData.routelenght !== "") newErrors.routelenght = errors.routelenght
+        //====================================cutoffTime============================================
+        if (formData.cutoffTime === "") newErrors.cutoffTime = ""
+        else if (formData.cutoffTime !== "") newErrors.cutoffTime = errors.cutoffTime
+    }
+    const handleFieldChange = (fieldName, value) => {
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [fieldName]: ''
+        }))
+        //====================================distrubutionBatchName==================================
+        if (fieldName === "distrubutionBatchName") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }))
+            }
+            else if (value) {
+
+            }
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================routeCode============================================
+        if (fieldName === "routeCode") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }))
+            }
+            else if (value) {
+
+            }
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================routeName============================================
+        if (fieldName === "routeName") {
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================contractorName============================================
+        //{users_code,contractor_code,contractor_name}
+        if (fieldName === "contractorName") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }))
+                setContractorCodeForDisplay("")
+            }
+            else if (value) {
+                const contractorName = contractorCodeNames.find(item => item.contractor_code === value)
+                if (contractorName) {
+                    const { users_code } = contractorName
+                    setContractorCodeForDisplay(() => users_code)
+                }
+            }
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================vehicleNumber============================================
+        if (fieldName === "vehicleNumber") {
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================active============================================
+        if (fieldName === "active") {
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================routeAlias============================================
+        if (fieldName === "routeAlias") {
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================routelenght============================================
+        if (fieldName === "routelenght") {
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
+        //====================================cutoffTime============================================
+        if (fieldName === "cutoffTime") {
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
 
     }
-    const handleClear = () => { }
+    const handleClear = () => {
+        setFormData({
+            distrubutionBatchName: "",
+            routeCode: "",
+            routeName: "",
+            contractorName: "",
+            vehicleNumber: '',
+            active: 'N',
+            routeAlias: '',
+            routelenght: '',
+            cutoffTime: ''
+        })
+        setSaveButton(true)
+        setUpdateButton(false)
+        setContractorCodeForDisplay("")
+        setErrors({})
+    }
     const handleUpdate = async (e) => { }
     const handleSubmit = async (e) => { }
     const columns = [
@@ -213,7 +360,7 @@ export default function DistributionRouteDT() {
                                     getOptionLabel={(options) => options.dist_batch_name}
                                     isOptionEqualToValue={(option, value) => option.dist_batch_no === value.dist_batch_no}
                                     value={distributionBatchNames.find(option => option.dist_batch_no === formData.distrubutionBatchName) || null}
-                                    //onChange={(e, v) => handleFieldChange("distrubutionBatchName", v?.district_code || "")}
+                                    onChange={(e, v) => handleFieldChange("distrubutionBatchName", v?.dist_batch_no || "")}
                                     renderInput={(params) =>
                                         <TextField
                                             {...params}
@@ -231,12 +378,11 @@ export default function DistributionRouteDT() {
                                     label="Route Code"
                                     variant="outlined"
                                     size='small'
-                                    name='statusName'
                                     required
                                     sx={textFiledStyle}
                                     fullWidth
                                     value={formData.routeCode}
-                                    //onChange={(e) => handleFieldChange("routeCode", e.target.value.toUpperCase())}
+                                    onChange={(e) => handleFieldChange("routeCode", e.target.value.toUpperCase())}
                                     error={Boolean(errors.routeCode)}
                                     helperText={errors.routeCode}
 
@@ -249,17 +395,16 @@ export default function DistributionRouteDT() {
                                     label="Route Name"
                                     variant="outlined"
                                     size='small'
-                                    name='statusName'
                                     required
                                     sx={textFiledStyle}
                                     fullWidth
                                     value={formData.routeName}
-                                    // onChange={(e) => handleFieldChange("routeName", e.target.value.toUpperCase())}
+                                    onChange={(e) => handleFieldChange("routeName", e.target.value.toUpperCase())}
                                     error={Boolean(errors.routeName)}
                                     helperText={errors.routeName}
                                 />
                             </Grid>
-                            {/* =========================Contractor Code======================== */}
+                            {/* =========================Contractor Name======================== */}
                             <Grid item md={4} lg={4} sm={12} xs={12}>
                                 <Autocomplete
                                     disablePortal
@@ -268,18 +413,33 @@ export default function DistributionRouteDT() {
                                     fullWidth
                                     options={contractorCodeNames}
                                     sx={autoCompleteStyle}
-                                    getOptionLabel={(options) => options.users_code}
+                                    getOptionLabel={(options) => options.contractor_name}
                                     isOptionEqualToValue={(option, value) => option.contractor_code === value.contractor_code}
-                                    value={contractorCodeNames.find(option => option.contractor_code === formData.contractorCode) || null}
-                                    //onChange={(e, v) => handleFieldChange("contractorCode", v?.contractor_code || "")}
+                                    value={contractorCodeNames.find(option => option.contractor_code === formData.contractorName) || null}
+                                    onChange={(e, v) => handleFieldChange("contractorName", v?.contractor_code || "")}
                                     renderInput={(params) =>
                                         <TextField
                                             {...params}
-                                            label="Contractor Code"
+                                            label="Contractor Name"
                                             required
-                                        //error={Boolean(errors.contractorCode)}
-                                        //helperText={errors.contractorCode}
+                                            error={Boolean(errors.contractorName)}
+                                            helperText={errors.contractorName}
                                         />}
+                                />
+                            </Grid>
+                            {/* =========================Contractor Code======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Contractor Code"
+                                    variant="outlined"
+                                    size='small'
+                                    sx={textFiledStyle}
+                                    fullWidth
+                                    inputProps={{
+                                        readOnly: true
+                                    }}
+                                    value={contractorCodeForDisplay || ""}
                                 />
                             </Grid>
                             {/* =========================Vehicle Number======================== */}
@@ -294,7 +454,7 @@ export default function DistributionRouteDT() {
                                     sx={textFiledStyle}
                                     fullWidth
                                     value={formData.vehicleNumber}
-                                    //onChange={(e) => handleFieldChange("vehicleNumber", e.target.value.toUpperCase())}
+                                    onChange={(e) => handleFieldChange("vehicleNumber", e.target.value.toUpperCase())}
                                     error={Boolean(errors.vehicleNumber)}
                                     helperText={errors.vehicleNumber}
 
@@ -311,8 +471,8 @@ export default function DistributionRouteDT() {
                                     sx={autoCompleteStyle}
                                     getOptionLabel={(options) => options.name}
                                     isOptionEqualToValue={(option, value) => option.value === value.value}
-                                    value={active.find(option => option.district_code === formData.active) || null}
-                                    //onChange={(e, v) => handleFieldChange("active", v?.value || "")}
+                                    value={active.find(option => option.value === formData.active) || null}
+                                    onChange={(e, v) => handleFieldChange("active", v?.value || "")}
                                     renderInput={(params) =>
                                         <TextField
                                             {...params}
@@ -333,7 +493,7 @@ export default function DistributionRouteDT() {
                                     sx={textFiledStyle}
                                     fullWidth
                                     value={formData.routeAlias}
-                                    // onChange={(e) => handleFieldChange("routeAlias", e.target.value.toUpperCase())}
+                                    onChange={(e) => handleFieldChange("routeAlias", e.target.value.toUpperCase())}
                                     error={Boolean(errors.routeAlias)}
                                     helperText={errors.routeAlias}
                                 />
@@ -349,8 +509,8 @@ export default function DistributionRouteDT() {
                                     sx={textFiledStyle}
                                     fullWidth
                                     value={formData.routelenght}
-                                    // onChange={(e) => handleFieldChange("routelenght", e.target.value.toUpperCase())}
-                                    // error={Boolean(errors.routelenght)}
+                                    onChange={(e) => handleFieldChange("routelenght", e.target.value.toUpperCase())}
+                                    error={Boolean(errors.routelenght)}
                                     helperText={errors.routelenght}
                                 />
                             </Grid>
@@ -363,15 +523,15 @@ export default function DistributionRouteDT() {
                                     size='small'
                                     sx={textFiledStyle}
                                     fullWidth
-                                value={formData.cutoffTime}
-                                // onChange={(e) => handleFieldChange("cutoffTime", e.target.value.toUpperCase())}
-                                error={Boolean(errors.cutoffTime)}
-                                helperText={errors.cutoffTime}
+                                    value={formData.cutoffTime}
+                                    onChange={(e) => handleFieldChange("cutoffTime", e.target.value.toUpperCase())}
+                                    error={Boolean(errors.cutoffTime)}
+                                    helperText={errors.cutoffTime}
                                 />
                             </Grid>
                             {/* =========================Button======================== */}
                             <Grid item md={12} lg={12} sm={12} xs={12}>
-                                <Stack direction="row" spacing={2}>
+                                <Stack spacing={{ xs: 1, sm: 1, md: 1 }} direction={{ xs: 'column', sm: 'row' }}>
                                     {saveButton && (
                                         <Button
                                             variant="contained"
