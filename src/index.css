@@ -28,3 +28,9 @@ code {
 .custom-swal-container {
   z-index: 6969;
 }
+
+.MuiAutocomplete-option{
+  font-size: 12px;
+  font-weight: bolder;
+  height: 25px;
+}

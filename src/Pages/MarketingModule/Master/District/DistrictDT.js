@@ -104,6 +104,7 @@ export default function DistrictDT() {
         setErrors({})
         setSaveButton(true)
         setUpdateButton(false)
+        localStorage.setItem("Navigation_state", true)
     }
     const handleFiledChange = (fieldName, value) => {
         localStorage.setItem("Navigation_state", false)
@@ -195,6 +196,7 @@ export default function DistrictDT() {
             districtName: row.district_name
         }))
         setDistrictCode(row.district_code)
+        localStorage.setItem("Navigation_state", true)
     }
     useEffect(() => {
         fetchData();

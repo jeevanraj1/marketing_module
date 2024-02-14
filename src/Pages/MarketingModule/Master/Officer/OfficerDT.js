@@ -44,7 +44,7 @@ export default function OfficerDT() {
         {
             field: "action",
             headerName: "Action",
-            width: 69,
+            width: 100,
             renderCell: (params) => (
                 <>
                     <ModeEditOutlineRoundedIcon
@@ -73,7 +73,7 @@ export default function OfficerDT() {
         {
             field: 'officer_code',
             headerName: 'Officer Code',
-            width: 200,
+            width: 150,
         },
         {
             field: 'officer_name',
@@ -83,7 +83,7 @@ export default function OfficerDT() {
         {
             field: 'zone_code',
             headerName: 'Zone Code',
-            width: 100,
+            width: 150,
             type: 'number',
         },
     ];

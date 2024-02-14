@@ -218,10 +218,25 @@ export const ContractorAPi = {
             fetchAll: () => axios.get(url),
             create: newRecord => axios.post(url, newRecord),
             update: (id, updateRecord) => axios.put(url + `?contractor_code=${id}`, updateRecord),
+
             fetch_BankMaster_DD: () => axios.get(baseurl + 'dd_bank_master'),
             fetch_BranchMaster_DD: (id) => axios.get(baseurl + `dd_branchmaster?bank_code=${id}`),
+            fetch_ifcs: (id) => axios.get(baseurl + `get_ifsc_from_branch?branch_code=${id}`),
 
-            fetch_ifcs : (id)=>axios.get(baseurl+`get_ifsc_from_branch?branch_code=${id}`)
+            DD_contractor_details_route_name: () => axios.get(baseurl + 'dd_contractor_detail_route_name'),
+            contractDetailsCreate: (newRecord) => axios.post(baseurl + 'contractor_detail', newRecord),
+            updateContrcatDetails: (id, newRecord) => axios.put(baseurl + `contractor_detail?cont_det_code=${id}`, newRecord),
+
+            DD_route_name_form_Contrcator_code: (id) => axios.get(baseurl + `dd_contractor_deposit_route_name?contractor_code=${id}`),
+            fetchContrcatorDeposite: (id) => axios.get(baseurl + `contractor_deposit?contractor_code=${id}`),
+            fetch_DepositePaymode_DD: () => axios.get(baseurl + 'dd_deposit_paymode'),
+            fetch_DepositeType_DD: () => axios.get(baseurl + 'dd_deposit_type'),
+            postContractorDetails: (newRecord) => axios.post(baseurl + "contractor_deposit", newRecord),
+
+            DD_contractor_code:()=>axios.get(baseurl+`dd_contrac_contractor_code`),
+            DD_contractor_name:()=>axios.get(baseurl+`dd_contrac_contractor_name`),
+            fetchById:(id)=>axios.get(url + `?contractor_code=${id}`),
+            
         };
     }
 };
@@ -233,8 +248,8 @@ export const DistrubutionRoutesAPI = {
             create: newRecord => axios.post(url, newRecord),
             update: (id, updateRecord) => axios.put(url + `?route_code=${id}`, updateRecord),
 
-            DD_fetch_district_batch_name:()=>axios.get(baseurl+'dd_dist_batch_name'),
-            DD_fetch_contractorCodeNames : ()=>axios.get(baseurl+'dd_contractor_name')
+            DD_fetch_district_batch_name: () => axios.get(baseurl + 'dd_dist_batch_name'),
+            DD_fetch_contractorCodeNames: () => axios.get(baseurl + 'dd_contractor_name')
         };
     }
 };

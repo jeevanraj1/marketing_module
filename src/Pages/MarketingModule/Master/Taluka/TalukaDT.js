@@ -131,6 +131,7 @@ export default function TalukaDT() {
         }
     }
     const handleFieldChange = (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false);
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
@@ -183,6 +184,7 @@ export default function TalukaDT() {
         setErrors({})
         setSaveButton(true)
         setUpdateButton(false)
+        localStorage.setItem("Navigation_state", true);
     }
     const fetchDistrictNameDD = async () => {
         try {
@@ -267,6 +269,7 @@ export default function TalukaDT() {
         setSaveButton(false)
         setUpdateButton(true)
         setErrors({})
+        localStorage.setItem("Navigation_state", true);
     }
     useEffect(() => {
         fetchDistrictNameDD()

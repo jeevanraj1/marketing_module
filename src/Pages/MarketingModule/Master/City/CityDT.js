@@ -130,6 +130,7 @@ export default function CityDT() {
         }
     }
     const handleFieldChange = (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
@@ -248,12 +249,14 @@ export default function CityDT() {
             cityName: row.city_name
         }))
         setCityCode(row.city_code)
+        localStorage.setItem("Navigation_state", true)
     }
     const handleClear = () => {
         setErrors({})
         setFormData({ talukaName: "", cityName: "" })
         setSaveButton(true)
         setUpdateButton(false)
+        localStorage.setItem("Navigation_state", true)
     }
     const fetchData = async () => {
         try {

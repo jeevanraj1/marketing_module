@@ -123,7 +123,6 @@ export default function BankMasterDT() {
     }
 
     const handleInputChange = (event) => {
-
         localStorage.setItem("Navigation_state", false);
         const newEnglishText = event.target.value.toUpperCase();
         if (newEnglishText.length <= 3) {

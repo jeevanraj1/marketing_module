@@ -6,7 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Swal from 'sweetalert2';
 import { DataGrid } from '@mui/x-data-grid'
-import { customerApi } from '../../../Api';
+import { ContractorAPi } from '../../../Api';
 import dayjs from 'dayjs';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
 
@@ -85,7 +85,7 @@ const datePickerStyle = {
     },
 }
 
-export default function ContractorDeposite({ closeContractorDeposit, contractorCode }) {
+export default function ContractorDeposite({ closeContractorDeposit, contractorCode, usersCode, contractorName }) {
     const [Errors, setErrors] = useState({});
     const [gridBankDocNumber, setGridBankDocNumber] = useState(false);
     const [gridDepositeDate, setGridDepositeDate] = useState(false);
@@ -101,6 +101,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
     const [fetchDepositePaymodeDD, setFetchDepositePaymodeDD] = useState([]);
     const [fetchDepositeTypeDD, setFetchDepositeTypeDD] = useState([]);
     const [formData, setFormData] = useState({
+        routeNames: "",
         paymode: '',
         depositType: '',
         bankDocNumber: '',
@@ -118,9 +119,11 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
     const [rows, setRows] = useState([]);
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
         deposit_id: false,
-        customer_code: false,
         dep_paymode_id: false,
+        contractor_code: false,
     })
+    const [routeNames, setRouteNames] = useState([]);
+    const [depositePaymodeId, setDepositePaymodeId] = useState(null);
 
     const getRowClassName = (params) => {
         const rowIndex = params.indexRelativeToCurrentPage;
@@ -128,10 +131,16 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
     };
     const validation = () => {
         const newErrors = {}
+        if (formData.routeNames === "") newErrors.routeNames = "Required"
+        else if (formData.routeNames !== "") newErrors.routeNames = ""
+
         if (formData.paymode === "") newErrors.paymode = "Required"
         else if (formData.paymode !== "") newErrors.paymode = ""
         // ==========================================Bank========================================
         if (formData.paymode !== "" && formData.paymode === 1) {
+            if (formData.routeNames === "") newErrors.routeNames = "Required"
+            else if (formData.routeNames === undefined) newErrors.routeNames = "Required"
+            else if (formData.routeNames !== "") newErrors.routeNames = ""
             // ==========================================depositType========================================
             if (formData.depositType === "") newErrors.depositType = "Required"
             else if (formData.depositType !== "") newErrors.depositType = Errors?.depositType
@@ -143,9 +152,11 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             else if (formData.bankName !== "") newErrors.bankName = Errors?.bankName
             // ==========================================depositDate========================================
             if (formData.depositDate === "") newErrors.depositDate = "Required"
+            else if (formData.depositDate === null) newErrors.depositDate = "Required"
             else if (formData.depositDate !== "") newErrors.depositDate = Errors?.depositDate
             // ==========================================expireDate========================================
             if (formData.expireDate === "") newErrors.expireDate = "Required"
+            else if (formData.expireDate === null) newErrors.expireDate = "Required"
             else if (formData.expireDate !== "") newErrors.expireDate = Errors?.expireDate
             // ==========================================amount========================================
             if (formData.amount === "") newErrors.amount = "Required"
@@ -156,17 +167,22 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         }
         // ==========================================ADJUSTED IN BILL========================================
         if (formData.paymode !== "" && formData.paymode === 2) {
+            if (formData.routeNames === "") newErrors.routeNames = "Required"
+            else if (formData.routeNames === undefined) newErrors.routeNames = "Required"
+            else if (formData.routeNames !== "") newErrors.routeNames = ""
             // ==========================================billNumber========================================
             if (formData.billNumber === "") newErrors.billNumber = "Required"
             else if (formData.billNumber !== "") newErrors.billNumber = Errors?.billNumber
             // ==========================================billDate========================================
             if (formData.billDate === "") newErrors.billDate = "Required"
+            else if (formData.billDate === null) newErrors.billDate = "Required"
             else if (formData.billDate !== "") newErrors.billDate = Errors?.billDate
             // ==========================================grNumber========================================
             if (formData.grNumber === "") newErrors.grNumber = "Required"
             else if (formData.grNumber !== "") newErrors.grNumber = Errors?.grNumber
             // ==========================================grDate========================================
             if (formData.grDate === "") newErrors.grDate = "Required"
+            else if (formData.grDate === null) newErrors.grDate = "Required"
             else if (formData.grDate !== "") newErrors.grDate = Errors?.grDate
             // ==========================================amount========================================
             if (formData.amount === "") newErrors.amount = "Required"
@@ -177,6 +193,9 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         }
         // ==========================================ONLINE========================================
         if (formData.paymode !== "" && formData.paymode === 3) {
+            if (formData.routeNames === "") newErrors.routeNames = "Required"
+            else if (formData.routeNames === undefined) newErrors.routeNames = "Required"
+            else if (formData.routeNames !== "") newErrors.routeNames = ""
             // ==========================================bankName========================================
             if (formData.bankName === "") newErrors.bankName = "Required"
             else if (formData.bankName !== "") newErrors.bankName = Errors?.bankName
@@ -185,6 +204,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             else if (formData.grNumber !== "") newErrors.grNumber = Errors?.grNumber
             // ==========================================grDate========================================
             if (formData.grDate === "") newErrors.grDate = "Required"
+            else if (formData.grDate === null) newErrors.grDate = "Required"
             else if (formData.grDate !== "") newErrors.grDate = Errors?.grDate
             // ==========================================amount========================================
             if (formData.amount === "") newErrors.amount = "Required"
@@ -195,11 +215,15 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         }
         // ==========================================PAID IN CASH========================================
         if (formData.paymode !== "" && formData.paymode === 4) {
+            if (formData.routeNames === "") newErrors.routeNames = "Required"
+            else if (formData.routeNames === undefined) newErrors.routeNames = "Required"
+            else if (formData.routeNames !== "") newErrors.routeNames = ""
             // ==========================================grNumber========================================
             if (formData.grNumber === "") newErrors.grNumber = "Required"
             else if (formData.grNumber !== "") newErrors.grNumber = Errors?.grNumber
             // ==========================================grDate========================================
             if (formData.grDate === "") newErrors.grDate = "Required"
+            else if (formData.grDate === null) newErrors.grDate = "Required"
             else if (formData.grDate !== "") newErrors.grDate = Errors?.grDate
             // ==========================================amount========================================
             if (formData.amount === "") newErrors.amount = "Required"
@@ -219,9 +243,9 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         if (!hasErrors) {
             try {
                 const newRecord = {
-                    "customer_code": ContractorCode,
+                    "contractor_code": contractorCode,
                     "dep_paymode_id": Number(formData.paymode),
-                    "deposit_type": formData.depositType !== "" ? (Number(formData.depositType)) : null,
+                    "deposit_type": (Number(formData.depositType)),
                     "deposit_date": formData.depositDate !== "" ? formData.depositDate : null,
                     "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
                     "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
@@ -232,10 +256,10 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                     "instrument_details": formData.bankDocNumber != "" ? formData.bankDocNumber : null,
                     "bill_no": formData.billNumber != "" ? formData.billNumber : null,
                     "bill_date": formData.billDate != "" ? formData.billDate : null,
+                    "route_code": Number(formData.routeNames),
                 }
                 console.log(newRecord);
-                const response = await customerApi.customerMaster().AddDeposit(newRecord)
-                console.log(response);
+                const response = await ContractorAPi.ContractorAPi_master().postContractorDetails(newRecord)
                 if (response.data.Status === 1) {
                     Swal.fire({
                         title: 'Saved',
@@ -245,7 +269,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                             container: 'custom-swal-container'
                         }
                     });
-                    await fetchData(ContractorCode)
+                    fetchData(ContractorCode)
                     handleClear();
                     localStorage.setItem("Navigation_state", true)
                 } else {
@@ -276,6 +300,21 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             ...prevErrors,
             [fieldName]: "",
         }));
+        //================================routeNames===========================
+        if (fieldName === 'routeNames') {
+            if (value === '') {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: "Required",
+                }));
+            }
+            else if (value) {
+            }
+            setFormData((prevdata) => ({
+                ...prevdata,
+                [fieldName]: value
+            }))
+        }
         // =========================Paymode======================== 
         if (fieldName === 'paymode') {
             if (value === '') {
@@ -284,12 +323,14 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             else if (value) {
                 setErrors({})
                 const paymode = fetchDepositePaymodeDD.find(option => option.dep_paymode_id === value)
+                console.log(paymode);
                 const { dep_mode } = paymode
                 if (dep_mode === "BANK") isBank()
                 else if (dep_mode === "ADJUSTED IN BILL") isAdjustInBill()
                 else if (dep_mode === "ONLINE") isOnline()
                 else if (dep_mode === "PAID IN CASH") isPaidInCash()
-                setFormData({
+                setFormData((prevdata) => ({
+                    ...prevdata,
                     paymode: '',
                     depositType: '',
                     bankDocNumber: '',
@@ -302,7 +343,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                     remarks: '',
                     billNumber: "",
                     billDate: null,
-                })
+                }))
             }
             setFormData((prevdata) => ({
                 ...prevdata,
@@ -311,7 +352,6 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         }
         // =========================depositType======================== 
         if (fieldName === 'depositType') {
-            console.log(value);
             if (value === '') {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
@@ -622,7 +662,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
     }
     const fetch_DepositePaymode_DD = async () => {
         try {
-            const response = await customerApi.customerMaster().fetch_DepositePaymode_DD()
+            const response = await ContractorAPi.ContractorAPi_master().fetch_DepositePaymode_DD()
             if (response.status === 200) {
                 setFetchDepositePaymodeDD(response.data.items)
             }
@@ -632,7 +672,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
     }
     const fetch_DepositeType_DD = async () => {
         try {
-            const response = await customerApi.customerMaster().fetch_DepositeType_DD()
+            const response = await ContractorAPi.ContractorAPi_master().fetch_DepositeType_DD()
             if (response.status === 200) {
                 setFetchDepositeTypeDD(response.data.items)
             }
@@ -642,9 +682,21 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
     }
     const fetchData = async (id) => {
         try {
-            const response = await customerApi.customerMaster().FetchDepositeDetails(id)
+            const response = await ContractorAPi.ContractorAPi_master().fetchContrcatorDeposite(id)
+            console.log(response);
             if (response.status === 200) {
                 setRows(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const fetchRoutesName = async (id) => {
+        try {
+            const response = await ContractorAPi.ContractorAPi_master().DD_route_name_form_Contrcator_code(id)
+            if (response.status === 200) {
+                setRouteNames(response.data.items)
             }
         } catch (error) {
             console.log(error);
@@ -654,6 +706,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         fetch_DepositePaymode_DD()
         fetch_DepositeType_DD()
         fetchData(ContractorCode)
+        fetchRoutesName(ContractorCode);
         console.log(ContractorCode);
     }, [])
     const columns = [
@@ -682,7 +735,6 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                     >
                         Edit
                     </ModeEditOutlineRoundedIcon>
-
                 </>
             ),
         },
@@ -692,8 +744,8 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             width: 120,
         },
         {
-            field: 'customer_code',
-            headerName: 'Customer Code',
+            field: 'contractor_code',
+            headerName: 'Contractor Code',
             width: 120,
         },
         {
@@ -757,9 +809,32 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             headerName: 'Bill Date',
             width: 120
         },
+        {
+            field: 'route_code',
+            headerName: 'Route Code',
+            width: 120
+        },
     ];
     const handleEdit = (row) => {
         console.log(row);
+        handleFieldChange("paymode",row.dep_paymode_id)
+        setFormData((prevdata) => ({
+            ...prevdata,
+            routeNames: row.route_code,
+            // paymode: row.dep_paymode_id,
+            depositType: row.deposit_type,
+            bankDocNumber: row.instrument_details,
+            depositDate: dayjs(row.deposit_date),
+            expireDate: dayjs(row.expiry_date),
+            grNumber: row.gr_no,
+            grDate: dayjs(row.gr_date),
+            bankName: row.bank_name,
+            amount: row.amount,
+            remarks: row.remarks,
+            billNumber: row.bill_no,
+            billDate: dayjs(row.bill_date),
+        }))
+        setDepositePaymodeId(row.dep_paymode_id)
     }
     return (
         <>
@@ -767,7 +842,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                 {/* ================ */}
                 <Grid item xs={2} sm={2} md={10} lg={10} sx={{ width: "1000px", borderBottom: "1px solid #000" }}>
                     <Typography variant="h4">
-                        Deposite Details
+                        Deposit Details
                     </Typography>
                 </Grid>
                 {/* ================ */}
@@ -782,13 +857,13 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                 {/* ================================================= */}
                 <Grid item xs={12} sm={12} md={6} lg={6}>
                     <Typography component="h5" style={{ borderBottom: "1px dashed #000" }}>
-                        Contractor Code : C010
+                        Contractor Code : <span style={{ fontWeight: 'bold' }}>{usersCode}</span>
                     </Typography>
                 </Grid>
                 {/* ================================================= */}
                 <Grid item xs={12} sm={12} md={6} lg={6} >
                     <Typography component="h5" style={{ borderBottom: "1px dashed #000" }}>
-                        Contractor Name : JOHN
+                        Contractor Name : <span style={{ fontWeight: 'bold' }}>{contractorName}</span>
                     </Typography>
                 </Grid>
                 {/* ================================================= */}
@@ -799,19 +874,19 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                         id="combo-box-demo"
                         size='small'
                         fullWidth
-                        //options={fetchDistrictNamesDD}
+                        options={routeNames}
                         sx={autoCompleteStyle}
-                        // getOptionLabel={(options) => options.district_name}
-                        // isOptionEqualToValue={(option, value) => option.district_code === value.district_code}
-                        // value={fetchDistrictNamesDD.find(option => option.district_code === formData.districtName) || null}
-                        //onChange={(e, v) => handleFieldChange("districtName", v?.district_code || "")}
+                        getOptionLabel={(options) => options.route_name}
+                        isOptionEqualToValue={(option, value) => option.route_code === value.route_code}
+                        value={routeNames.find(option => option.route_code === formData.routeNames) || null}
+                        onChange={(e, v) => handleFieldChange("routeNames", v?.route_code || "")}
                         renderInput={(params) =>
                             <TextField
                                 {...params}
                                 label="Route Name"
                                 required
-                            //error={Boolean(errors.districtName)}
-                            //helperText={errors.districtName}
+                                error={Boolean(Errors.routeNames)}
+                                helperText={Errors.routeNames}
                             />}
                     />
                 </Grid>

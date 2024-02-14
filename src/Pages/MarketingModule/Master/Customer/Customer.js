@@ -248,6 +248,7 @@ export default function Customer() {
   }
 
   const handleFieldChange = async (fieldName, value) => {
+    localStorage.setItem("Navigation_state", false)
     setErrors((prevErrors) => ({
       ...prevErrors,
       [fieldName]: "",
@@ -934,6 +935,7 @@ export default function Customer() {
     event.stopPropagation();
   };
   const handleClose = () => {
+    localStorage.setItem("Navigation_state", true)
     navigate(-1)
   }
 

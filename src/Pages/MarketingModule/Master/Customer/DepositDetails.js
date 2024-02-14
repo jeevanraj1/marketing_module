@@ -1,4 +1,4 @@
-import { Grid, TextField, Autocomplete, Typography, Box, Button, Stack, } from '@mui/material'
+import { Grid, TextField, Autocomplete, Typography, Box, Button, Stack, Paper } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -221,7 +221,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                 const newRecord = {
                     "customer_code": customerCode,
                     "dep_paymode_id": Number(formData.paymode),
-                    "deposit_type": formData.depositType !== "" ? (Number(formData.depositType)) : null,
+                    "deposit_type": (Number(formData.depositType)),
                     "deposit_date": formData.depositDate !== "" ? formData.depositDate : null,
                     "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
                     "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
@@ -272,6 +272,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         }
     }
     const handleFieldChange = (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
@@ -554,6 +555,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         })
         setErrors({})
         emptyFields()
+        localStorage.setItem("Navigation_state", true)
     }
     const isBank = () => {
         setGridBankDocNumber(true)
@@ -660,7 +662,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         {
             field: "action",
             headerName: "Action",
-            width: 120,
+            width: 110,
             renderCell: (params) => (
                 <>
                     <ModeEditOutlineRoundedIcon
@@ -707,79 +709,80 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         {
             field: 'deposit_id',
             headerName: 'Deposite ID',
-            width: 120,
+            width: 200,
         },
         {
             field: 'customer_code',
             headerName: 'Customer Code',
-            width: 120,
+            width: 200,
         },
         {
             field: 'dep_paymode_id',
             headerName: 'Pay Mode ID',
-            width: 120,
+            width: 200,
         },
         {
             field: 'deposit_type',
             headerName: 'Deposit Type',
-            width: 120,
+            width: 200,
         },
         {
             field: 'deposit_date',
             headerName: 'Deposite Date',
-            width: 120,
+            width: 200,
         },
         {
             field: 'expiry_date',
             headerName: 'Expire Date',
-            width: 120,
+            width: 200,
         },
         {
             field: 'gr_no',
             headerName: 'GR Number',
-            width: 120,
+            width: 200,
         },
         {
             field: 'gr_date',
             headerName: 'GR Date',
-            width: 120,
+            width: 200,
         },
         {
             field: 'bank_name',
             headerName: 'Bank Name',
-            width: 120
+            width: 200
         },
         {
             field: 'amount',
             headerName: 'Amount',
-            width: 120,
+            width: 200,
             type: 'number'
         },
         {
             field: 'remarks',
             headerName: 'Remarks',
-            width: 120
+            width: 200
         },
         {
             field: 'instrument_details',
             headerName: 'Back Docement Number',
-            width: 120
+            width: 200
         },
         {
             field: 'bill_no',
             headerName: 'Bill Number',
-            width: 120
+            width: 200
         },
         {
             field: 'bill_date',
             headerName: 'Bill Date',
-            width: 120
+            width: 200
         },
     ];
     const handleEdit = (row) => {
+        localStorage.setItem("Navigation_state", true)
         console.log(row);
     }
-    const handleDeleteButtonClick = (row)=>{
+    const handleDeleteButtonClick = (row) => {
         console.log(row);
     }
     return (
@@ -788,7 +791,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                 {/* ================ */}
                 <Grid item xs={2} sm={2} md={10} lg={10} sx={{ width: "1000px", borderBottom: "1px solid #000" }}>
                     <Typography variant="h4">
-                        Deposite Details
+                        Deposit Details
                     </Typography>
                 </Grid>
                 {/* ================ */}
@@ -1063,32 +1066,33 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     </Stack>
                 </Grid>
                 {/* =========================datagrid start======================== */}
-                <Grid item md={12} lg={12} sm={12} xs={12}>
-                    <Box sx={{ height: 310, width: '100%', marginTop: '20px' }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            getRowId={(row) => row.deposit_id.toString()}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: {
-                                        pageSize: 5,
+                <Paper sx={{ width: "100%", marginTop: 3, }}>
+                    <Grid item md={12} lg={12} sm={12} xs={12}>
+                        <Box sx={{ height: 310, width: '100%', marginTop: '20px' }}>
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.deposit_id.toString()}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: 5,
+                                        },
                                     },
-                                },
-                            }}
-                            columnVisibilityModel={columnVisibilityModel}
-                            onColumnVisibilityModelChange={(newModel) =>
-                                setColumnVisibilityModel(newModel)
-                            }
-                            pageSizeOptions={[5, 10, 20]}
-                            disableRowSelectionOnClick
-                            getRowHeight={() => 35}
-                            getRowClassName={getRowClassName}
-                        />
-                    </Box>
-                </Grid>
-                {/* =========================datagrid end======================== */}
-
+                                }}
+                                columnVisibilityModel={columnVisibilityModel}
+                                onColumnVisibilityModelChange={(newModel) =>
+                                    setColumnVisibilityModel(newModel)
+                                }
+                                pageSizeOptions={[5, 10, 20]}
+                                disableRowSelectionOnClick
+                                getRowHeight={() => 35}
+                                getRowClassName={getRowClassName}
+                            />
+                        </Box>
+                    </Grid>
+                    {/* =========================datagrid end======================== */}
+                </Paper>
                 {/* ================ */}
             </Grid>
             {/* ================ */}

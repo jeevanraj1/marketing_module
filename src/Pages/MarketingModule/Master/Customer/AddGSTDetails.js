@@ -1,4 +1,4 @@
-import { Grid, TextField, Autocomplete, Typography, Box, Button, Stack, } from '@mui/material'
+import { Grid, TextField, Autocomplete, Typography, Box, Button, Stack,Paper } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -92,6 +92,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
     };
     const handleFieldChange = async (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
@@ -193,6 +194,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
                             fetchData(customerCodeForGst)
                             handleClear()
                             getMaxGstCancleDate(customerCodeForGst)
+                            localStorage.setItem("Navigation_state", true)
                         }
                         else {
                             Swal.fire({
@@ -260,6 +262,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
                     handleClear()
                     setShowCancleDate(false)
                     getMaxGstCancleDate(customerCodeForGst)
+                    localStorage.setItem("Navigation_state", true)
                 }
                 else {
                     Swal.fire({
@@ -344,7 +347,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
         {
             field: 'regd_date',
             headerName: 'Registration Date',
-            width: 150,
+            width: 200,
         },
         {
             field: 'cncl_date',
@@ -371,6 +374,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
                 status: "I"
             }))
         }
+        localStorage.setItem("Navigation_state", true)
     }
     const handleClear = () => {
         setFormData({ gst_cancel_date: "", gst_reg_date: "", status: "I" })
@@ -378,6 +382,7 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
         setUpdateButton(false)
         setErrors({})
         setShowCancleDate(false)
+        localStorage.setItem("Navigation_state", true)
     }
     rows.forEach(item => {
         item.regd_date = dayjs(item.regd_date).format("DD/MMM/YYYY")
@@ -523,30 +528,32 @@ export default function AddGSTDetails({ closeGSTDetails, customerCode, userCode,
                     </Stack>
                 </Grid>
                 {/* =========================datagrid start======================== */}
-                <Grid item md={12} lg={12} sm={12} xs={12}>
-                    <Box sx={{ height: 300, width: '100%', marginTop: '20px' }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            getRowId={(row) => row.gst_id.toString()}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: {
-                                        pageSize: 5,
+                <Paper elevation={3} sx={{ width: "100%", marginTop: 3, }}>
+                    <Grid item md={12} lg={12} sm={12} xs={12}>
+                        <Box sx={{ height: 300, width: '100%' }}>
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.gst_id.toString()}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: 5,
+                                        },
                                     },
-                                },
-                            }}
-                            columnVisibilityModel={columnVisibilityModel}
-                            onColumnVisibilityModelChange={(newModel) =>
-                                setColumnVisibilityModel(newModel)
-                            }
-                            pageSizeOptions={[5, 10, 20]}
-                            disableRowSelectionOnClick
-                            getRowHeight={() => 35}
-                            getRowClassName={getRowClassName}
-                        />
-                    </Box>
-                </Grid>
+                                }}
+                                columnVisibilityModel={columnVisibilityModel}
+                                onColumnVisibilityModelChange={(newModel) =>
+                                    setColumnVisibilityModel(newModel)
+                                }
+                                pageSizeOptions={[5, 10, 20]}
+                                disableRowSelectionOnClick
+                                getRowHeight={() => 35}
+                                getRowClassName={getRowClassName}
+                            />
+                        </Box>
+                    </Grid>
+                </Paper>
                 {/* =========================datagrid end======================== */}
                 {/* ================ */}
             </Grid>

@@ -46,7 +46,7 @@ export default function CustomerDT() {
         {
             field: "action",
             headerName: "Action",
-            width: 69,
+            width: 110,
             renderCell: (params) => (
                 <>
                     <ModeEditOutlineRoundedIcon
@@ -80,27 +80,27 @@ export default function CustomerDT() {
         {
             field: 'user_code',
             headerName: 'Customer Code',
-            width: 150,
+            width: 170,
         },
         {
             field: 'customer_name',
             headerName: 'Customer Name',
-            width: 150,
+            width: 190,
         },
         {
             field: 'customer_alias',
             headerName: 'Customer Alias',
-            width: 150,
+            width: 170,
         },
         {
             field: 'status_id',
             headerName: 'Status Id',
-            width: 150,
+            width: 160,
         },
         {
             field: 'status_name',
             headerName: 'Status Name',
-            width: 150,
+            width: 160,
         },
         {
             field: 'rel_type_id',
@@ -110,12 +110,12 @@ export default function CustomerDT() {
         {
             field: 'rel_name2',
             headerName: 'Relation Type Name',
-            width: 150,
+            width: 200,
         },
         {
             field: 'rel_name',
             headerName: 'Relation Name',
-            width: 150,
+            width: 170,
         },
         {
             field: 'customer_type',
@@ -125,7 +125,7 @@ export default function CustomerDT() {
         {
             field: 'customer_type_name',
             headerName: 'Customer Type Name',
-            width: 150,
+            width: 220,
         },
         {
             field: 'bill_catag',
@@ -135,7 +135,7 @@ export default function CustomerDT() {
         {
             field: 'bill_catag_name',
             headerName: 'Bill Catageory Name',
-            width: 150,
+            width: 200,
         },
         {
             field: 'rate_catag',
@@ -145,7 +145,7 @@ export default function CustomerDT() {
         {
             field: 'catag_name',
             headerName: 'Rate Catageory Name',
-            width: 150,
+            width: 220,
         },
         {
             field: 'pay_mode',
@@ -155,7 +155,7 @@ export default function CustomerDT() {
         {
             field: 'description',
             headerName: 'Pay Mode',
-            width: 150,
+            width: 250,
         },
         {
             field: 'bank_code',
@@ -165,92 +165,92 @@ export default function CustomerDT() {
         {
             field: 'bank_name',
             headerName: 'Bank Name',
-            width: 150,
+            width: 200,
         },
         {
             field: 'branch_code',
             headerName: 'Branch Code',
-            width: 150,
+            width: 200,
         },
         {
             field: 'branch_name',
             headerName: 'Branch Name',
-            width: 150,
+            width: 200,
         },
         {
             field: 'account_no',
             headerName: 'Account Number',
-            width: 150,
-            type:'number'
+            width: 200,
+            align:'right',
         },
         {
             field: 'fd_lock',
             headerName: 'FD Lock',
-            width: 150,
+            width: 200,
         },
         {
             field: 'fd_limit',
             headerName: 'FD Limit',
-            width: 150,
-            type:'number'
+            width: 200,
+            type: 'number'
         },
         {
             field: 'balance',
             headerName: 'Balance',
-            width: 150,
+            width: 200,
         },
         {
             field: 'pan_no',
             headerName: 'Pan Number',
-            width: 150,
+            width: 200,
         },
         {
             field: 'gst_no',
             headerName: 'Gst Number',
-            width: 150,
+            width: 200,
         },
         {
             field: 'aadhar_no',
             headerName: 'Aadhar Number',
-            width: 150,
-            align:'right'
+            width: 200,
+            align: 'right'
         },
         {
             field: 'mobile',
             headerName: 'Mobile Number',
-            width: 150,
-            align:'right'
+            width: 200,
+            align: 'right'
         },
         {
             field: 'email',
             headerName: 'Email',
-            width: 150,
+            width: 200,
         },
         {
             field: 'officer_code',
             headerName: 'Officer Code',
-            width: 150,
+            width: 200,
         },
         {
             field: 'officer_name',
             headerName: 'Officer Name',
-            width: 150,
+            width: 200,
         },
         {
             field: 'registration_date',
             headerName: 'Registration Date',
-            width: 150,
+            width: 200,
         },
         {
             field: 'tcs_perc',
             headerName: 'TCS Percentage',
-            width: 150,
+            width: 200,
         },
         {
             field: 'alternate_ph_no',
             headerName: 'Alternate Phone Number',
-            width: 150,
-            align:'right'
+            width: 230,
+            align: 'right',
         },
 
     ];
@@ -293,7 +293,7 @@ export default function CustomerDT() {
             relationType: row.rel_type_id,
             relationName: row.rel_name,
             officerName: row.officer_code,
-            registrationDate:row.registration_date,
+            registrationDate: row.registration_date,
             // ======================================Customer Category===============================
             customerType: row.customer_type,
             billCategory: row.bill_catag,
@@ -349,7 +349,7 @@ export default function CustomerDT() {
         }
     }
     const handleSearch = () => {
-        if(customerCode === "") FetchData()
+        if (customerCode === "") FetchData()
         else if (customerCode !== "") fetchCustomerDeatils(customerCode)
     }
     const fetchCustomerDeatils = async (id) => {
@@ -374,7 +374,7 @@ export default function CustomerDT() {
             console.log(error);
         }
     }
-    
+
     const fectchCustomerName = async () => {
         try {
             const response = await customerApi.customerMaster().dd_CustomerName()
@@ -491,31 +491,32 @@ export default function CustomerDT() {
                                 </Button>
                             </Grid>
                         </Grid>
-
-                        <Grid item md={12} lg={12} sm={12} xs={12}>
-                            <Box sx={{ height: 315, marginTop: 2 }}>
-                                <DataGrid
-                                    rows={Rows}
-                                    columns={columns}
-                                    getRowId={(row) => row.customer_code.toString()}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: {
-                                                pageSize: 5,
+                        <Paper elevation={3} sx={{ width: "100%", marginTop: 3, }}>
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Box sx={{ height: 315, width: '100%' }}>
+                                    <DataGrid
+                                        rows={Rows}
+                                        columns={columns}
+                                        getRowId={(row) => row.customer_code.toString()}
+                                        initialState={{
+                                            pagination: {
+                                                paginationModel: {
+                                                    pageSize: 5,
+                                                },
                                             },
-                                        },
-                                    }}
-                                    columnVisibilityModel={columnVisibilityModel}
-                                    onColumnVisibilityModelChange={(newModel) =>
-                                        setColumnVisibilityModel(newModel)
-                                    }
-                                    pageSizeOptions={[5, 10, 20]}
-                                    disableRowSelectionOnClick
-                                    getRowHeight={() => 35}
-                                    getRowClassName={getRowClassName}
-                                />
-                            </Box>
-                        </Grid>
+                                        }}
+                                        columnVisibilityModel={columnVisibilityModel}
+                                        onColumnVisibilityModelChange={(newModel) =>
+                                            setColumnVisibilityModel(newModel)
+                                        }
+                                        pageSizeOptions={[5, 10, 20]}
+                                        disableRowSelectionOnClick
+                                        getRowHeight={() => 35}
+                                        getRowClassName={getRowClassName}
+                                    />
+                                </Box>
+                            </Grid>
+                        </Paper>
                     </Paper>
                 </Grid>
             </Grid>

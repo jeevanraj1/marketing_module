@@ -227,7 +227,6 @@ export default function PayModeDT() {
                         paymode: '',
                         description: '',
                     });
-                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire("Error", response.data.Error, "error");
                 }
@@ -254,7 +253,6 @@ export default function PayModeDT() {
                 console.log(response);
                 if (response.data.Status === 1) {
                     Swal.fire("success", "Updated Successfully", "success");
-                    localStorage.setItem("Navigation_state", true);
                     fetch_paymode()
                     setFormData({
                         paymode: '',

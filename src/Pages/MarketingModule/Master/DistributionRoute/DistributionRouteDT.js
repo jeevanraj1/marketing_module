@@ -57,9 +57,12 @@ export default function DistributionRouteDT() {
     const [distributionBatchNames, setDistributionBatchNames] = useState([]);
     const [contractorCodeNames, setContractorCodeNames] = useState([]);
     const [contractorCodeForDisplay, setContractorCodeForDisplay] = useState("");
+    const [routeCode, setRouteCode] = useState(null);
 
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-        taluka_code: false
+        route_code: false,
+        dist_batch_no: false,
+        contractor_code: false,
     });
     const [formData, setFormData] = useState({
         distrubutionBatchName: "",
@@ -96,17 +99,19 @@ export default function DistributionRouteDT() {
         if (formData.vehicleNumber === "") newErrors.vehicleNumber = "Required"
         else if (formData.vehicleNumber !== "") newErrors.vehicleNumber = errors.vehicleNumber
         //====================================active============================================
-        if (formData.active === "") newErrors.active = ""
+        if (formData.active === "") newErrors.active = "Required"
         else if (formData.active !== "") newErrors.active = errors.active
         //====================================routeAlias============================================
         if (formData.routeAlias === "") newErrors.routeAlias = ""
         else if (formData.routeAlias !== "") newErrors.routeAlias = errors.routeAlias
         //====================================routelenght============================================
-        if (formData.routelenght === "") newErrors.routelenght = ""
-        else if (formData.routelenght !== "") newErrors.routelenght = errors.routelenght
+        // if (formData.routelenght === "") newErrors.routelenght = ""
+        // else if (formData.routelenght !== "") newErrors.routelenght = errors.routelenght
         //====================================cutoffTime============================================
         if (formData.cutoffTime === "") newErrors.cutoffTime = ""
         else if (formData.cutoffTime !== "") newErrors.cutoffTime = errors.cutoffTime
+
+        return newErrors
     }
     const handleFieldChange = (fieldName, value) => {
         setErrors((prevErrors) => ({
@@ -131,14 +136,23 @@ export default function DistributionRouteDT() {
         }
         //====================================routeCode============================================
         if (fieldName === "routeCode") {
-            if (value === "") {
+            if (value?.trim() === "") {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     [fieldName]: 'Required'
                 }))
             }
-            else if (value) {
-
+            else if (value?.trim().length > 15) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be Less Than 15 Charaters'
+                }))
+            }
+            else if (value?.trim().length < 3) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be more Than 3 Charaters'
+                }))
             }
             setFormData((prevdata) => ({
                 ...prevdata,
@@ -147,6 +161,24 @@ export default function DistributionRouteDT() {
         }
         //====================================routeName============================================
         if (fieldName === "routeName") {
+            if (value?.trim() === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }))
+            }
+            else if (value?.trim().length > 50) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be Less Than 50 Charaters'
+                }))
+            }
+            else if (value?.trim().length < 3) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be More Than 3 Charaters'
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
@@ -176,6 +208,24 @@ export default function DistributionRouteDT() {
         }
         //====================================vehicleNumber============================================
         if (fieldName === "vehicleNumber") {
+            if (value?.trim() === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }))
+            }
+            else if (value?.trim().length > 12) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be Less Than 12 Charaters'
+                }))
+            }
+            else if (value?.trim().length < 3) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be More Than 3 Charaters'
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
@@ -187,23 +237,86 @@ export default function DistributionRouteDT() {
                 ...prevdata,
                 [fieldName]: value
             }))
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }))
+            }
+            else if (value) {
+
+            }
         }
         //====================================routeAlias============================================
         if (fieldName === "routeAlias") {
+            if (value?.trim() === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ''
+                }))
+            }
+            else if (value?.trim().length > 20) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be Less Than 20 Charaters'
+                }))
+            }
+            else if (value?.trim().length < 3) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be More Than 3 Charaters'
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
             }))
         }
         //====================================routelenght============================================
-        if (fieldName === "routelenght") {
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
-        }
+        // if (fieldName === "routelenght") {
+        //     if (value?.trim() === "") {
+        //         setErrors((prevErrors) => ({
+        //             ...prevErrors,
+        //             [fieldName]: ''
+        //         }))
+        //     }
+        //     else if (value?.trim().length > 10) {
+        //         setErrors((prevErrors) => ({
+        //             ...prevErrors,
+        //             [fieldName]: 'Value Must be Less Than 10 Charaters'
+        //         }))
+        //     }
+        //     else if (value?.trim().length < 3) {
+        //         setErrors((prevErrors) => ({
+        //             ...prevErrors,
+        //             [fieldName]: 'Value Must be More Than 3 Charaters'
+        //         }))
+        //     }
+        //     setFormData((prevdata) => ({
+        //         ...prevdata,
+        //         [fieldName]: value
+        //     }))
+        // }
         //====================================cutoffTime============================================
         if (fieldName === "cutoffTime") {
+            if (value?.trim() === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ''
+                }))
+            }
+            else if (value?.trim().length > 12) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be Less Than 12 Charaters'
+                }))
+            }
+            else if (value?.trim().length < 3) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Value Must be More Than 3 Charaters'
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
@@ -228,8 +341,114 @@ export default function DistributionRouteDT() {
         setContractorCodeForDisplay("")
         setErrors({})
     }
-    const handleUpdate = async (e) => { }
-    const handleSubmit = async (e) => { }
+    const handleUpdate = async (e) => {
+        e.preventDefault()
+        const validationErorrs = validation()
+        setErrors(validationErorrs)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
+        if (!hasErrors) {
+            const newRecord = {
+                "route_name": formData.routeName,
+                "route_alias": formData.routeAlias !== "" ? formData.routeAlias : null,
+                "contractor_code": Number(formData.contractorName),
+                "users_code": formData.routeCode,
+                "active": formData.active,
+                "vehicle_no": formData.vehicleNumber,
+                "cut_off": formData.cutoffTime !== "" ? formData.cutoffTime : null,
+                "dist_batch_no": Number(formData.distrubutionBatchName),
+                "route_length": null,
+            }
+            try {
+                console.log(newRecord);
+                const response = await DistrubutionRoutesAPI.DistrubutionRoutesAPI_master().update(routeCode,newRecord)
+                if (response.data.Status === 1) {
+                    Swal.fire({
+                        title: 'Saved',
+                        text: 'Updated Sucessfully',
+                        icon: 'success',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                    fetchData()
+                    localStorage.setItem("Navigation_state", true)
+                    handleClear()
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: `${response.data.Error}` || 'Unknown Error',
+                        icon: 'error',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Unknown Error',
+                    icon: 'error',
+                    customClass: {
+                        container: 'custom-swal-container'
+                    }
+                });
+            }
+        }
+    }
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        const validationErorrs = validation()
+        setErrors(validationErorrs)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
+        if (!hasErrors) {
+            const newRecord = {
+                "route_name": formData.routeName,
+                "route_alias": formData.routeAlias !== "" ? formData.routeAlias : null,
+                "contractor_code": Number(formData.contractorName),
+                "users_code": formData.routeCode,
+                "active": formData.active,
+                "vehicle_no": formData.vehicleNumber,
+                "cut_off": formData.cutoffTime !== "" ? formData.cutoffTime : null,
+                "dist_batch_no": Number(formData.distrubutionBatchName),
+                "route_length": null,
+            }
+            try {
+                console.log(newRecord);
+                const response = await DistrubutionRoutesAPI.DistrubutionRoutesAPI_master().create(newRecord)
+                if (response.data.Status === 1) {
+                    Swal.fire({
+                        title: 'Saved',
+                        text: 'Saved Sucessfully',
+                        icon: 'success',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                    fetchData()
+                    localStorage.setItem("Navigation_state", true)
+                    handleClear()
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: `${response.data.Error}` || 'Unknown Error',
+                        icon: 'error',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Unknown Error',
+                    icon: 'error',
+                    customClass: {
+                        container: 'custom-swal-container'
+                    }
+                });
+            }
+        }
+    }
     const columns = [
         {
             field: "action",
@@ -238,7 +457,7 @@ export default function DistributionRouteDT() {
             renderCell: (params) => (
                 <>
                     <ModeEditOutlineRoundedIcon
-                        sx={{ color: "blue", marginRight: 2 }}
+                        sx={{ color: "blue", marginRight: 0.5 }}
                         style={{
                             cursor: "pointer",
                             opacity: 1,
@@ -280,23 +499,86 @@ export default function DistributionRouteDT() {
             ),
         },
         {
-            field: 'taluka_code',
-            headerName: 'Taluka Code',
+            field: 'route_code',
+            headerName: 'Route Code',
             width: 150,
         },
         {
-            field: 'taluka_name',
-            headerName: 'Taluka Name',
+            field: 'dist_batch_no',
+            headerName: 'Distrubution Batch Number',
             width: 150,
         },
         {
-            field: 'district_code',
-            headerName: 'District Code',
+            field: 'dist_batch_name',
+            headerName: 'Distrubution Batch Name',
+            width: 200,
+        },
+        {
+            field: 'route_name',
+            headerName: 'Route Name',
+            width: 150,
+        },
+        {
+            field: 'users_code',
+            headerName: 'Route Code',
+            width: 150,
+        },
+        {
+            field: 'route_alias',
+            headerName: 'Route Alias',
+            width: 110,
+        },
+        {
+            field: 'route_length',
+            headerName: 'Route Length',
+            width: 110,
+        },
+        {
+            field: 'contractor_code',
+            headerName: 'Contractor Code',
+            width: 110,
+        },
+        {
+            field: 'contractor_name',
+            headerName: 'Contractor Name',
+            width: 150,
+        },
+        {
+            field: 'active',
+            headerName: 'Active',
+            width: 110,
+        },
+        {
+            field: 'vehicle_no',
+            headerName: 'Vehicle Number',
+            width: 110,
+        },
+        {
+            field: 'cut_off',
+            headerName: 'Cut Off Time',
             width: 110,
         },
 
     ];
-    const handleEdit = (row) => { }
+    const handleEdit = (row) => {
+        console.log(row);
+        setUpdateButton(true)
+        setSaveButton(false)
+        setRouteCode(row.route_code)
+        setFormData((prevdata) => ({
+            ...prevdata,
+            distrubutionBatchName: row.dist_batch_no,
+            routeCode: row.users_code,
+            routeName: row.route_name,
+            contractorName: row.contractor_code,
+            vehicleNumber: row.vehicle_no,
+            active: row.active,
+            routeAlias: row.route_alias,
+            routelenght: row.route_length,
+            cutoffTime: row.cut_off,
+        }))
+        setErrors({})
+    }
     const handleDeleteButtonClick = (row) => { }
     const fetchDistributionBatchNames = async () => {
         try {
@@ -304,7 +586,6 @@ export default function DistributionRouteDT() {
             if (response.status === 200) {
                 setDistributionBatchNames(response.data.items)
             }
-
         } catch (error) {
             console.log(error);
         }
@@ -322,16 +603,16 @@ export default function DistributionRouteDT() {
     const fetchData = async () => {
         try {
             const response = await DistrubutionRoutesAPI.DistrubutionRoutesAPI_master().fetchAll()
-            // if (response.status === 200) {
-            //     setRows(response.data.items)
-            // }
+            if (response.status === 200) {
+                setRows(response.data.items)
+            }
 
         } catch (error) {
             console.log(error);
         }
     }
     useEffect(() => {
-        // fetchData()
+        fetchData()
         fetchDistributionBatchNames()
         fetchContractorCodeName()
         document.title = "Distribution Route Master"
@@ -477,6 +758,7 @@ export default function DistributionRouteDT() {
                                         <TextField
                                             {...params}
                                             label="Active"
+                                            required
                                             error={Boolean(errors.active)}
                                             helperText={errors.active}
                                         />}
@@ -499,7 +781,7 @@ export default function DistributionRouteDT() {
                                 />
                             </Grid>
                             {/* =========================Route Length======================== */}
-                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                            {/* <Grid item md={4} lg={4} sm={12} xs={12}>
                                 <TextField
                                     id="outlined-basic"
                                     label="Route Length"
@@ -509,11 +791,11 @@ export default function DistributionRouteDT() {
                                     sx={textFiledStyle}
                                     fullWidth
                                     value={formData.routelenght}
-                                    onChange={(e) => handleFieldChange("routelenght", e.target.value.toUpperCase())}
+                                    onChange={(e) => handleFieldChange("routelenght", e.target.value.replace(/[^0-9.]/g, ''))}
                                     error={Boolean(errors.routelenght)}
                                     helperText={errors.routelenght}
                                 />
-                            </Grid>
+                            </Grid> */}
                             {/* =========================Cut Off Time======================== */}
                             <Grid item md={4} lg={4} sm={12} xs={12}>
                                 <TextField
@@ -561,11 +843,11 @@ export default function DistributionRouteDT() {
                         </Grid>
                     </Paper>
                     <Grid xs={12} sm={12} md={12} lg={12}>
-                        <Box sx={{ height: 300, width: '100%', marginTop: '20px' }}>
+                        <Box sx={{ height: 310, width: '100%', marginTop: '20px' }}>
                             <DataGrid
                                 rows={rows}
                                 columns={columns}
-                                getRowId={(row) => row.taluka_code.toString()}
+                                getRowId={(row) => row.route_code.toString()}
                                 initialState={{
                                     pagination: {
                                         paginationModel: {

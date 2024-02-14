@@ -1,4 +1,4 @@
-import { Grid, TextField, Autocomplete, Typography, Box, Button, Stack, } from '@mui/material'
+import { Grid, TextField, Autocomplete, Typography, Box, Button, Stack, Paper } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Swal from 'sweetalert2';
@@ -120,6 +120,7 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
         return newErrors
     }
     const handleFieldChange = (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: ""
@@ -422,7 +423,7 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
             }
             try {
                 console.log(addressId);
-                const response = await customerApi.customerMaster().AddressUpdate(addressId,newRecord)
+                const response = await customerApi.customerMaster().AddressUpdate(addressId, newRecord)
                 console.log(response);
                 if (response.data.Status === 1) {
                     Swal.fire({
@@ -474,6 +475,7 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
         setErrors({})
         setSaveButton(true)
         setUpdateButton(false)
+        localStorage.setItem("Navigation_state", true)
     }
     const fetchData = async (CustomerCodeForAddress) => {
         try {
@@ -554,7 +556,7 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
         {
             field: 'address_type',
             headerName: 'Address Type',
-            width: 150,
+            width: 200,
         },
         {
             field: 'address1',
@@ -624,9 +626,10 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
             taluka: row.taluka_code,
             district: row.district_code,
             location: row.location,
-            status:addr_status,
+            status: addr_status,
         }))
         setAddressId(row.address_id)
+        localStorage.setItem("Navigation_state", true)
     }
     useEffect(() => {
         dd_Fetch_cityName()
@@ -888,30 +891,32 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
                     </Stack>
                 </Grid>
                 {/* =========================datagrid start======================== */}
-                <Grid item md={12} lg={12} sm={12} xs={12}>
-                    <Box sx={{ height: 169, width: '100%', marginTop: '20px' }}>
-                        <DataGrid
-                            rows={rows}
-                            columns={columns}
-                            getRowId={(row) => row.address_id.toString()}
-                            initialState={{
-                                pagination: {
-                                    paginationModel: {
-                                        pageSize: 1,
+                <Paper elevation={3} sx={{ width: "100%", marginTop: 3, }}>
+                    <Grid item md={12} lg={12} sm={12} xs={12}>
+                        <Box sx={{ height: 169, width: '100%' }}>
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.address_id.toString()}
+                                initialState={{
+                                    pagination: {
+                                        paginationModel: {
+                                            pageSize: 1,
+                                        },
                                     },
-                                },
-                            }}
-                            columnVisibilityModel={columnVisibilityModel}
-                            onColumnVisibilityModelChange={(newModel) =>
-                                setColumnVisibilityModel(newModel)
-                            }
-                            pageSizeOptions={[1, 5, 10, 20]}
-                            disableRowSelectionOnClick
-                            getRowHeight={() => 35}
-                            getRowClassName={getRowClassName}
-                        />
-                    </Box>
-                </Grid>
+                                }}
+                                columnVisibilityModel={columnVisibilityModel}
+                                onColumnVisibilityModelChange={(newModel) =>
+                                    setColumnVisibilityModel(newModel)
+                                }
+                                pageSizeOptions={[1, 5, 10, 20]}
+                                disableRowSelectionOnClick
+                                getRowHeight={() => 35}
+                                getRowClassName={getRowClassName}
+                            />
+                        </Box>
+                    </Grid>
+                </Paper>
                 {/* =========================datagrid end======================== */}
             </Grid>
         </>

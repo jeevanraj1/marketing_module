@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -43,6 +43,11 @@ import CustomerTypeIcon from './MarketingModule/Images/icons/customers-type.svg'
 import CityIcon from "./MarketingModule/Images/icons/cityIcon.svg"
 import TalukIcon from "./MarketingModule/Images/icons/TalukIcon.svg"
 import DistrictIcon from "./MarketingModule/Images/icons/DistrictIcon.svg"
+import bankIcon from "./MarketingModule/Images/icons/bank.svg"
+import AddressIcon from "./MarketingModule/Images/icons/AddressIcon.svg"
+import RouteIcon from "./MarketingModule/Images/icons/RouteIcon.svg"
+import DistributionRouteIcon from "./MarketingModule/Images/icons/DistributionIcon.svg"
+import DistributionBatchIcon from "./MarketingModule/Images/icons/DistributionBatchIcon.svg"
 
 
 const drawerWidth = 240;
@@ -111,6 +116,18 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
+const hover = {
+    pl: 0,
+    height: "30px",
+    background: "#fff",
+    padding: 2,
+    color: "#000",
+    '&:hover': {
+        backgroundColor: '#1976D2',
+        color: '#fff',
+    },
+}
+
 export default function ResponsiveDrawer() {
     const theme = useTheme();
     const navigate = useNavigate()
@@ -118,6 +135,11 @@ export default function ResponsiveDrawer() {
     const [open, setOpen] = useState(true);
     const [openMarketingModule, setOpenMarketingModule] = useState(false);
     const [openMaster, setopenMaster] = useState(false);
+    const popOverIconStyle = {
+        minWidth: 0,
+        mr: open ? 3 : 'auto',
+        justifyContent: 'center',
+    }
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -133,31 +155,36 @@ export default function ResponsiveDrawer() {
     const handleMarketingModuleClick = () => {
         setOpenMarketingModule(!openMarketingModule)
         setopenMaster(false)
+        setBackgroundColor('#fff');
+        setTextColor('#000');
     }
     const handleMasterClick = () => {
         setopenMaster(!openMaster)
+        setBackgroundColor('#fff');
+        setTextColor('#000');
     }
     const handleListItemClick = (text) => {
         const route = text
         const checkEditState = localStorage.getItem("Navigation_state")
         if (checkEditState === "true" || checkEditState === null) {
             if (route === "/customer") { navigate("customer"); handleClose() }
-            else if (route === "/relation") navigate("relation")
-            else if (route === "/Paymode") navigate("Paymode")
-            else if (route === "/Status") navigate("Status")
+            else if (route === "/relation") { navigate("relation"); handleClose() }
+            else if (route === "/Paymode") { navigate("Paymode"); handleClose() }
+            else if (route === "/Status") { navigate("Status"); handleClose() }
             else if (route === "/Officer") navigate("Officer")
-            else if (route === "/BillCategory") navigate("BillCategory")
-            else if (route === "/RateCategory") navigate("RateCategory")
+            else if (route === "/BillCategory") { navigate("BillCategory"); handleClose() }
+            else if (route === "/RateCategory") { navigate("RateCategory"); handleClose() }
             else if (route === "/CustomerType") navigate("CustomerType")
-            else if (route === "/BankMaster") navigate("BankMaster")
-            else if (route === "/BranchMaster") navigate("BranchMaster")
-            else if (route === "/District") navigate("District")
-            else if (route === "/Taluka") navigate("Taluka")
-            else if (route === "/City") navigate("City")
-            else if (route === "/DistributionRoute") navigate("DistributionRoute")
-            else if (route === "/DistrubutionBatch") navigate("DistrubutionBatch")
+            else if (route === "/BankMaster") { navigate("BankMaster"); handleBankClose() }
+            else if (route === "/BranchMaster") { navigate("BranchMaster"); handleBankClose() }
+            else if (route === "/District") { navigate("District"); handleAddressClose() }
+            else if (route === "/Taluka") { navigate("Taluka"); handleAddressClose() }
+            else if (route === "/City") { navigate("City"); handleAddressClose() }
+            else if (route === "/DistributionRoute") { navigate("DistributionRoute"); handleRouteClose() }
+            else if (route === "/DistrubutionBatch") { navigate("DistrubutionBatch"); handleRouteClose() }
             else if (route === "/Contractor") navigate("Contractor")
             else if (route === "/ContractorType") navigate("ContractorType")
+            else if (route === "/Products") navigate("Products")
         }
         else {
             const handleNavigate = async (text) => {
@@ -206,6 +233,41 @@ export default function ResponsiveDrawer() {
     const openkaro = Boolean(anchorEl);
     const ida = open ? 'simple-popover' : undefined;
 
+    const [anchorE2, setAnchorE2] = useState(null);
+    const openBank = Boolean(anchorE2);
+    const bankID = open ? 'simple-popover' : undefined;
+    const handleBankClick = (event) => {
+        setAnchorE2(event.currentTarget);
+        setBackgroundColor('#fff');
+        setTextColor('#000');
+    }
+    const handleBankClose = () => {
+        setAnchorE2(null);
+        setBackgroundColor('#fff');
+        setTextColor('#000');
+        console.log("color change in bank close");
+    }
+
+
+    const [anchorE3, setAnchorE3] = useState(null);
+    const openAddress = Boolean(anchorE3);
+    const AddressId = open ? 'simple-popover' : undefined;
+    const handleAddressClick = (event) => {
+        setAnchorE3(event.currentTarget);
+    }
+    const handleAddressClose = () => {
+        setAnchorE3(null);
+    }
+
+    const [anchorE4, setAnchorE4] = useState(null);
+    const openRoutes = Boolean(anchorE4);
+    const routeID = open ? 'simple-popover' : undefined;
+    const handleRouteClick = (event) => {
+        setAnchorE4(event.currentTarget);
+    }
+    const handleRouteClose = () => {
+        setAnchorE4(null);
+    }
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -261,11 +323,7 @@ export default function ResponsiveDrawer() {
                                 onClick={() => handleMarketingModuleClick()}
                             >
                                 <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}>
+                                    sx={popOverIconStyle}>
                                     <CampaignIcon sx={{ color: '#ee6c4d', marginRight: 0, fontSize: 30 }} />
                                 </ListItemIcon>
                                 <ListItemText primary="Marketing Module" className="calibriFont" sx={{ opacity: open ? 1 : 0 }} />
@@ -289,17 +347,13 @@ export default function ResponsiveDrawer() {
                                         onClick={() => handleMasterClick()}
                                     >
                                         <ListItemIcon
-                                            sx={{
-                                                minWidth: 0,
-                                                mr: open ? 3 : 'auto',
-                                                justifyContent: 'center',
-                                            }}>
+                                            sx={popOverIconStyle}>
                                             <PersonIcon
                                                 sx={{ marginLeft: "-5px", color: "#ffb703", fontSize: 27, }}
                                             />
                                         </ListItemIcon>
                                         <ListItemText sx={{ opacity: open ? 1 : 0 }} className="calibriFont" primary="Master" />
-                                        {openMaster ? <ExpandLess sx={{ opacity: open ? 1 : 0 }} /> : <ExpandMore sx={{ opacity: open ? 1 : 0 }} />}
+                                        {openMaster ? <ExpandLess sx={{ opacity: open ? 1 : 0, }} /> : <ExpandMore sx={{ opacity: open ? 1 : 0 }} />}
                                     </ListItemButton>
                                     <Collapse
                                         in={openMaster}
@@ -316,18 +370,20 @@ export default function ResponsiveDrawer() {
                                                         backgroundColor: '#1976D2',
                                                         color: 'white',
                                                     },
+                                                    // background:backgroundColor,
+                                                    // color:textColor,
                                                 }}
-                                                aria-describedby={ida} onClick={handleClick}
+                                                onClick={handleClick}
                                             >
                                                 <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
+                                                    sx={popOverIconStyle}>
                                                     <img src={customerIcon} alt="" width={20} />
                                                 </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }} className="calibriFont" primary="Customer" />
+                                                <ListItemText
+                                                    sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Customer"
+                                                />
                                             </ListItemButton>
                                             <Popover
                                                 id={ida}
@@ -347,85 +403,143 @@ export default function ResponsiveDrawer() {
                                                     horizontal: 'left',
                                                 }}
                                             >
-                                                <div style={{ background: "#fff" }}>
+                                                <ListItemButton
+                                                    sx={hover}
+                                                    onClick={() => handleListItemClick("/customer")}
+                                                >
+                                                    <ListItemIcon>
+                                                        <PersonAddAlt1Icon
+                                                            sx={{
+                                                                ...popOverIconStyle,
+                                                                color: " #ffb703"
+                                                            }}
+                                                        />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary="New Customer"
+                                                        sx={{ marginLeft: "-25px" }}
+                                                        className="calibriFont"
+                                                    />
+                                                </ListItemButton>
+                                                {/* ======== New Customer end =========== */}
+                                                <ListItemButton
+                                                    sx={hover}
+                                                >
+                                                    <ListItemIcon>
+                                                        <TurnSlightRightIcon
+                                                            sx={{
+                                                                ...popOverIconStyle,
+                                                                color: " #ee6c4d"
+                                                            }}
+                                                        />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary="Add To Route"
+                                                        sx={{ marginLeft: "-25px" }}
+                                                        className="calibriFont"
+                                                    />
+                                                </ListItemButton>
+                                                {/* ======== Add to route end =========== */}
+                                                <ListItemButton
+                                                    sx={hover}
+                                                >
+                                                    <ListItemIcon>
+                                                        <CategoryIcon
+                                                            sx={{
+                                                                ...popOverIconStyle,
+                                                                color: " #fb8500"
+                                                            }}
+                                                        />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        primary="Customer Category"
+                                                        sx={{ marginLeft: "-25px" }}
+                                                        className="calibriFont"
+                                                    />
+                                                    {/* ======== Customer end =========== */}
+                                                </ListItemButton>
+                                                {/* ======== Customer Category  end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
                                                     <ListItemButton
-                                                        sx={{
-                                                            pl: 0,
-                                                            height: "30px",
-                                                            background: "#fff",
-                                                            padding: 2,
-                                                            color: "#000",
-                                                            '&:hover': {
-                                                                backgroundColor: '#1976D2',
-                                                                color: '#fff',
-                                                            },
-                                                        }}
-                                                        onClick={() => handleListItemClick("/customer")}
+                                                        sx={hover}
+                                                        onClick={() => { handleListItemClick("/BillCategory") }}
                                                     >
-                                                        <ListItemIcon>
-                                                            <PersonAddAlt1Icon
-                                                                sx={{ marginLeft: "-5px", color: " #ffb703" }}
-                                                            />
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}
+                                                        >
+                                                            <img src={BillCategoryIcon} alt="" width={20} />
                                                         </ListItemIcon>
                                                         <ListItemText
-                                                            primary="New Customer"
-                                                            sx={{ marginLeft: "-30px" }}
-                                                            className="calibriFont"
-                                                        />
+                                                            primary="Bill Category"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont" />
                                                     </ListItemButton>
-                                                    {/* ======== New Customer end =========== */}
+                                                </ListItem>
+                                                {/* ======== Bill Category end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
                                                     <ListItemButton
-                                                        sx={{
-                                                            pl: 0,
-                                                            height: "30px",
-                                                            background: "#fff",
-                                                            padding: 2,
-                                                            color: "#000",
-                                                            '&:hover': {
-                                                                backgroundColor: '#1976D2',
-                                                                color: '#fff',
-                                                            },
-                                                        }}
+                                                        sx={hover}
+                                                        onClick={() => { handleListItemClick("/RateCategory") }}
                                                     >
-                                                        <ListItemIcon>
-                                                            <TurnSlightRightIcon
-                                                                sx={{ marginLeft: "-5px", color: " #ee6c4d" }}
-                                                            />
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={RateCategoryIcon} alt="" width={20} />
                                                         </ListItemIcon>
                                                         <ListItemText
-                                                            primary="Add To Route"
-                                                            sx={{ marginLeft: "-30px" }}
-                                                            className="calibriFont"
-                                                        />
+                                                            primary="Rate Category"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont" />
                                                     </ListItemButton>
-                                                    {/* ======== Add to route end =========== */}
+                                                </ListItem>
+                                                {/* ======== Rate Category end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
                                                     <ListItemButton
-                                                        sx={{
-                                                            pl: 0,
-                                                            height: "30px",
-                                                            background: "#fff",
-                                                            padding: 2,
-                                                            color: "#000",
-                                                            '&:hover': {
-                                                                backgroundColor: '#1976D2',
-                                                                color: '#fff',
-                                                            },
-                                                        }}
+                                                        sx={hover}
+                                                        onClick={() => { handleListItemClick("/Paymode") }}
                                                     >
-                                                        <ListItemIcon>
-                                                            <CategoryIcon
-                                                                sx={{ marginLeft: "-5px", color: " #fb8500" }}
-                                                            />
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={paymodeICON} alt="" width={20} />
                                                         </ListItemIcon>
                                                         <ListItemText
-                                                            primary="Customer Category"
-                                                            sx={{ marginLeft: "-30px" }}
-                                                            className="calibriFont"
-                                                        />
-                                                        {/* ======== Customer end =========== */}
+                                                            primary="Pay mode"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont" />
                                                     </ListItemButton>
-                                                    {/* ======== Customer Category  end =========== */}
-                                                </div>
+                                                </ListItem>
+                                                {/* ======== Pay Mode end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        onClick={() => { handleListItemClick("/Status") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={statusICon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            primary="Status"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== Status end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        onClick={() => { handleListItemClick("/relation") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={relationIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            primary="Relation"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== Relation end =========== */}
                                             </Popover>
                                         </ListItem>
                                         {/* ======== Customer end =========== */}
@@ -440,23 +554,71 @@ export default function ResponsiveDrawer() {
                                                         color: 'white',
                                                     },
                                                 }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/relation") }}
+                                                onClick={handleBankClick}
                                             >
                                                 <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={relationIcon} alt="" width={20} />
+                                                    sx={popOverIconStyle}>
+                                                    <img src={bankIcon} alt="" width={20} />
                                                 </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                <ListItemText
+                                                    sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
-                                                    primary="Relation" />
+                                                    primary="Bank"
+                                                />
                                             </ListItemButton>
+                                            <Popover
+                                                id={bankID}
+                                                open={openBank}
+                                                anchorEl={anchorE2}
+                                                onClose={handleBankClose}
+                                                onClick={() => {
+                                                    setBackgroundColor('#1976D2');
+                                                    setTextColor('#fff');
+                                                }}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'left',
+                                                }}
+                                            >
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        onClick={() => { handleListItemClick("/BankMaster") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={BankMasterIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            primary="Bank Master"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== Bank Master end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        onClick={() => { handleListItemClick("/BranchMaster") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={BranchMasterIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            className="calibriFont"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            primary="Branch Master" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== Branch Master end =========== */}
+                                            </Popover>
                                         </ListItem>
-                                        {/* ======== Relation end =========== */}
+                                        {/* ======== Bank End =========== */}
                                         <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
@@ -468,23 +630,88 @@ export default function ResponsiveDrawer() {
                                                         color: 'white',
                                                     },
                                                 }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/Paymode") }}
+                                                onClick={handleAddressClick}
                                             >
                                                 <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={paymodeICON} alt="" width={20} />
+                                                    sx={popOverIconStyle}>
+                                                    <img src={AddressIcon} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
-                                                    primary="Pay Mode" />
+                                                    primary="Address" />
                                             </ListItemButton>
+                                            <Popover
+                                                id={AddressId}
+                                                open={openAddress}
+                                                anchorEl={anchorE3}
+                                                onClose={handleAddressClose}
+                                                onClick={() => {
+                                                    setBackgroundColor('#1976D2');
+                                                    setTextColor('#fff');
+                                                }}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'left',
+                                                }}
+                                            >
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        aria-describedby={ida}
+                                                        onClick={() => { handleListItemClick("/District") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={DistrictIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            className="calibriFont"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            primary="District" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== District Master end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        aria-describedby={ida}
+                                                        onClick={() => { handleListItemClick("/Taluka") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={TalukIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont"
+                                                            primary="Taluk" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== Taluka Master End =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        aria-describedby={ida}
+                                                        onClick={() => { handleListItemClick("/City") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={CityIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            className="calibriFont"
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            primary="City" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== City Master end =========== */}
+                                            </Popover>
                                         </ListItem>
-                                        {/* ======== Pay Mode end =========== */}
+                                        {/* ======== Address End=========== */}
                                         <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
@@ -496,23 +723,72 @@ export default function ResponsiveDrawer() {
                                                         color: 'white',
                                                     },
                                                 }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/Status") }}
+                                                onClick={handleRouteClick}
                                             >
                                                 <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={statusICon} alt="" width={20} />
+                                                    sx={popOverIconStyle}>
+                                                    <img src={RouteIcon} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
-                                                    primary="Status" />
+                                                    primary="Route" />
                                             </ListItemButton>
+                                            <Popover
+                                                id={routeID}
+                                                open={openRoutes}
+                                                anchorEl={anchorE4}
+                                                onClose={handleRouteClose}
+                                                onClick={() => {
+                                                    setBackgroundColor('#1976D2');
+                                                    setTextColor('#fff');
+                                                }}
+                                                anchorOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'right',
+                                                }}
+                                                transformOrigin={{
+                                                    vertical: 'top',
+                                                    horizontal: 'left',
+                                                }}
+                                            >
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        aria-describedby={ida}
+                                                        onClick={() => { handleListItemClick("/DistrubutionBatch") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={DistributionBatchIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont"
+                                                            primary="Distribution Batch" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== Distribution batch end =========== */}
+                                                <ListItem disablePadding sx={{ display: 'block' }}>
+                                                    <ListItemButton
+                                                        sx={hover}
+                                                        aria-describedby={ida}
+                                                        onClick={() => { handleListItemClick("/DistributionRoute") }}
+                                                    >
+                                                        <ListItemIcon
+                                                            sx={popOverIconStyle}>
+                                                            <img src={DistributionRouteIcon} alt="" width={20} />
+                                                        </ListItemIcon>
+                                                        <ListItemText
+                                                            sx={{ marginLeft: "-10px" }}
+                                                            className="calibriFont"
+                                                            primary="Distribution Route" />
+                                                    </ListItemButton>
+                                                </ListItem>
+                                                {/* ======== Distribution Route end =========== */}
+
+                                            </Popover>
                                         </ListItem>
-                                        {/* ======== Status end =========== */}
+                                        {/* ======== Route End=========== */}
                                         <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
@@ -553,62 +829,6 @@ export default function ResponsiveDrawer() {
                                                     },
                                                 }}
                                                 aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/BillCategory") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={BillCategoryIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="Bill Category" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== Bill Category end =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/RateCategory") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={RateCategoryIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="Rate Category" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== Rate Category end =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
                                                 onClick={() => { handleListItemClick("/CustomerType") }}
                                             >
                                                 <ListItemIcon
@@ -637,207 +857,6 @@ export default function ResponsiveDrawer() {
                                                     },
                                                 }}
                                                 aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/BankMaster") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={BankMasterIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="Bank Master" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== Bank Master end =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/BranchMaster") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={BranchMasterIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="Branch Master" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== Branch Master end =========== */}
-                                        {/* ======== District Master start =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/District") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="District" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== District Master end =========== */}
-                                        {/* ======== Taluka Master start =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/Taluka") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={TalukIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="Taluk" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== City Master start =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/City") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={CityIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="City" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== City Master end =========== */}
-                                        {/* ======== Distribution Route Start =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/DistributionRoute") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="Distribution Route" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== Distribution Route end =========== */}
-                                        {/* ======== Distribution batch Start =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/DistrubutionBatch") }}
-                                            >
-                                                <ListItemIcon
-                                                    sx={{
-                                                        minWidth: 0,
-                                                        mr: open ? 3 : 'auto',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
-                                                </ListItemIcon>
-                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
-                                                    className="calibriFont"
-                                                    primary="Distribution Batch" />
-                                            </ListItemButton>
-                                        </ListItem>
-                                        {/* ======== Distribution batch end =========== */}
-                                        {/* ======== Contractor Start =========== */}
-                                        <ListItem disablePadding sx={{ display: 'block' }}>
-                                            <ListItemButton
-                                                sx={{
-                                                    height: 30,
-                                                    justifyContent: open ? 'initial' : 'center',
-                                                    px: 6,
-                                                    '&:hover': {
-                                                        backgroundColor: '#1976D2',
-                                                        color: 'white',
-                                                    },
-                                                }}
-                                                aria-describedby={ida}
                                                 onClick={() => { handleListItemClick("/Contractor") }}
                                             >
                                                 <ListItemIcon
@@ -853,9 +872,8 @@ export default function ResponsiveDrawer() {
                                                     primary="Contractor" />
                                             </ListItemButton>
                                         </ListItem>
-                                        {/* ======== Contractor end =========== */}
-                                         {/* ======== Contractor Start =========== */}
-                                         <ListItem disablePadding sx={{ display: 'block' }}>
+                                        {/* ======== Contractor Type end =========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
                                                     height: 30,
@@ -867,7 +885,7 @@ export default function ResponsiveDrawer() {
                                                     },
                                                 }}
                                                 aria-describedby={ida}
-                                                onClick={() => { handleListItemClick("/ContractorType") }}
+                                                onClick={() => { handleListItemClick("/Products") }}
                                             >
                                                 <ListItemIcon
                                                     sx={{
@@ -879,10 +897,10 @@ export default function ResponsiveDrawer() {
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
-                                                    primary="Contractor Type" />
+                                                    primary="Products" />
                                             </ListItemButton>
                                         </ListItem>
-                                        {/* ======== Contractor end =========== */}
+                                        {/* ======== Products Type end =========== */}
                                     </Collapse>
                                 </ListItem>
                             </Collapse>

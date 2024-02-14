@@ -34,6 +34,7 @@ import DistrubutionBatch from './MarketingModule/Master/Distribution/Distrubutio
 import ContractorPage from './MarketingModule/Master/Contractor/ContractorPage';
 import ContractorDT from './MarketingModule/Master/Contractor/ContractorDT';
 import ContractorType from './MarketingModule/Master/ContractorType/ContractorType';
+import ProductsDt from './MarketingModule/Master/Products/ProductsDt';
 
 
 export default function RoutingComponent() {
@@ -100,7 +101,7 @@ export default function RoutingComponent() {
                     </Route>
 
                     <Route path='ContractorType' element={<ErrorBoundary key={location.pathname} componentName="ContractorType" ><ContractorType /></ErrorBoundary>} />
-
+                    <Route path='Products' element={<ErrorBoundary key={location.pathname} componentName="ProductsDt" ><ProductsDt /></ErrorBoundary>} />
 
                 </Route>
 
