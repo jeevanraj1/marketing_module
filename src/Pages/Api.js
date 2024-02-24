@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const baseurl = `http://172.16.17.2:8080/ords/market/tbl/`
-const baseurl = `http://103.21.232.59:8080/ords/market/tbl/`
+const baseurl = `http://172.16.17.2:8080/ords/market/tbl/`
+// const baseurl = `http://103.21.232.59:8080/ords/market/tbl/`
 export const officerApi = {
     officerApi_master(url = baseurl + `officers`) {
         return {
@@ -37,6 +37,7 @@ export const customerApi = {
             fetch_DepositeType_DD: () => axios.get(baseurl + 'dd_deposit_type'),
             FetchAll: () => axios.get(url),
             create: (newRecord) => axios.post(url, newRecord),
+            fetch_ifcs: (id) => axios.get(baseurl + `get_ifsc_from_branch?branch_code=${id}`),
             update: (id, newRecord) => axios.put(url + `?customer_code=${id}`, newRecord),
 
             fetchGSTDetails: (id) => axios.get(baseurl + `gst_details?customer_code=${id}`),
@@ -62,6 +63,7 @@ export const customerApi = {
         }
     }
 }
+
 
 export const RelationApi = {
     RelationApi_master(url = baseurl + "relation") {
@@ -232,11 +234,12 @@ export const ContractorAPi = {
             fetch_DepositePaymode_DD: () => axios.get(baseurl + 'dd_deposit_paymode'),
             fetch_DepositeType_DD: () => axios.get(baseurl + 'dd_deposit_type'),
             postContractorDetails: (newRecord) => axios.post(baseurl + "contractor_deposit", newRecord),
+            updateContractorDetails: (id, newRecord) => axios.put(baseurl + `contractor_deposit?deposit_id=${id}`, newRecord),
 
-            DD_contractor_code:()=>axios.get(baseurl+`dd_contrac_contractor_code`),
-            DD_contractor_name:()=>axios.get(baseurl+`dd_contrac_contractor_name`),
-            fetchById:(id)=>axios.get(url + `?contractor_code=${id}`),
-            
+            DD_contractor_code: () => axios.get(baseurl + `dd_contrac_contractor_code`),
+            DD_contractor_name: () => axios.get(baseurl + `dd_contrac_contractor_name`),
+            fetchById: (id) => axios.get(url + `?contractor_code=${id}`),
+
         };
     }
 };
@@ -254,3 +257,110 @@ export const DistrubutionRoutesAPI = {
     }
 };
 
+export const ProductsApi = {
+    ProductsApi_master(url = baseurl + "products") {
+        return {
+            fetchAll: () => axios.get(url),
+            create: newRecord => axios.post(url, newRecord),
+            update: (id, updateRecord) => axios.put(url + `?product_code=${id}`, updateRecord),
+
+            dd_UsersCode: () => axios.get(baseurl + `dd_prd_product_code`),
+            dd_ProductName: () => axios.get(baseurl + `dd_prd_product_name`),
+            dd_ProductSuplier: () => axios.get(baseurl + 'dd_product_supplier'),
+            fetchByProductCode: (id) => axios.get(url + `?product_code=${id}`)
+
+        }
+    }
+}
+
+export const PacketsUnitsAPi = {
+    PacketsUnitsAPi_master(url = baseurl + 'pkt_units') {
+        return {
+            DD_gst_units: () => axios.get(baseurl + 'dd_get_gst_units'),
+            fetchAll: () => axios.get(url),
+            create: newRecord => axios.post(url, newRecord),
+            update: (id, updateRecord) => axios.put(url + `?unit_id=${id}`, updateRecord),
+        }
+    }
+}
+
+export const CustomerRouteApi = {
+    PacketsUnitsAPi_master(url = baseurl + 'customer_route') {
+        return {
+            fetchAll: () => axios.get(url),
+            create: newRecord => axios.post(url, newRecord),
+            update: (id, updateRecord) => axios.put(url + `?cust_route_id=${id}`, updateRecord),
+            fetchbyId: (id) => axios.get(url + `cust_route_id=${id}`),
+
+            dd_RouteNames: (id) => axios.get(baseurl + `dd_get_route_name_by_dist_batch_no?dist_batch_no=${id}`),
+            dd_CustomerName: () => axios.get(baseurl + `dd_cust_customer_name`),
+            dd_fetch_distribution_batch_name: () => axios.get(baseurl + 'dd_dist_batch_name'),
+            dd_searchRoute: () => axios.get(baseurl + 'dd_contractor_detail_route_name'),   
+
+            searchRouteName: (id) => axios.get(baseurl + `search_cust_route_routename?route_code=${id}`),
+            searchCustomerName: (id) => axios.get(baseurl + `search_cust_route_custname?customer_code=${id}`),
+
+            indentRouteValidation: (distrubutionBatchCode, customerCode) => axios.get(baseurl + `cust_route_AppIndentRoute_status?dist_batch_no=${distrubutionBatchCode}&customer_code=${customerCode}`),
+            indetupdate: (id, record) => axios.put(baseurl + `cust_route_AppIndentRoute_status?cust_route_id=${id}`, record),
+
+            billRouteValidation: (customerCode) => axios.get(baseurl + `cust_route_BillRoute_status?customer_code=${customerCode}`),
+            billupadte: (id,record) => axios.put(baseurl + `cust_route_BillRoute_status?cust_route_id=${id}`,record)
+        }
+    }
+}
+
+export const PacketsApi = {
+    PacketsAPI_master(url = baseurl + 'packets') {
+        return {
+            fetchAll: () => axios.get(url),
+            create: newRecord => axios.post(url, newRecord),
+            update: (id, updateRecord) => axios.put(url + `?packet_code=${id}`, updateRecord),
+
+            DD_fetch_product_name: () => axios.get(baseurl + 'dd_prd_product_name'),
+            DD_fetch_unit_name: () => axios.get(baseurl + 'dd_packet_unit_name'),
+            DD_fetch_category_name: () => axios.get(baseurl + 'dd_category_name'),
+
+
+            DD_UsersCode: () => axios.get(baseurl + `dd_pkt_packet_code`),
+            DD_PacketName: () => axios.get(baseurl + `dd_pkt_packet_name`),
+            fetchByPacketCode: (id) => axios.get(url + `?packet_code=${id}`)
+        };
+    }
+};
+
+export const IndentEntryAPI = {
+    IndentEntryAPI_master(url = baseurl + 'indent_entry') {
+        return {
+            DD_fetch_district_batch_name: () => axios.get(baseurl + 'dd_dist_batch_name'),
+            // DD_fetch_customer_name:()=>axios.get(baseurl +`dd_indent_entry_customer`),
+            DD_fetch_customer_name:(id)=>axios.get(baseurl +`dd_indent_entry_customer_name?dist_batch_no=${id}`),
+            DD_fetch_route_name:(distbatchNo,CustomerCode)=>axios.get(baseurl + `dd_indent_entry_route_name?dist_batch_no=${distbatchNo}&customer_code=${CustomerCode}`)
+        };
+    }
+};
+
+export const DocumentMasterLinkApi = {
+    DocumentMasterLinkApi_Master(url = baseurl + 'doc_master_link') {
+        return {
+            fetchAll: () => axios.get(url),
+            create: (newRecord) => axios.post(url, newRecord),
+            update: (id, newRecord) => axios.put(url + `?link_id=${id}`, newRecord),
+            delete: id => axios.delete(url + `?link_id=${id}`),
+
+            DD_fetch_masterName: () => axios.get( baseurl + 'dd_doc_master_masterName'),
+            DD_fetch_documentName: () => axios.get(baseurl + 'dd_doc_master_documentName'),
+
+            fetchByMasterId: (id) => axios.get(baseurl + `search_docMasterLink_masterName?master_id=${id}`)
+
+        }
+    }
+}
+export const DocumentMasterApi = {
+    DocumentMasterApi_Master(url = baseurl + 'doc_master') {
+        return {
+            fetchAll: () => axios.get(url),
+            create: (newRecord) => axios.post(url, newRecord),
+            update: (id, newRecord) => axios.put(url + `?doc_id=${id}`, newRecord)
+        }
+    }
+}

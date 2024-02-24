@@ -121,7 +121,9 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         customer_code: false,
         dep_paymode_id: false,
     })
-
+    const [depositeId, setDepositeId] = useState(null);
+    const [saveButton, setSaveButton] = useState(true);
+    const [upadteButton, setUpadteButton] = useState(false);
     const getRowClassName = (params) => {
         const rowIndex = params.indexRelativeToCurrentPage;
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
@@ -221,7 +223,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                 const newRecord = {
                     "customer_code": customerCode,
                     "dep_paymode_id": Number(formData.paymode),
-                    "deposit_type": (Number(formData.depositType)),
+                    "deposit_type": formData.depositType,
                     "deposit_date": formData.depositDate !== "" ? formData.depositDate : null,
                     "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
                     "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
@@ -240,6 +242,68 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     Swal.fire({
                         title: 'Saved',
                         text: 'Saved Sucessfully',
+                        icon: 'success',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                    await fetchData(CustomerCode)
+                    handleClear();
+                    localStorage.setItem("Navigation_state", true)
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: `${response.data.Error}` || 'Unknown Error',
+                        icon: 'error',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Unknown Error',
+                    icon: 'error',
+                    customClass: {
+                        container: 'custom-swal-container'
+                    }
+                });
+            }
+
+        }
+    }
+
+    const handleUpdate = async (e) => {
+        e.preventDefault()
+        const validationErorrs = validation()
+        setErrors(validationErorrs)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
+        if (!hasErrors) {
+            try {
+                const newRecord = {
+                    "customer_code": customerCode,
+                    "dep_paymode_id": Number(formData.paymode),
+                    "deposit_type": formData.depositType,
+                    "deposit_date": formData.depositDate !== "" ? formData.depositDate : null,
+                    "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
+                    "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
+                    "gr_date": formData.grDate !== "" ? formData.grDate : null,
+                    "bank_name": formData.bankName != "" ? formData.bankName : null,
+                    "amount": formData.amount != "" ? formData.amount : null,
+                    "remarks": formData.remarks != "" ? formData.remarks : null,
+                    "instrument_details": formData.bankDocNumber != "" ? formData.bankDocNumber : null,
+                    "bill_no": formData.billNumber != "" ? formData.billNumber : null,
+                    "bill_date": formData.billDate != "" ? formData.billDate : null,
+                }
+                console.log(newRecord);
+                console.log(depositeId);
+                const response = await customerApi.customerMaster().updateDepositeDetails(depositeId, newRecord)
+                console.log(response);
+                if (response.data.Status === 1) {
+                    Swal.fire({
+                        title: 'Saved',
+                        text: 'Updated Sucessfully',
                         icon: 'success',
                         customClass: {
                             container: 'custom-swal-container'
@@ -294,15 +358,15 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     paymode: '',
                     depositType: '',
                     bankDocNumber: '',
-                    depositDate: null,
-                    expireDate: null,
+                    depositDate: "",
+                    expireDate: "",
                     grNumber: '',
-                    grDate: null,
+                    grDate: "",
                     bankName: "",
                     amount: "",
                     remarks: '',
                     billNumber: "",
-                    billDate: null,
+                    billDate: "",
                 })
             }
             setFormData((prevdata) => ({
@@ -684,7 +748,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     >
                         Edit
                     </ModeEditOutlineRoundedIcon>
-                    <DeleteForeverIcon
+                    {/* <DeleteForeverIcon
                         sx={{ color: "red" }}
                         style={{
                             cursor: "pointer",
@@ -702,7 +766,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                         onClick={() => handleDeleteButtonClick(params.row)}
                     >
                         Delete
-                    </DeleteForeverIcon>
+                    </DeleteForeverIcon> */}
                 </>
             ),
         },
@@ -780,7 +844,26 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
     ];
     const handleEdit = (row) => {
         localStorage.setItem("Navigation_state", true)
-        console.log(row);
+        handleFieldChange("paymode", row.dep_paymode_id)
+        setFormData((prevdata) => ({
+            ...prevdata,
+            routeNames: row.route_code ? row.route_code : null,
+            // paymode: row.dep_paymode_id,
+            depositType: row.deposit_type ? row.deposit_type : null,
+            bankDocNumber: row.instrument_details ? row.instrument_details : null,
+            depositDate: row.deposit_date ? dayjs(row.deposit_date) : null,
+            expireDate: row.expiry_date ? dayjs(row.expiry_date) : null,
+            grNumber: row.gr_no ? row.gr_no : null,
+            grDate: row.gr_date ? dayjs(row.gr_date) : null,
+            bankName: row.bank_name ? row.bank_name : null,
+            amount: row.amount ? row.amount : null,
+            remarks: row.remarks ? row.remarks : null,
+            billNumber: row.bill_no ? row.bill_no : null,
+            billDate: row.bill_date ? dayjs(row.bill_date) : null,
+        }))
+        setDepositeId(row.deposit_id)
+        setSaveButton(false)
+        setUpadteButton(true)
     }
     const handleDeleteButtonClick = (row) => {
         console.log(row);
@@ -902,6 +985,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             label="Deposit Date"
                             sx={datePickerStyle}
                             onChange={(value) => handleFieldChange("depositDate", value)}
+                            value={formData.depositDate}
                             slotProps={
                                 {
                                     textField:
@@ -924,6 +1008,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             format='DD/MMM/YYYY'
                             minDate={(dayjs(formData.depositDate).add(1, "day"))}
                             onChange={(value) => handleFieldChange("expireDate", value)}
+                            value={formData.expireDate}
                             slotProps={
                                 {
                                     textField:
@@ -963,6 +1048,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             format='DD/MMM/YYYY'
                             sx={datePickerStyle}
                             onChange={(value) => handleFieldChange("billDate", value)}
+                            value={formData.billDate}
                             slotProps={
                                 {
                                     textField:
@@ -1000,6 +1086,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             sx={datePickerStyle}
                             format='DD/MMM/YYYY'
                             onChange={(value) => handleFieldChange("grDate", value)}
+                            value={formData.grDate}
                             slotProps={
                                 {
                                     textField:
@@ -1048,13 +1135,22 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                 {/* =========================Button======================== */}
                 <Grid item md={12} lg={12} sm={12} xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Stack direction="row" spacing={1}>
-                        <Button
-                            variant="contained"
-                            size='small'
-                            onClick={(e) => handleSubmit(e)}
-                        >
-                            Save
-                        </Button>
+                        {saveButton && (
+                            <Button
+                                variant="contained"
+                                size='small'
+                                onClick={(e) => handleSubmit(e)}
+                            >
+                                Save
+                            </Button>)}
+                        {upadteButton && (
+                            <Button
+                                variant="contained"
+                                size='small'
+                                onClick={(e) => handleUpdate(e)}
+                            >
+                                Update
+                            </Button>)}
                         <Button
                             variant="contained"
                             size='small'

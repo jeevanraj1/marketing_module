@@ -6,11 +6,14 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { customerApi } from '../../../Api';
 import Swal from 'sweetalert2';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
 import DepositDetails from './DepositDetails';
 import AddGSTDetails from './AddGSTDetails';
 import dayjs from 'dayjs';
 import AddAddress from './AddAddress';
-
 const style = {
   position: 'absolute',
   top: '50%',
@@ -95,7 +98,6 @@ const datePickerStyle = {
     marginTop: "-1px",
   },
 }
-
 export default function Customer() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -110,6 +112,9 @@ export default function Customer() {
   const [fetchBankMasterDD, setFetchBankMasterDD] = useState([]);
   const [fetchBranchMasterDD, setFetchBranchMasterDD] = useState([]);
   const [fetchCustomerTypeDD, setFetchCustomerTypeDD] = useState([]);
+  const [fetchByYes, setFetchByYes] = React.useState(false);
+  const [fetchByNo, setFetchByNo] = React.useState(true);
+  const [DDMainCustomerName, setDDMainCustomerName] = useState([]);
   const [formData, setFormData] = useState({
     // ======================================Personal Details===============================
     customerCode: '',
@@ -120,6 +125,7 @@ export default function Customer() {
     relationName: '',
     officerName: '',
     registrationDate: dayjs(),
+    mainCustomerName: "",
     // ======================================Customer Category===============================
     customerType: '',
     billCategory: '',
@@ -158,7 +164,6 @@ export default function Customer() {
   const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
   const aadhraRegex = /^[2-9]{1}[0-9]{3}[0-9]{4}[0-9]{4}$/;
   const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-
   const handleMobileOpen = () => setMobileOpen(true);
   const handleMobileClose = () => {
     setMobileOpen(false)
@@ -171,6 +176,27 @@ export default function Customer() {
     { name: "YES", value: 'Y' },
     { name: "NO", value: "N" }
   ]
+  const handleRadio = (e) => {
+    const { value } = e.target;
+    if (value === 'yes') {
+      setFetchByYes(true)
+      setFetchByNo(false)
+    } else if (value === 'no') {
+      setFetchByYes(false)
+      setFetchByNo(true)
+    }
+  }
+  const fectchCustomerName = async () => {
+    try {
+      const response = await customerApi.customerMaster().dd_CustomerName()
+      console.log(response);
+      if (response.status === 200) {
+        setDDMainCustomerName(response.data.items)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const validation = () => {
     const newErrors = {}
     // ======================================customerCode=================================
@@ -233,7 +259,9 @@ export default function Customer() {
     // ======================================gstNumber=================================
     if (formData.gstNumber === '') newErrors.gstNumber = ''
     else if (formData.gstNumber !== "") newErrors.gstNumber = errors.gstNumber
-    // ======================================tcsPercentage pending=================================
+    // ======================================tcsPercentage=================================
+    if (formData.tcsPercentage === '') newErrors.tcsPercentage = ''
+    else if (formData.tcsPercentage !== "") newErrors.tcsPercentage = errors.tcsPercentage
     // ======================================phoneNumber=================================
     if (formData.phoneNumber === '') newErrors.phoneNumber = ''
     else if (formData.phoneNumber !== "") newErrors.phoneNumber = errors.phoneNumber
@@ -243,7 +271,6 @@ export default function Customer() {
     //======================================alternatePhoneNumber=================================
     if (formData.alternatePhoneNumber === '') newErrors.alternatePhoneNumber = ''
     else if (formData.alternatePhoneNumber !== "") newErrors.alternatePhoneNumber = errors.alternatePhoneNumber
-
     return newErrors
   }
 
@@ -460,6 +487,25 @@ export default function Customer() {
         [fieldName]: value
       }))
     }
+    // ==============================mainCustomerName=========================================
+    if (fieldName === 'mainCustomerName') {
+      if (value === '') {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          mainCustomerName: "",
+        }));
+      }
+      else if (value !== "") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          mainCustomerName: "",
+        }));
+      }
+      setFormData((prevdata) => ({
+        ...prevdata,
+        [fieldName]: value
+      }))
+    }
     // ======================================customerType=================================
     if (fieldName === "customerType") {
       setFormData((prevdata) => ({
@@ -526,14 +572,17 @@ export default function Customer() {
         }))
         setBankDetailsShow(false)
       }
-      else if (value !== "") {
+      else if (value) {
         const paymode = fetchPayModeDD.find(option => option.pay_mode === value)
-        const { pay_mode } = paymode
-        if (pay_mode === "B") setBankDetailsShow(true)
-        else if (pay_mode === "R") setBankDetailsShow(true)
-        else setBankDetailsShow(false)
+        if (paymode) {
+          const { pay_mode } = paymode
+          if (pay_mode === "B") setBankDetailsShow(true)
+          else if (pay_mode === "R") setBankDetailsShow(true)
+          else setBankDetailsShow(false)
+        }
+        if (value === "B") setBankDetailsShow(true)
+        else if (value === "R") setBankDetailsShow(true)
       }
-      console.log(value);
       setFormData((prevdata) => ({
         ...prevdata,
         [fieldName]: value
@@ -630,6 +679,31 @@ export default function Customer() {
           ...prevErrors,
           aadharNumber: "",
         }))
+      }
+    }
+    // ======================================tcsPercentage=================================
+    if (fieldName === "tcsPercentage") {
+      setFormData((prevdata) => ({
+        ...prevdata,
+        [fieldName]: value
+      }))
+      if (value?.trim() === '') {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "",
+        }));
+      }
+      else if (!/^\d{0,2}(\.\d{1,3})?$/.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "Invalid Tcs Percentage",
+        }))
+      }
+      else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "",
+        }));
       }
     }
     // ======================================phoneNumber=================================
@@ -799,9 +873,7 @@ export default function Customer() {
         [fieldName]: value
       }))
     }
-
   }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     const validationErorrs = validation()
@@ -810,7 +882,6 @@ export default function Customer() {
     const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
     console.log(hasErrors);
     if (!hasErrors) {
-      console.log("hi");
       const newRecord = {
         "user_code": formData.customerCode,
         "customer_name": formData.customerName,
@@ -834,7 +905,9 @@ export default function Customer() {
         "email": formData.emailId !== "" ? formData.emailId : null,
         "officer_code": Number(formData.officerName),
         "alternate_ph_no": Number(formData.alternatePhoneNumber),
-        "registration_date": dayjs(formData.registrationDate)
+        "registration_date": dayjs(formData.registrationDate),
+        "main_customer_code": fetchByYes ? formData.mainCustomerName : null,
+        "tcs_perc": formData.tcsPercentage !== "" ? Number(formData.tcsPercentage) : null,
       }
       try {
         const response = await customerApi.customerMaster().create(newRecord)
@@ -861,11 +934,8 @@ export default function Customer() {
           icon: 'error',
         });
       }
-
     }
-
   }
-
   const handleUpdate = async (e) => {
     e.preventDefault()
     const validationErorrs = validation()
@@ -898,7 +968,9 @@ export default function Customer() {
         "email": formData.emailId !== "" ? formData.emailId : null,
         "officer_code": Number(formData.officerName),
         "alternate_ph_no": Number(formData.alternatePhoneNumber),
-        "registration_date": dayjs(formData.registrationDate)
+        "registration_date": dayjs(formData.registrationDate),
+        "tcs_perc": formData.tcsPercentage !== "" ? Number(formData.tcsPercentage) : null,
+        "main_customer_code": fetchByYes ? formData.mainCustomerName : null
       }
       try {
         const response = await customerApi.customerMaster().update(customerCode, newRecord)
@@ -929,8 +1001,6 @@ export default function Customer() {
     }
 
   }
-
-
   const handleBackdropMobileClick = (event) => {
     event.stopPropagation();
   };
@@ -938,9 +1008,6 @@ export default function Customer() {
     localStorage.setItem("Navigation_state", true)
     navigate(-1)
   }
-
-
-
   const fetch_customerType_DD = async () => {
     try {
       const response = await customerApi.customerMaster().fetch_customerType_DD()
@@ -991,7 +1058,6 @@ export default function Customer() {
       console.log(error);
     }
   }
-
   const fetch_RateCategoryDD = async () => {
     try {
       const response = await customerApi.customerMaster().fetch_RateCateogry_DD()
@@ -1012,7 +1078,6 @@ export default function Customer() {
       console.log(error);
     }
   }
-
   const fetch_relationType_DD = async () => {
     try {
       const respone = await customerApi.customerMaster().fetch_relationType_DD()
@@ -1033,7 +1098,7 @@ export default function Customer() {
       console.log(error);
     }
   }
-  useEffect(() => {
+  const checkingState = async () => {
     if (location.state !== null) {
       setUpdateButton(true)
       setSaveButton(false)
@@ -1049,6 +1114,7 @@ export default function Customer() {
         relationName,
         officerName,
         registrationDate,
+        mainCustomerName,
         // ======================================Customer Category===============================
         customerType,
         billCategory,
@@ -1075,6 +1141,11 @@ export default function Customer() {
         alternatePhoneNumber
       } = location.state
       setcustomerCode(customer_code)
+      handleFieldChange("paymode", paymode)
+      handleFieldChange("bankName", bankName)
+      console.log(mainCustomerName);
+      if (mainCustomerName) { setFetchByYes(true); setFetchByNo(false) }
+      const response = await customerApi.customerMaster().fetch_ifcs(branchName)
       setFormData((prev) => ({
         ...prev,
         // ======================================Personal Details===============================
@@ -1086,15 +1157,16 @@ export default function Customer() {
         relationName: relationName,
         officerName: officerName,
         registrationDate: dayjs(registrationDate),
+        mainCustomerName,
         // ======================================Customer Category===============================
         customerType: customerType,
         billCategory: billCategory,
         rateCategory: rateCategory,
-        paymode: paymode,
+        // paymode: paymode,
         // ======================================Bank Details====================================
-        bankName: bankName,
+        // bankName: bankName,
         branchName: branchName,
-        ifscCode: ifscCode,
+        ifscCode: response.data.items[0].ifsc_code,
         accNumber: accNumber,
         // ======================================Deposit Details=================================
         totalDepositeAmount: totalDepositeAmount,
@@ -1115,7 +1187,10 @@ export default function Customer() {
         setShowGSTDetails(true)
       }
     }
-
+  }
+  useEffect(() => {
+    checkingState()
+    fectchCustomerName()
     fetch_officerNames()
     fetch_relationType_DD()
     fetch_status_DD()
@@ -1290,8 +1365,53 @@ export default function Customer() {
               />
             </LocalizationProvider>
           </Grid>
+          {/* =========================Radio======================== */}
+          <Grid item md={1.5} lg={1.5} sm={12} xs={12}>
+            <Typography component='p' sx={{ fontWeight: "bolder" }}>Sub Agents</Typography>
+          </Grid>
+          <Grid item md={2} lg={2} sm={12} xs={12} mt={-1}>
+            <FormControl>
+              <RadioGroup
+                row
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                name="Sub Agent"
+                onChange={(e) => { handleRadio(e) }}
+              >
+                <FormControlLabel
+                  value="yes"
+                  control={<Radio name="Yes" checked={fetchByYes} />}
+                  label="Yes"
+                />
+                <FormControlLabel
+                  value="no"
+                  control={<Radio name="no" checked={fetchByNo} />}
+                  label="No"
+                />
+              </RadioGroup>
+            </FormControl>
+          </Grid>
+          {fetchByYes && (
+            <Grid item md={3} lg={3} sm={12} xs={12}>
+              <Autocomplete
+                disablePortal
+                id="combo-box-demo"
+                options={DDMainCustomerName}
+                getOptionLabel={(options) => options.customer_name}
+                isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
+                value={DDMainCustomerName.find(item => item.customer_code === formData.mainCustomerName) || null}
+                onChange={(event, value) => handleFieldChange("mainCustomerName", value?.customer_code || "")}
+                size='small'
+                fullWidth
+                sx={autoCompleteStyle}
+                renderInput={(params) =>
+                  <TextField
+                    {...params}
+                    label="Main Customer Name"
+                  />}
+              />
+            </Grid>
+          )}
         </Grid>
-
       </Paper>
       {/* =========================Paper end======================== */}
       <Paper sx={{ mt: 2, p: 2 }} elevation={3}>
@@ -1481,7 +1601,6 @@ export default function Customer() {
               helperText={errors.accNumber}
             />
           </Grid>
-          {/* =========================Button======================== */}
         </Grid>
       </Paper>)}
       {/* =========================Paper end======================== */}
@@ -1624,10 +1743,10 @@ export default function Customer() {
               size='small'
               fullWidth
               sx={textFiledStyle}
-            // value={formData.aadharNumber}
-            // onChange={(e) => handleFieldChange("aadharNumber", e.target.value.replace(/[^0-9]/g, ''))}
-            // error={Boolean(errors.aadharNumber)}
-            // helperText={errors.aadharNumber}
+              value={formData.tcsPercentage}
+              onChange={(e) => handleFieldChange("tcsPercentage", e.target.value.replace(/[^0-9.]/g, '').replace(/(\.\d{3})\d*$/, '$1'))}
+              error={Boolean(errors.tcsPercentage)}
+              helperText={errors.tcsPercentage}
             />
           </Grid>
         </Grid>

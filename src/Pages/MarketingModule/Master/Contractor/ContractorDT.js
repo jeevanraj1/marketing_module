@@ -18,15 +18,23 @@ const textFiledStyle = {
   "& .MuiInputLabel-root": {
     color: "black",
     "&.Mui-focused": {
-      transform: "translate(16px, -10px)",
+      transform: "translate(14px, -10px)",
     },
   },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "10px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginTop: "-1px",
   },
 }
 
@@ -41,12 +49,20 @@ const autoCompleteStyle = {
       transform: "translate(14px, -10px)",
     },
   },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "10px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginTop: "-1px",
   },
 }
 const datePickerStyle = {
@@ -55,7 +71,7 @@ const datePickerStyle = {
     "& fieldset": {
       borderColor: "black",
       borderWidth: "2px",
-      height: "35px",
+      height: "32px",
       paddingBottom: "5px",
 
     },
@@ -70,7 +86,7 @@ const datePickerStyle = {
     height: "12px",
     display: "flex",
     alignItems: "center",
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "bold",
     marginTop: "-1px",
   },
@@ -191,6 +207,8 @@ export default function ContractorDT() {
     cont_det_code: false,
     notification_number: false,
     notification_date: false,
+    route_code: false,
+    route_length: false,
   })
   const handleContractorDepositeOpen = () => setContractorDeposite(true)
   const handleContractorDepositeClose = () => setContractorDeposite(false)
@@ -245,12 +263,12 @@ export default function ContractorDT() {
           [fieldName]: "Required"
         }))
       }
-      else if (value?.trim().length > 5) {
+      else if (value?.trim().length > 10) {
         setMasterErrors((prevErrors) => ({
           ...prevErrors,
-          [fieldName]: "Value Must Be less than 5 Charaters"
+          [fieldName]: "Value Must Be less than 10 Charaters"
         }))
-        value = value.substring(0, 5)
+        value = value.substring(0, 10)
         setTimeout(() => {
           setMasterErrors((prevErrors) => ({
             ...prevErrors,
@@ -502,6 +520,9 @@ export default function ContractorDT() {
     setMasterSaveButton(true)
     setMasterUpdateButton(false)
     setBranchNames([])
+    setSearchContractorCode()
+    setShowGrid(false)
+    setShowContractorDetails(false)
     localStorage.setItem("Navigation_state", true)
   }
   const MasterHandleUpdate = async (e) => {
@@ -694,7 +715,8 @@ export default function ContractorDT() {
       field: 'account_no',
       headerName: 'Account Number',
       width: 150,
-      align: "right"
+      align: "right",
+      type:"number",
     },
     {
       field: 'pan_no',
@@ -715,13 +737,15 @@ export default function ContractorDT() {
       field: 'sur_chg',
       headerName: 'Surcharge',
       width: 150,
-      align: "right"
+      align: "right",
+      type:"number",
     },
     {
       field: 'phone_no',
       headerName: 'Phone Number',
       width: 150,
-      align: "right"
+      align: "right",
+      // type:"number",
     },
     {
       field: 'gst_no',
@@ -732,9 +756,14 @@ export default function ContractorDT() {
       field: 'tds_prc',
       headerName: 'TDS Percentage',
       align: "right",
+      type:"number",
       width: 150,
     },
-
+    {
+      field: 'route_name',
+      headerName: 'Route Name',
+      width: 150,
+    },
     {
       field: 'route_code',
       headerName: 'Route Code',
@@ -744,46 +773,66 @@ export default function ContractorDT() {
       field: 'period_from',
       headerName: 'Period from',
       width: 150,
+      valueGetter: (params) => {
+        const value = params.row.period_from
+        return dayjs(value).format("DD/MMM/YYYY")
+      }
     },
     {
       field: 'period_to',
       headerName: 'Period To',
       width: 150,
+      valueGetter: (params) => dayjs(params.row.period_to).format("DD/MMM/YYYY")
     },
     {
       field: 'contract_date',
       headerName: 'contract_date',
       width: 150,
+      valueGetter: (params) => {
+        const value = params.row.contract_date
+        return dayjs(value).format("DD/MMM/YYYY")
+      }
     },
     {
       field: 'rate_per_km',
       headerName: 'Rate Per Km',
       width: 150,
+      align: "right",
+      type:"number",
     },
     {
       field: 'vehicle_no',
       headerName: 'Vehicle Number',
       width: 150,
+      align: "right",
+      type:"number",
     },
     {
       field: 'vehicle_capacity',
       headerName: 'Vehicle Capacity',
       width: 150,
+      align: "right",
+      type:"number",
     },
     {
       field: 'order_number',
       headerName: 'Order Number',
       width: 150,
+      align: "right",
+      type:"number",
     },
     {
       field: 'order_date',
       headerName: 'Order Date',
       width: 150,
+      valueGetter: (params) => dayjs(params.row.order_date).format("DD/MMM/YYYY")
     },
     {
       field: 'notification_number',
       headerName: 'Notification Number',
       width: 150,
+      align: "right",
+      type:"number",
     },
     {
       field: 'notification_date',
@@ -794,16 +843,23 @@ export default function ContractorDT() {
       field: 'period_of_extension',
       headerName: 'Period of extension',
       width: 150,
+      valueGetter: (params) => dayjs(params.row.period_of_extension).format("DD/MMM/YYYY")
     },
     {
       field: 'extension_order_no',
       headerName: 'extension Order Number',
       width: 150,
+      align: "right",
+      type:"number",
     },
     {
       field: 'contract_closed',
       headerName: 'Contract Closed',
       width: 150,
+      valueGetter: (params) => {
+        const value = params.row.contract_closed
+        return value === "Y" ? "YES":"NO"
+      }
     },
     {
       field: 'route_length',
@@ -814,6 +870,10 @@ export default function ContractorDT() {
       field: 'contract_type',
       headerName: 'Contract Type',
       width: 150,
+      valueGetter: (params) => {
+        const value = params.row.contract_type
+        return value === "T" ? "TEMPORARY":"PERMANENT"
+      }
     },
   ];
   const handleEdit = async (row) => {
@@ -1289,7 +1349,7 @@ export default function ContractorDT() {
               container: 'custom-swal-container'
             }
           });
-          fetchData()
+          fetchData(contractorCode)
           handleChildClear()
           localStorage.setItem("Navigation_state", true)
         } else {
@@ -1358,7 +1418,8 @@ export default function ContractorDT() {
         setContractorCode(response.data.items[0].contractor_code2)
         fetchData(response.data.items[0].contractor_code2)
         setShowContractorDetails(true)
-
+        setMasterUpdateButton(true)
+        setMasterSaveButton(false)
         if (response.data.items[0].cont_det_code !== null) {
           setShowGrid(true)
           setShowContractorDetails(true)
@@ -1402,8 +1463,14 @@ export default function ContractorDT() {
   const fetchData = async (contractorCode) => {
     try {
       const response = await ContractorAPi.ContractorAPi_master().fetchById(contractorCode)
+      console.log(response);
       if (response.status === 200) {
-        setRows(response.data.items)
+        if (response.data.items[0].cont_det_code === null) {
+          setRows([])
+        }
+        else if (response.data.items[0].cont_det_code !== null) {
+          setRows(response.data.items)
+        }
       }
     } catch (error) {
       console.log(error);
@@ -2101,7 +2168,7 @@ export default function ContractorDT() {
               <DataGrid
                 rows={rows}
                 columns={columns}
-                getRowId={(row) => row.cont_det_code.toString()}
+                getRowId={(row) => row?.cont_det_code.toString()}
                 initialState={{
                   pagination: {
                     paginationModel: {

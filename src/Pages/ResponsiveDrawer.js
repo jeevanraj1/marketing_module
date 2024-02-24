@@ -19,7 +19,6 @@ import ListItemText from '@mui/material/ListItemText';
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import { Collapse } from "@mui/material";
 import Popover from '@mui/material/Popover';
 import MenuIcon from "@mui/icons-material/Menu";
@@ -48,7 +47,11 @@ import AddressIcon from "./MarketingModule/Images/icons/AddressIcon.svg"
 import RouteIcon from "./MarketingModule/Images/icons/RouteIcon.svg"
 import DistributionRouteIcon from "./MarketingModule/Images/icons/DistributionIcon.svg"
 import DistributionBatchIcon from "./MarketingModule/Images/icons/DistributionBatchIcon.svg"
-
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 
 const drawerWidth = 240;
 
@@ -134,6 +137,8 @@ export default function ResponsiveDrawer() {
     const location = useLocation()
     const [open, setOpen] = useState(true);
     const [openMarketingModule, setOpenMarketingModule] = useState(false);
+    const [openDrawer, setOpenDrawer] = useState(null);
+
     const [openMaster, setopenMaster] = useState(false);
     const popOverIconStyle = {
         minWidth: 0,
@@ -174,6 +179,7 @@ export default function ResponsiveDrawer() {
             else if (route === "/Officer") navigate("Officer")
             else if (route === "/BillCategory") { navigate("BillCategory"); handleClose() }
             else if (route === "/RateCategory") { navigate("RateCategory"); handleClose() }
+            else if (route === "/CustomerRoute") { navigate("CustomerRoute"); handleClose() }
             else if (route === "/CustomerType") navigate("CustomerType")
             else if (route === "/BankMaster") { navigate("BankMaster"); handleBankClose() }
             else if (route === "/BranchMaster") { navigate("BranchMaster"); handleBankClose() }
@@ -185,6 +191,11 @@ export default function ResponsiveDrawer() {
             else if (route === "/Contractor") navigate("Contractor")
             else if (route === "/ContractorType") navigate("ContractorType")
             else if (route === "/Products") navigate("Products")
+            else if (route === "/PackUnits") navigate("PackUnits")
+            else if (route === "/Packets") navigate("Packets")
+            else if (route === "/DocumentsMaster") navigate("DocumentsMaster")
+            else if (route === "/DocumentsMasterLink") navigate("DocumentsMasterLink")
+            else if (route === "/IndentEntry") navigate("IndentEntry")
         }
         else {
             const handleNavigate = async (text) => {
@@ -268,6 +279,20 @@ export default function ResponsiveDrawer() {
     const handleRouteClose = () => {
         setAnchorE4(null);
     }
+
+    const [anchorE5, setAnchorE5] = useState(null);
+
+    const handleDrawerOpen1 = () => {
+        setOpenDrawer(true);
+    };
+
+    const handleMenuOpen = (event) => {
+        setAnchorE5(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorE5(null);
+    };
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -275,9 +300,10 @@ export default function ResponsiveDrawer() {
                 <AppBar position="fixed" open={open}>
                     <Toolbar
                         sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            mt: "-6px",
                         }}
                     >
                         <IconButton
@@ -293,10 +319,46 @@ export default function ResponsiveDrawer() {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap component="div">
-                            Marketing Module
+                            Milk Bill Module
                         </Typography>
                         <Stack spacing={2} direction="row">
-                            <Button variant="contained" onClick={handleLogout}>Logout</Button>
+                            <IconButton
+                                color="inherit"
+                                aria-label="account of current user"
+                                aria-controls="menu-appbar"
+                                aria-haspopup="true"
+                                onClick={handleMenuOpen}
+                            >
+                                <AccountCircleIcon style={{ fontSize: '29px', marginRight: '8px' }} /> <span style={{ fontSize: 18 }}>Hi</span>
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorE5}
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'center',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'center',
+                                }}
+                                sx={{
+                                    marginTop: "34px",
+                                    marginLeft: "10px",
+                                }}
+                                open={Boolean(anchorE5)}
+                                onClose={handleMenuClose}
+                            >
+                                <MenuItem sx={{ fontSize: 12 }} onClick={handleMenuClose}>
+                                    <VpnKeyIcon sx={{ marginRight: 1, fontSize: 14 }} />
+                                    Change Password
+                                </MenuItem>
+                                <MenuItem sx={{ fontSize: 12 }} onClick={handleLogout}>
+                                    <ExitToAppIcon sx={{ marginRight: 1, fontSize: 14 }} />
+                                    Logout
+                                </MenuItem>
+                            </Menu>
                         </Stack>
                     </Toolbar>
                 </AppBar>
@@ -424,6 +486,7 @@ export default function ResponsiveDrawer() {
                                                 {/* ======== New Customer end =========== */}
                                                 <ListItemButton
                                                     sx={hover}
+                                                    onClick={() => { handleListItemClick("/CustomerRoute") }}
                                                 >
                                                     <ListItemIcon>
                                                         <TurnSlightRightIcon
@@ -442,6 +505,7 @@ export default function ResponsiveDrawer() {
                                                 {/* ======== Add to route end =========== */}
                                                 <ListItemButton
                                                     sx={hover}
+                                                // onClick={() => { handleListItemClick("/BillCategory") }}
                                                 >
                                                     <ListItemIcon>
                                                         <CategoryIcon
@@ -900,7 +964,147 @@ export default function ResponsiveDrawer() {
                                                     primary="Products" />
                                             </ListItemButton>
                                         </ListItem>
-                                        {/* ======== Products Type end =========== */}
+                                        {/* ======== Products  end =========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/PackUnits") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Pack Units" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Pack Units  end =========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/Packets") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Packets" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Packets  end =========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/DocumentsMaster") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Document Master" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Document Master end=========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/DocumentsMasterLink") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Document Master Link" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== Document Master Link end=========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/IndentEntry") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="Indent Entry" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== IndentEntry end=========== */}
                                     </Collapse>
                                 </ListItem>
                             </Collapse>

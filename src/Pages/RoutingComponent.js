@@ -35,6 +35,14 @@ import ContractorPage from './MarketingModule/Master/Contractor/ContractorPage';
 import ContractorDT from './MarketingModule/Master/Contractor/ContractorDT';
 import ContractorType from './MarketingModule/Master/ContractorType/ContractorType';
 import ProductsDt from './MarketingModule/Master/Products/ProductsDt';
+import PacketUnitsDT from './MarketingModule/Master/PacketUnits/PacketUnitsDT';
+import PacketsPage from './MarketingModule/Master/Packets/PacketsPage';
+import PacketsDT from './MarketingModule/Master/Packets/PacketsDT';
+import Packets from './MarketingModule/Master/Packets/Packets';
+import CustomerRouteDT from './MarketingModule/Master/CustomerRoute/CustomerRouteDT';
+import DocumentMaster from './MarketingModule/Master/DocumentMaster/DocumentMaster';
+import DocumentsMasterLink from './MarketingModule/Master/DocumentsMasterLink/DocumentsMasterLink';
+import IndentEntry from './MarketingModule/Master/IndentEntry/IndentEntry';
 
 
 export default function RoutingComponent() {
@@ -51,6 +59,8 @@ export default function RoutingComponent() {
                         <Route index element={<CustomerDT />} />
                         <Route path='CreateCustomer' element={<ErrorBoundary key={location.pathname} componentName="Customer" ><Customer /></ErrorBoundary>} />
                     </Route>
+
+                    <Route path='CustomerRoute' element={<ErrorBoundary key={location.pathname} componentName="CustomerRoute" ><CustomerRouteDT /></ErrorBoundary>} />
 
                     <Route path='relation' element={<ErrorBoundary key={location.pathname} componentName="RealationShipPage" ><RealationShipPage /></ErrorBoundary>}>
                         <Route index element={<RealationShipDT />} />
@@ -101,7 +111,21 @@ export default function RoutingComponent() {
                     </Route>
 
                     <Route path='ContractorType' element={<ErrorBoundary key={location.pathname} componentName="ContractorType" ><ContractorType /></ErrorBoundary>} />
+
                     <Route path='Products' element={<ErrorBoundary key={location.pathname} componentName="ProductsDt" ><ProductsDt /></ErrorBoundary>} />
+
+                    <Route path='PackUnits' element={<ErrorBoundary key={location.pathname} componentName="PackUnits" ><PacketUnitsDT /></ErrorBoundary>} />
+
+                    <Route path='Packets' element={<ErrorBoundary key={location.pathname} componentName="Packets" ><PacketsPage /></ErrorBoundary>}>
+                        <Route index element={<PacketsDT />} />
+                        <Route path='CreatePackets' element={<ErrorBoundary key={location.pathname} componentName="CreatePackets" ><Packets /></ErrorBoundary>} />
+                    </Route>
+
+                    <Route path='DocumentsMaster' element={<ErrorBoundary key={location.pathname} componentName="DocumentsMaster" ><DocumentMaster /></ErrorBoundary>} />
+
+                    <Route path='DocumentsMasterLink' element={<ErrorBoundary key={location.pathname} componentName="DocumentsMasterLink" ><DocumentsMasterLink /></ErrorBoundary>} />
+
+                    <Route path='IndentEntry' element={<ErrorBoundary key={location.pathname} componentName="IndentEntry" ><IndentEntry /></ErrorBoundary>} />
 
                 </Route>
 

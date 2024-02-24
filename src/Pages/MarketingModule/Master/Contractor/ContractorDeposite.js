@@ -121,9 +121,14 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         deposit_id: false,
         dep_paymode_id: false,
         contractor_code: false,
+        deposit_type: false,
+        route_code: false,
     })
     const [routeNames, setRouteNames] = useState([]);
     const [depositePaymodeId, setDepositePaymodeId] = useState(null);
+    const [saveButton, setSaveButton] = useState(true);
+    const [upadteButton, setUpadteButton] = useState(false);
+
 
     const getRowClassName = (params) => {
         const rowIndex = params.indexRelativeToCurrentPage;
@@ -245,7 +250,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                 const newRecord = {
                     "contractor_code": contractorCode,
                     "dep_paymode_id": Number(formData.paymode),
-                    "deposit_type": (Number(formData.depositType)),
+                    "deposit_type": formData.depositType,
                     "deposit_date": formData.depositDate !== "" ? formData.depositDate : null,
                     "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
                     "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
@@ -264,6 +269,69 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                     Swal.fire({
                         title: 'Saved',
                         text: 'Saved Sucessfully',
+                        icon: 'success',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                    fetchData(ContractorCode)
+                    handleClear();
+                    localStorage.setItem("Navigation_state", true)
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: `${response.data.Error}` || 'Unknown Error',
+                        icon: 'error',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Unknown Error',
+                    icon: 'error',
+                    customClass: {
+                        container: 'custom-swal-container'
+                    }
+                });
+            }
+
+        }
+    }
+
+    const handleUpdate = async (e) => {
+        e.preventDefault()
+        const validationErorrs = validation()
+        setErrors(validationErorrs)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
+        if (!hasErrors) {
+            try {
+                const newRecord = {
+                    "contractor_code": contractorCode,
+                    "dep_paymode_id": Number(formData.paymode),
+                    "deposit_type": formData.depositType,
+                    "deposit_date": formData.depositDate !== "" ? formData.depositDate : null,
+                    "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
+                    "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
+                    "gr_date": formData.grDate !== "" ? formData.grDate : null,
+                    "bank_name": formData.bankName != "" ? formData.bankName : null,
+                    "amount": formData.amount != "" ? formData.amount : null,
+                    "remarks": formData.remarks != "" ? formData.remarks : null,
+                    "instrument_details": formData.bankDocNumber != "" ? formData.bankDocNumber : null,
+                    "bill_no": formData.billNumber != "" ? formData.billNumber : null,
+                    "bill_date": formData.billDate != "" ? formData.billDate : null,
+                    "route_code": Number(formData.routeNames),
+                }
+                console.log(newRecord);
+                console.log(depositePaymodeId);
+                const response = await ContractorAPi.ContractorAPi_master().updateContractorDetails(depositePaymodeId, newRecord)
+                console.log(response);
+                if (response.data.Status === 1) {
+                    Swal.fire({
+                        title: 'Saved',
+                        text: 'Upadted Sucessfully',
                         icon: 'success',
                         customClass: {
                             container: 'custom-swal-container'
@@ -390,7 +458,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value.trim()
+                [fieldName]: value
             }))
         }
         // =========================bankName======================== 
@@ -415,7 +483,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================depositDate======================== 
@@ -495,7 +563,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================billNumber======================== 
@@ -514,7 +582,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================billDate======================== 
@@ -553,7 +621,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================grDate======================== 
@@ -594,6 +662,8 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         })
         setErrors({})
         emptyFields()
+        setSaveButton(true)
+        setUpadteButton(false)
     }
     const isBank = () => {
         setGridBankDocNumber(true)
@@ -744,6 +814,16 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             width: 120,
         },
         {
+            field: 'route_name',
+            headerName: 'Route Name',
+            width: 120,
+        },
+        {
+            field: 'dep_mode',
+            headerName: 'Deposite Mode',
+            width: 120,
+        },
+        {
             field: 'contractor_code',
             headerName: 'Contractor Code',
             width: 120,
@@ -762,21 +842,26 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             field: 'deposit_date',
             headerName: 'Deposite Date',
             width: 120,
+            valueGetter: (params) => dayjs(params.row.deposit_date).format("DD/MMM/YYYY")
         },
         {
             field: 'expiry_date',
             headerName: 'Expire Date',
             width: 120,
+            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
         },
         {
             field: 'gr_no',
             headerName: 'GR Number',
             width: 120,
+            type:"number",
+            align:'right',
         },
         {
             field: 'gr_date',
             headerName: 'GR Date',
             width: 120,
+            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
         },
         {
             field: 'bank_name',
@@ -802,12 +887,15 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
         {
             field: 'bill_no',
             headerName: 'Bill Number',
-            width: 120
+            width: 120,
+            type:"number",
+            align:'right',
         },
         {
             field: 'bill_date',
             headerName: 'Bill Date',
-            width: 120
+            width: 120,
+            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
         },
         {
             field: 'route_code',
@@ -817,24 +905,26 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
     ];
     const handleEdit = (row) => {
         console.log(row);
-        handleFieldChange("paymode",row.dep_paymode_id)
+        handleFieldChange("paymode", row.dep_paymode_id)
         setFormData((prevdata) => ({
             ...prevdata,
-            routeNames: row.route_code,
+            routeNames: row.route_code ? row.route_code : null,
             // paymode: row.dep_paymode_id,
-            depositType: row.deposit_type,
-            bankDocNumber: row.instrument_details,
-            depositDate: dayjs(row.deposit_date),
-            expireDate: dayjs(row.expiry_date),
-            grNumber: row.gr_no,
-            grDate: dayjs(row.gr_date),
-            bankName: row.bank_name,
-            amount: row.amount,
-            remarks: row.remarks,
-            billNumber: row.bill_no,
-            billDate: dayjs(row.bill_date),
+            depositType: row.deposit_type ? row.deposit_type : null,
+            bankDocNumber: row.instrument_details ? row.instrument_details : null,
+            depositDate: row.deposit_date ? dayjs(row.deposit_date) : null,
+            expireDate: row.expiry_date ? dayjs(row.expiry_date) : null,
+            grNumber: row.gr_no ? row.gr_no : null,
+            grDate: row.gr_date ? dayjs(row.gr_date) : null,
+            bankName: row.bank_name ? row.bank_name : null,
+            amount: row.amount ? row.amount : null,
+            remarks: row.remarks ? row.remarks : null,
+            billNumber: row.bill_no ? row.bill_no : null,
+            billDate: row.bill_date ? dayjs(row.bill_date) : null,
         }))
-        setDepositePaymodeId(row.dep_paymode_id)
+        setDepositePaymodeId(row.deposit_id)
+        setSaveButton(false)
+        setUpadteButton(true)
     }
     return (
         <>
@@ -975,6 +1065,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                             format='DD/MMM/YYYY'
                             label="Deposit Date"
                             sx={datePickerStyle}
+                            value={formData.depositDate}
                             onChange={(value) => handleFieldChange("depositDate", value)}
                             slotProps={
                                 {
@@ -996,6 +1087,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                             label="Expiry Date"
                             sx={datePickerStyle}
                             format='DD/MMM/YYYY'
+                            value={formData.expireDate}
                             minDate={(dayjs(formData.depositDate).add(1, "day"))}
                             onChange={(value) => handleFieldChange("expireDate", value)}
                             slotProps={
@@ -1037,6 +1129,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                             format='DD/MMM/YYYY'
                             sx={datePickerStyle}
                             onChange={(value) => handleFieldChange("billDate", value)}
+                            value={formData.billDate}
                             slotProps={
                                 {
                                     textField:
@@ -1074,6 +1167,7 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                             sx={datePickerStyle}
                             format='DD/MMM/YYYY'
                             onChange={(value) => handleFieldChange("grDate", value)}
+                            value={formData.grDate}
                             slotProps={
                                 {
                                     textField:
@@ -1122,13 +1216,20 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
                 {/* =========================Button======================== */}
                 <Grid item md={12} lg={12} sm={12} xs={12} sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <Stack direction="row" spacing={1}>
-                        <Button
+                        {saveButton && (<Button
                             variant="contained"
                             size='small'
                             onClick={(e) => handleSubmit(e)}
                         >
                             Save
-                        </Button>
+                        </Button>)}
+                        {upadteButton && (<Button
+                            variant="contained"
+                            size='small'
+                            onClick={(e) => handleUpdate(e)}
+                        >
+                            Update
+                        </Button>)}
                         <Button
                             variant="contained"
                             size='small'

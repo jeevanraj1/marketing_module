@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DataGrid } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import { Grid, Paper, Typography } from '@mui/material';
@@ -10,9 +10,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
-import { customerApi } from '../../../Api';
+import { PacketsApi, customerApi } from '../../../Api';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-import dayjs from 'dayjs';
+import Swal from 'sweetalert2';
+
 
 const autocompleteStyle = {
     width: "100%",
@@ -33,14 +34,22 @@ const autocompleteStyle = {
         fontWeight: "bold",
     },
 }
-export default function CustomerDT() {
+export default function PacketsDT() {
     const navigate = useNavigate()
     const [searchByCode, setSearchByCode] = React.useState(true)
     const [searchByName, setSearchByName] = React.useState(false)
     const [Rows, setRows] = useState([]);
-    const [DDCusomerName, setDDCusomerName] = useState([]);
-    const [DDCustomerCode, setDDCustomerCode] = useState([]);
-    const [customerCode, setCustomerCode] = useState(null);
+    const [DDPacketCode, setDDPacketCode] = useState([]);
+    const [DDPacketName, setDDPacketName] = useState([]);
+    const [packetCode, setpacketCode] = useState(null);
+   
+
+
+    const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+        packet_code: false,
+        product_code:false,
+        category_id:false
+    });
 
     const columns = [
         {
@@ -72,312 +81,325 @@ export default function CustomerDT() {
                 </>
             ),
         },
+        // {==========1.VARIANT DETAILS=================}
         {
-            field: 'customer_code',
-            headerName: 'Customer Code',
+            field: 'packet_code',
+            headerName: 'Packets Code',
             width: 90
         },
         {
-            field: 'user_code',
-            headerName: 'Customer Code',
+            field: 'users_code',
+            headerName: 'Packets Code',
+            width: 90
+        },
+        {
+            field: 'packet_name',
+            headerName: 'Packets Name',
             width: 170,
         },
         {
-            field: 'customer_name',
-            headerName: 'Customer Name',
+            field: 'packet_alias',
+            headerName: 'Packet Alias',
             width: 190,
         },
         {
-            field: 'customer_alias',
-            headerName: 'Customer Alias',
+            field: 'milk_or_product',
+            headerName: 'Milk Or Product',
+            width: 190,
+        },
+        {
+            field: 'product_code',
+            headerName: 'Product Code',
+            width: 190,
+        },
+        {
+            field: 'product_name',
+            headerName: 'Product Name',
+            width: 190,
+        },
+        {
+            field: 'unit_id',
+            headerName: 'Unit',
+            width: 190,
+        },
+
+        {
+            field: 'pack_size',
+            headerName: 'Packet Size',
             width: 170,
         },
         {
-            field: 'status_id',
-            headerName: 'Status Id',
-            width: 160,
-        },
-        {
-            field: 'status_name',
-            headerName: 'Status Name',
-            width: 160,
-        },
-        {
-            field: 'rel_type_id',
-            headerName: 'Relation Type ID',
-            width: 150,
-        },
-        {
-            field: 'rel_name2',
-            headerName: 'Relation Type Name',
-            width: 200,
-        },
-        {
-            field: 'rel_name',
-            headerName: 'Relation Name',
+            field: 'crates',
+            headerName: 'Supplied In Crates',
             width: 170,
         },
         {
-            field: 'customer_type',
-            headerName: 'Customer Type',
-            width: 150,
+            field: 'crate_or_not',
+            headerName: 'Crate Or Not',
+            width: 170,
         },
         {
-            field: 'customer_type_name',
-            headerName: 'Customer Type Name',
-            width: 220,
+            field: 'terminated',
+            headerName: 'Terminated',
+            width: 190,
         },
         {
-            field: 'bill_catag',
-            headerName: 'Bill Catageory',
-            width: 150,
+            field: 'utp_issue',
+            headerName: 'Issue In UTP Rate',
+            width: 170,
+        },
+        // {==========2.TAX DETAILS=================}
+
+        {
+            field: 'sac_no',
+            headerName: 'Product Name',
+            width: 190,
         },
         {
-            field: 'bill_catag_name',
-            headerName: 'Bill Catageory Name',
-            width: 200,
+            field: 'gst',
+            headerName: 'Packets Alias',
+            width: 170,
         },
         {
-            field: 'rate_catag',
-            headerName: 'Rate Catageory',
-            width: 150,
+            field: 'cgst',
+            headerName: 'Product Name',
+            width: 190,
         },
         {
-            field: 'catag_name',
-            headerName: 'Rate Catageory Name',
-            width: 220,
+            field: 'sgst',
+            headerName: 'Packets Alias',
+            width: 170,
         },
         {
-            field: 'pay_mode',
-            headerName: 'Pay Mode',
-            width: 150,
+            field: 'igst',
+            headerName: 'Product Name',
+            width: 190,
+        },
+        // {==========3.ROUTE SHEET SETTINGS=================}   
+        {
+            field: 'packet_position',
+            headerName: 'Position',
+            width: 170,
         },
         {
-            field: 'description',
-            headerName: 'Pay Mode',
-            width: 250,
+            field: 'make_zero',
+            headerName: 'Make Zero in Reset Indent',
+            width: 170,
         },
         {
-            field: 'bank_code',
-            headerName: 'Bank Code',
-            width: 150,
+            field: 'packet_type',
+            headerName: 'Display in Route Sheet',
+            width: 170,
+        },
+        // {==========4.APP SETTINGS=================}   
+        {
+            field: 'indent_in',
+            headerName: 'Indent In',
+            width: 170,
         },
         {
-            field: 'bank_name',
-            headerName: 'Bank Name',
-            width: 200,
+            field: 'allow_in_both',
+            headerName: 'Allow In Both',
+            width: 170,
         },
         {
-            field: 'branch_code',
-            headerName: 'Branch Code',
-            width: 200,
+            field: 'notify_qty',
+            headerName: 'Make Zero in Reset Indent',
+            width: 170,
         },
         {
-            field: 'branch_name',
-            headerName: 'Branch Name',
-            width: 200,
+            field: 'category_id',
+            headerName: 'Category Id',
+            width: 170,
+        },
+           {
+            field: 'cat_name',
+            headerName: 'Category Name',
+            width: 170,
+        },
+
+        {
+            field: 'selected',
+            headerName: 'Display in App',
+            width: 170,
         },
         {
-            field: 'account_no',
-            headerName: 'Account Number',
-            width: 200,
-            align:'right',
+            field: 'shelf_life',
+            headerName: 'Shelf Life',
+            width: 170,
         },
         {
-            field: 'fd_lock',
-            headerName: 'FD Lock',
-            width: 200,
+            field: 'min_order_qty',
+            headerName: 'Minimum Order Quantity',
+            width: 170,
+        },
+
+        {
+            field: 'max_order_qty',
+            headerName: 'Maximum Order Quantity',
+            width: 170,
+        },
+    
+        // {==========5.RATES=================}   
+        {
+            field: 'mrp',
+            headerName: 'MRP',
+            width: 170,
         },
         {
-            field: 'fd_limit',
-            headerName: 'FD Limit',
-            width: 200,
-            type: 'number'
+            field: 'agent_comm',
+            headerName: 'Dealers Commission',
+            width: 170,
         },
         {
-            field: 'balance',
-            headerName: 'Balance',
-            width: 200,
+            field: 'sub_rate',
+            headerName: 'Subsidy Rate',
+            width: 170,
         },
-        {
-            field: 'pan_no',
-            headerName: 'Pan Number',
-            width: 200,
-        },
-        {
-            field: 'gst_no',
-            headerName: 'Gst Number',
-            width: 200,
-        },
-        {
-            field: 'aadhar_no',
-            headerName: 'Aadhar Number',
-            width: 200,
-            align: 'right'
-        },
-        {
-            field: 'mobile',
-            headerName: 'Mobile Number',
-            width: 200,
-            align: 'right'
-        },
-        {
-            field: 'email',
-            headerName: 'Email',
-            width: 200,
-        },
-        {
-            field: 'officer_code',
-            headerName: 'Officer Code',
-            width: 200,
-        },
-        {
-            field: 'officer_name',
-            headerName: 'Officer Name',
-            width: 200,
-        },
-        {
-            field: 'registration_date',
-            headerName: 'Registration Date',
-            width: 200,           
-        },
-        {
-            field: 'tcs_perc',
-            headerName: 'TCS Percentage',
-            width: 200,
-        },
-        {
-            field: 'alternate_ph_no',
-            headerName: 'Alternate Phone Number',
-            width: 230,
-            align: 'right',
-        },
-        {
-            field: 'main_customer_code',
-            headerName: 'Main Customer Code',
-            width: 160,          
-        },
-        {
-            field: 'customer_name1',
-            headerName: 'Main Customer Name',
-            width: 150,
-          },
+
 
     ];
     const getRowClassName = (params) => {
         const rowIndex = params.indexRelativeToCurrentPage;
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
     };
-    const [columnVisibilityModel, setColumnVisibilityModel] = React.useState({
-        customer_code: false,
-        status_id: false,
-        rel_type_id: false,
-        customer_type: false,
-        bill_catag: false,
-        rate_catag: false,
-        pay_mode: false,
-        bank_code: false,
-        branch_code: false,
-        officer_code: false,
-        fd_lock: false,
-        registration_date: false,
-    })
+
+
+    const handleEdit = (row) => {
+        localStorage.setItem("Navigation_state",true)
+        //navigationPacketCode
+        const Statevalue = {
+            // ======================================1.Variant Details===============================
+            usersCode: row.users_code,
+            packetName: row.packet_name,
+            packetAlias: row.packet_alias,
+            milkOrProduct: row.milk_or_product,
+            productName: row.product_code,
+            unitName: row.unit_id,
+            packetSize: row.pack_size, //pack_size
+            packetsPerCrate: row.crate_or_not,  //crate_or_not 
+            suppliedInCrates: row.crates, //crates
+            tERMINATED: row.terminated,
+            issueInUtpRate: row.utp_issue, //utp_issue  
+            // ======================================2.Tax Details===============================
+            HsnCode: row.sac_no, //sac_no
+            gST: row.gst,
+            cGST: row.cgst,
+            sGST: row.sgst,
+            iGST: row.igst,
+            // ======================================3.Route Sheet Settings====================================
+            pOSITION: row.packet_position, //packet_position
+            makeZeroinResetIndent: row.make_zero,  //make_zero
+            displayinRouteSheet: row.packet_type, //packet_type
+            // ======================================4.App Settings=================================
+            indentIn: row.indent_in,
+            allowInBoth: row.allow_in_both,
+            notifyQuantity: row.notify_qty,
+            cATEGORY: row.category_id,
+            displayInApp: row.selected, //selected
+            shelfLife: row.shelf_life,
+            minOrderQty: row.min_order_qty,   //new
+            maxOrderQty: row.max_order_qty,   //new
+            // ======================================5.Rates=================================
+            mRP: row.mrp,
+            dealersCommission:row.agent_comm,
+            sUBSIDY: row.sub_rate,
+            lastRateModifiedDate: row.last_rt_modified_dt,  //new
+
+            packetCode:row.packet_code,
+        }
+        console.log(Statevalue);
+        navigate("CreatePackets",{state:Statevalue})
+    }
+    const handleClick = () => {
+        navigate("CreatePackets")
+    }
+
+
     const handleRadio = (e) => {
         const { value } = e.target;
         if (value === 'Code') {
             setSearchByCode(true);
             setSearchByName(false);
-            FetchData()
+            fetchData()
         } else if (value === 'Name') {
             setSearchByCode(false);
             setSearchByName(true);
-            FetchData()
+            fetchData()
         }
-    }
-    const handleEdit = (row) => {
-        console.log(row.main_customer_code,);
-        const values = {
-            // ======================================Personal Details===============================
-            customerCode: row.user_code,
-            customerName: row.customer_name,
-            customerAlias: row.customer_alias,
-            customerStatus: row.status_id,
-            relationType: row.rel_type_id,
-            relationName: row.rel_name,
-            officerName: row.officer_code,
-            registrationDate: row.registration_date,
-            mainCustomerName:row.main_customer_code,
-            // ======================================Customer Category===============================
-            customerType: row.customer_type,
-            billCategory: row.bill_catag,
-            rateCategory: row.rate_catag,
-            paymode: row.pay_mode,
-            // ======================================Bank Details====================================
-            bankName: row.bank_code,
-            branchName: row.branch_code,
-            ifscCode: '',
-            accNumber: row.account_no,
-            // ======================================Deposit Details=================================
-            totalDepositeAmount: 0,
-            FdLock: row.fd_lock,
-            creditLimit: row.fd_limit,
-            currentBalance: row.balance,
-            // ======================================Tax Details=====================================
-            panNumber: row.pan_no,
-            gstNumber: row.gst_no,
-            aadharNumber: row.aadhar_no,
-            tcsPercentage: row.tcs_perc,
-            // ======================================Contact Details=================================
-            phoneNumber: row.mobile,
-            emailId: row.email,
-            alternatePhoneNumber: row.alternate_ph_no,
-            // ==================================================================================
-            customer_code: row.customer_code,
-        }
-        navigate("CreateCustomer", { state: values })
-    }
-    const handleClick = () => {
-        navigate("CreateCustomer")
     }
 
-    const handlefieldChange = async (fieldname, value) => {
-        if (fieldname === "CustomerName") {
+    //SEARCH: handlefieldChange
+    const handlefieldChangeSearch = async (fieldname, value) => {
+        if (fieldname === "PacketName") {
             if (value === "") {
-                setCustomerCode("")
-                FetchData()
+                setpacketCode(null)
+                fetchData()
             }
             else if (value) {
-                setCustomerCode(value)
+                setpacketCode(value)
             }
+
         }
-        if (fieldname === "CustomerCode") {
+        if (fieldname === "PacketCode") {
             if (value === "") {
-                setCustomerCode("")
-                FetchData()
+                setpacketCode(null)
+                fetchData()
             }
             else if (value) {
-                setCustomerCode(value)
+                setpacketCode(value)
             }
+
         }
     }
+
     const handleSearch = () => {
-        if (customerCode === "") FetchData()
-        else if (customerCode !== "") fetchCustomerDeatils(customerCode)
+        if (packetCode === null) Swal.fire("jasdn")
+        else if (packetCode !== "") fetchPacketDetails(packetCode)
+
+        setpacketCode(null)
     }
-    const fetchCustomerDeatils = async (id) => {
+
+    const fetchPacketDetails = async (id) => {
         try {
-            const respone = await customerApi.customerMaster().fetchByCustomerCode(id)
-            console.log(respone);
-            if (respone.status === 200) {
-                setRows(respone.data.items)
+            const response = await PacketsApi.PacketsAPI_master().fetchByPacketCode(id)
+            console.log(response);
+            if (response.status === 200) {
+                setRows(response.data.items)
             }
         } catch (error) {
             console.log(error);
         }
     }
-    const FetchData = async () => {
+
+
+
+    const fetchPacketCode = async () => {
         try {
-            const respone = await customerApi.customerMaster().FetchAll()
+            const response = await PacketsApi.PacketsAPI_master().DD_UsersCode()
+            if (response.status === 200) {
+                setDDPacketCode(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const fetchPacketName = async () => {
+        try {
+            const response = await PacketsApi.PacketsAPI_master().DD_PacketName()
+            if (response.status === 200) {
+                setDDPacketName(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    const fetchData = async () => {
+        try {
+            const respone = await PacketsApi.PacketsAPI_master().fetchAll()
             console.log(respone);
             if (respone.status === 200) {
                 setRows(respone.data.items)
@@ -387,31 +409,13 @@ export default function CustomerDT() {
         }
     }
 
-    const fectchCustomerName = async () => {
-        try {
-            const response = await customerApi.customerMaster().dd_CustomerName()
-            if (response.status === 200) {
-                setDDCusomerName(response.data.items)
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    const fectchCustomercode = async () => {
-        try {
-            const response = await customerApi.customerMaster().dd_UserCode()
-            if (response.status === 200) {
-                setDDCustomerCode(response.data.items)
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
+
     React.useEffect(() => {
-        document.title = 'Customer Master'
-        FetchData()
-        fectchCustomerName()
-        fectchCustomercode()
+        document.title = 'Packets Master'
+        fetchData()
+        fetchPacketCode()
+        fetchPacketName()
+
     }, [])
     return (
         <>
@@ -421,7 +425,7 @@ export default function CustomerDT() {
                         <Grid container spacing={2}>
                             <Grid item md={12} lg={12} sm={12} xs={12} width={1000}>
                                 <Typography variant='h5'>
-                                    Customer  Master
+                                    Packets  Master
                                 </Typography>
                             </Grid>
                             <Grid item md={4} lg={4} sm={12} xs={12}>
@@ -435,12 +439,12 @@ export default function CustomerDT() {
                                         <FormControlLabel
                                             value="Code"
                                             control={<Radio checked={searchByCode} />}
-                                            label="Customer Code"
+                                            label="Packets Code"
                                         />
                                         <FormControlLabel
                                             value="Name"
                                             control={<Radio checked={searchByName} />}
-                                            label="Customer Name"
+                                            label="Packets Name"
                                         />
 
                                     </RadioGroup>
@@ -450,18 +454,17 @@ export default function CustomerDT() {
                                 <Grid item md={3} lg={3} sm={12} xs={12}>
                                     <Autocomplete
                                         disablePortal
-                                        id="combo-box-demo"
-                                        options={DDCustomerCode}
-                                        getOptionLabel={(options) => options.user_code}
-                                        isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
-                                        onChange={(event, value) => handlefieldChange("CustomerCode", value?.customer_code || "")}
+                                        options={DDPacketCode}
+                                        getOptionLabel={(options) => options.users_code}
+                                        isOptionEqualToValue={(option, value) => option.packet_code === value.packet_code}
+                                        onChange={(event, value) => handlefieldChangeSearch("PacketCode", value?.packet_code || "")}
                                         size='small'
                                         fullWidth
                                         sx={autocompleteStyle}
                                         renderInput={(params) =>
                                             <TextField
                                                 {...params}
-                                                label="customer Code"
+                                                label="Packets Code"
                                             />}
                                     />
                                 </Grid>
@@ -470,18 +473,17 @@ export default function CustomerDT() {
                                 <Grid item md={3} lg={3} sm={12} xs={12}>
                                     <Autocomplete
                                         disablePortal
-                                        id="combo-box-demo"
-                                        options={DDCusomerName}
-                                        getOptionLabel={(options) => options.customer_name}
-                                        isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
-                                        onChange={(event, value) => handlefieldChange("CustomerName", value?.customer_code || "")}
+                                        options={DDPacketName}
+                                        getOptionLabel={(options) => options.packet_name}
+                                        isOptionEqualToValue={(option, value) => option.packet_code === value.packet_code}
+                                        onChange={(event, value) => handlefieldChangeSearch("PacketName", value?.packet_code || "")}
                                         size='small'
                                         fullWidth
                                         sx={autocompleteStyle}
                                         renderInput={(params) =>
                                             <TextField
                                                 {...params}
-                                                label="customer Name"
+                                                label="Packets Name"
                                             />}
                                     />
                                 </Grid>
@@ -509,7 +511,7 @@ export default function CustomerDT() {
                                     <DataGrid
                                         rows={Rows}
                                         columns={columns}
-                                        getRowId={(row) => row.customer_code.toString()}
+                                        getRowId={(row) => row.packet_code.toString()}
                                         initialState={{
                                             pagination: {
                                                 paginationModel: {

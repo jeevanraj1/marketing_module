@@ -75,6 +75,7 @@ export default function SignIn() {
           localStorage.setItem('login', 'Success');
           localStorage.setItem('login_id', formData.Login_id);
           localStorage.setItem("Navigation_state", true);
+          localStorage.setItem("Navigation_state", true);
           navigate(`/marketing-module/user=${formData.Login_id}`)
         } else {
           localStorage.setItem('login', 'Fail');

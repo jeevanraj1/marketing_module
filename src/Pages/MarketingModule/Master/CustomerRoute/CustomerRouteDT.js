@@ -193,18 +193,96 @@ export default function CustomerRouteDT() {
         }
         //=============================================billRoute==================================================
         if (fieldName === "billRoute") {
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value,
-            }))
+            if (formData.batch === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    batch: "Please choose batch First"
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: false,
+                }))
+            }
+            else if (formData.batch !== "" && formData.routeName === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    batch: "",
+                    routeName: "Please choose Route First"
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: false,
+                }))
+            }
+            else if (formData.batch !== "" && formData.routeName !== "" && formData.customerName === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    batch: "",
+                    routeName: "",
+                    customerName: "Please choose Route First"
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: false,
+                }))
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ""
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: true,
+                }))
+            }
             mulitpleBillRoute()
         }
         //=============================================indentRoute================================================
         if (fieldName === "indentRoute") {
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value,
-            }))
+            if (formData.batch === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    batch: "Please choose batch First"
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: false,
+                }))
+            }
+            else if (formData.batch !== "" && formData.routeName === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    batch: "",
+                    routeName: "Please choose Route First"
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: false,
+                }))
+            }
+            else if (formData.batch !== "" && formData.routeName !== "" && formData.customerName === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    batch: "",
+                    routeName: "",
+                    customerName: "Please choose Route First"
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: false,
+                }))
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ""
+                }))
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    [fieldName]: true,
+                }))
+            }
             multipleIndentRoute()
         }
 
@@ -242,86 +320,148 @@ export default function CustomerRouteDT() {
                 "indent_route": formData.indentRoute ? "Y" : "N",
                 "dist_batch_no": Number(formData.batch),
             }
-            const valid = false
-            if (formData.indentRoute === true) {
-                const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-                console.log(resposne);
-                console.log(resposne.data.items.length);
-                if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-                    valid = true
-                    console.log("hi");
-                }
-                else if (resposne.data.items.length !== 0) {
-                    const indentRouteExits = {
-                        cust_route_id: resposne.data.items[0].cust_route_id,
-                        customer_code: resposne.data.items[0].customer_code,
-                        dist_batch_no: resposne.data.items[0].dist_batch_no,
-                        route_code: resposne.data.items[0].route_code,
-                        indent_route: resposne.data.items[0].indent_route,
-                        dist_batch_name: resposne.data.items[0].dist_batch_name,
-                        route_name: resposne.data.items[0].route_name,
-                    }
-                    if (resposne.data.items[0].status === 1) {
-                        const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-                        console.log(routeNames.find(option => option.route_code === formData.routeName));
-                        Swal.fire({
-                            title: "Route Exits",
-                            text: `Indent Route Exist for ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-                            showDenyButton: true,
-                            confirmButtonText: "Save",
-                            icon: "warning",
-                            confirmButtonText: "Yes",
-                            reverseButtons: true,
-                            denyButtonText: `NO `
-                        })
-                            .then(async (result) => {
-                                if (result.isConfirmed) {
-                                    try {
-                                        await CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
-                                            indent_route: "N",
-                                        })
-                                        await CustomerRouteApi.PacketsUnitsAPi_master().update(customerRouteId, newRecord)
-                                        fetchData()
-                                    } catch (error) {
-                                        Swal.fire("Error", 'Unknown Error', "error")
-                                    }
-                                }
-                                else if (result.isDenied) {
-                                    // Swal.fire("Changes are not saved", "", "info");
-                                }
-                            })
-                        valid = false;
-                    }
+            // const valid = false
+            // if (formData.indentRoute === true) {
+            //     const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
+            //     console.log(resposne);
+            //     console.log(resposne.data.items.length);
+            //     if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
+            //         valid = true
+            //         console.log("hi");
+            //     }
+            //     else if (resposne.data.items.length !== 0) {
+            //         const indentRouteExits = {
+            //             cust_route_id: resposne.data.items[0].cust_route_id,
+            //             customer_code: resposne.data.items[0].customer_code,
+            //             dist_batch_no: resposne.data.items[0].dist_batch_no,
+            //             route_code: resposne.data.items[0].route_code,
+            //             indent_route: resposne.data.items[0].indent_route,
+            //             dist_batch_name: resposne.data.items[0].dist_batch_name,
+            //             route_name: resposne.data.items[0].route_name,
+            //         }
+            //         if (resposne.data.items[0].status === 1) {
+            //             const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
+            //             console.log(routeNames.find(option => option.route_code === formData.routeName));
+            //             Swal.fire({
+            //                 title: "Route Exits",
+            //                 text: `Indent Route Exist for ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
+            //                 showDenyButton: true,
+            //                 confirmButtonText: "Save",
+            //                 icon: "warning",
+            //                 confirmButtonText: "Yes",
+            //                 reverseButtons: true,
+            //                 denyButtonText: `NO `
+            //             })
+            //                 .then(async (result) => {
+            //                     if (result.isConfirmed) {
+            //                         try {
+            //                             await CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
+            //                                 indent_route: "N",
+            //                             })
+            //                             await CustomerRouteApi.PacketsUnitsAPi_master().update(customerRouteId, newRecord)
+            //                             fetchData()
+            //                         } catch (error) {
+            //                             Swal.fire("Error", 'Unknown Error', "error")
+            //                         }
+            //                     }
+            //                     else if (result.isDenied) {
+            //                         // Swal.fire("Changes are not saved", "", "info");
+            //                     }
+            //                 })
+            //             valid = false;
+            //         }
 
+            //     }
+            // }
+            // else if (formData.indentRoute === false) {
+            //     valid = true
+            // }
+            // else if (formData.billRoute === true) {
+            //     const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
+            //     console.log(resposne);
+            // }
+            // else if (formData.billRoute === false) {
+            //     valid = true
+            // }
+
+            try {
+                const response = await CustomerRouteApi.PacketsUnitsAPi_master().update(customerRouteId, newRecord)
+                if (response.data.Status === 1) {
+                    Swal.fire({
+                        title: 'Saved',
+                        text: 'Updated Sucessfully',
+                        icon: 'success',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                    handleClear()
+                    fetchData()
+                    localStorage.setItem("Navigation_state", true)
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: `${response.data.Error}` || 'Unknown Error',
+                        icon: 'error',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
                 }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Unknown Error',
+                    icon: 'error',
+                    customClass: {
+                        container: 'custom-swal-container'
+                    }
+                });
             }
-            else if (formData.indentRoute === false) {
-                valid = true
+        }
+    }
+
+    const mulitpleBillRoute = async () => {
+        // const newRecord = {
+        //     "route_code": Number(formData.routeName),
+        //     "customer_code": Number(formData.customerName),
+        //     "pos_on_route": Number(formData.positionOnRoute),
+        //     "days": null,
+        //     "indent_for": formData.indentFor,
+        //     "indent_route": "Y",
+        //     "bill_route": "N",
+        //     "dist_batch_no": Number(formData.batch),
+        // }
+        const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
+        if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
+
+        }
+        else if (resposne.data.items.length !== 0) {
+            const billRoutes = {
+                bill_route: resposne.data.items[0].bill_route,
+                cust_route_id: resposne.data.items[0].cust_route_id,
+                customer_code: resposne.data.items[0].customer_code,
+                dist_batch_name: resposne.data.items[0].dist_batch_name,
+                dist_batch_no: resposne.data.items[0].dist_batch_no,
+                route_code: resposne.data.items[0].route_code,
+                route_name: resposne.data.items[0].route_name,
             }
-            else if (formData.billRoute === true) {
-                const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-                console.log(resposne);
-            }
-            else if (formData.billRoute === false) {
-                valid = true
-            }
-            if (valid) {
-                const update = async (newRecord) => {
+            if (resposne.data.items[0].status === 1) {
+                const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
+                const billRouteExits = await Swal.fire({
+                    title: "Route Exits",
+                    text: `Bill Route Exist  ${billRoutes.dist_batch_name}  batch and ${billRoutes.route_name} Route would you like to change this to ${route_name}`,
+                    showDenyButton: true,
+                    icon: "warning",
+                    confirmButtonText: "Yes",
+                    reverseButtons: true,
+                    denyButtonText: `NO `
+                })
+                if (billRouteExits.isConfirmed) {
                     try {
-                        const response = await CustomerRouteApi.PacketsUnitsAPi_master().update(customerRouteId, newRecord)
-                        if (response.data.Status === 1) {
-                            Swal.fire({
-                                title: 'Saved',
-                                text: 'Updated Sucessfully',
-                                icon: 'success',
-                                customClass: {
-                                    container: 'custom-swal-container'
-                                }
-                            });
-                            handleClear()
-                            fetchData()
-                            localStorage.setItem("Navigation_state", true)
-                        } else {
+                        const response = await CustomerRouteApi.PacketsUnitsAPi_master().billupadte(billRoutes.cust_route_id, { bill_route: "N" })
+                        if (response.data.Status === 1) { fetchData() }
+                        else {
                             Swal.fire({
                                 title: 'Error',
                                 text: `${response.data.Error}` || 'Unknown Error',
@@ -341,188 +481,162 @@ export default function CustomerRouteDT() {
                             }
                         });
                     }
+                    // const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
+                    // try {
+                    //     if (response.data.Status === 1) {
+                    //         Swal.fire({
+                    //             title: 'Saved',
+                    //             text: 'Saved Sucessfully',
+                    //             icon: 'success',
+                    //             customClass: {
+                    //                 container: 'custom-swal-container'
+                    //             }
+                    //         });
+                    //         handleClear()
+                    //         fetchData()
+                    //         localStorage.setItem("Navigation_state", true)
+                    //     } else {
+                    //         Swal.fire({
+                    //             title: 'Error',
+                    //             text: `${response.data.Error}` || 'Unknown Error',
+                    //             icon: 'error',
+                    //             customClass: {
+                    //                 container: 'custom-swal-container'
+                    //             }
+                    //         });
+                    //     }
+                    // } catch (error) {
+                    //     Swal.fire({
+                    //         title: 'Error',
+                    //         text: 'Unknown Error',
+                    //         icon: 'error',
+                    //         customClass: {
+                    //             container: 'custom-swal-container'
+                    //         }
+                    //     });
+                    // }
                 }
-                update(newRecord)
-            }
-
-        }
-    }
-
-    const mulitpleBillRoute = async () => {
-        console.log(formData.billRoute);
-        if (formData.indentRoute === false) {
-            // const newRecord = {
-            //     "route_code": Number(formData.routeName),
-            //     "customer_code": Number(formData.customerName),
-            //     "pos_on_route": Number(formData.positionOnRoute),
-            //     "days": null,
-            //     "indent_for": formData.indentFor,
-            //     "indent_route": "Y",
-            //     "bill_route": "N",
-            //     "dist_batch_no": Number(formData.batch),
-            // }
-            const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-            if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-
-            }
-            else if (resposne.data.items.length !== 0) {
-                const billRoutes = {
-                    bill_route: resposne.data.items[0].bill_route,
-                    cust_route_id: resposne.data.items[0].cust_route_id,
-                    customer_code: resposne.data.items[0].customer_code,
-                    dist_batch_name: resposne.data.items[0].dist_batch_name,
-                    dist_batch_no: resposne.data.items[0].dist_batch_no,
-                    route_code: resposne.data.items[0].route_code,
-                    route_name: resposne.data.items[0].route_name,
-                }
-                if (resposne.data.items[0].status === 1) {
-                    const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-                    const billRouteExits = await Swal.fire({
-                        title: "Route Exits",
-                        text: `Bill Route Exist  ${billRoutes.dist_batch_name}  batch and ${billRoutes.route_name} Route would you like to change this to ${route_name}`,
-                        showDenyButton: true,
-                        confirmButtonText: "Save",
-                        icon: "warning",
-                        confirmButtonText: "Yes",
-                        reverseButtons: true,
-                        denyButtonText: `NO `
-                    })
-                    if (billRouteExits.isConfirmed) {
-                        CustomerRouteApi.PacketsUnitsAPi_master().billupadte(billRoutes.cust_route_id, { bill_route: "N" })
-                        fetchData()
-                        // const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-                        // try {
-                        //     if (response.data.Status === 1) {
-                        //         Swal.fire({
-                        //             title: 'Saved',
-                        //             text: 'Saved Sucessfully',
-                        //             icon: 'success',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //         handleClear()
-                        //         fetchData()
-                        //         localStorage.setItem("Navigation_state", true)
-                        //     } else {
-                        //         Swal.fire({
-                        //             title: 'Error',
-                        //             text: `${response.data.Error}` || 'Unknown Error',
-                        //             icon: 'error',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //     }
-                        // } catch (error) {
-                        //     Swal.fire({
-                        //         title: 'Error',
-                        //         text: 'Unknown Error',
-                        //         icon: 'error',
-                        //         customClass: {
-                        //             container: 'custom-swal-container'
-                        //         }
-                        //     });
-                        // }
-                    }
+                if (billRouteExits.isDenied) {
+                    setFormData((prevdata) => ({
+                        ...prevdata,
+                        billRoute: false
+                    }))
                 }
             }
         }
-
-
     }
 
     const multipleIndentRoute = async () => {
-        console.log(` multipleIndentRoute ${formData.indentRoute}`);
-        if (formData.indentRoute === false) {
-            // const newRecord = {
-            //     "route_code": Number(formData.routeName),
-            //     "customer_code": Number(formData.customerName),
-            //     "pos_on_route": Number(formData.positionOnRoute),
-            //     "days": null,
-            //     "indent_for": formData.indentFor,
-            //     "indent_route": "Y",
-            //     "bill_route": "N",
-            //     "dist_batch_no": Number(formData.batch),
-            // }
-            const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-            if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
+        // const newRecord = {
+        //     "route_code": Number(formData.routeName),
+        //     "customer_code": Number(formData.customerName),
+        //     "pos_on_route": Number(formData.positionOnRoute),
+        //     "days": null,
+        //     "indent_for": formData.indentFor,
+        //     "indent_route": "Y",
+        //     "bill_route": "N",
+        //     "dist_batch_no": Number(formData.batch),
+        // }
+        const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
+        if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
 
+        }
+        else if (resposne.data.items.length !== 0) {
+            const indentRouteExits = {
+                cust_route_id: resposne.data.items[0].cust_route_id,
+                customer_code: resposne.data.items[0].customer_code,
+                dist_batch_no: resposne.data.items[0].dist_batch_no,
+                route_code: resposne.data.items[0].route_code,
+                indent_route: resposne.data.items[0].indent_route,
+                dist_batch_name: resposne.data.items[0].dist_batch_name,
+                route_name: resposne.data.items[0].route_name,
             }
-            else if (resposne.data.items.length !== 0) {
-                const indentRouteExits = {
-                    cust_route_id: resposne.data.items[0].cust_route_id,
-                    customer_code: resposne.data.items[0].customer_code,
-                    dist_batch_no: resposne.data.items[0].dist_batch_no,
-                    route_code: resposne.data.items[0].route_code,
-                    indent_route: resposne.data.items[0].indent_route,
-                    dist_batch_name: resposne.data.items[0].dist_batch_name,
-                    route_name: resposne.data.items[0].route_name,
-                }
-                if (resposne.data.items[0].status === 1) {
-                    const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-                    const indentRoute = await Swal.fire({
-                        title: "Route Exits",
-                        text: `Indent Route Exist  ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-                        showDenyButton: true,
-                        confirmButtonText: "Save",
-                        icon: "warning",
-                        confirmButtonText: "Yes",
-                        reverseButtons: true,
-                        denyButtonText: `NO `
-                    })
-                    if (indentRoute.isConfirmed) {
-                        CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
+            if (resposne.data.items[0].status === 1) {
+                const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
+                const indentRoute = await Swal.fire({
+                    title: "Route Exits",
+                    text: `Indent Route Exist  ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
+                    showDenyButton: true,
+                    icon: "warning",
+                    confirmButtonText: "Yes",
+                    reverseButtons: true,
+                    denyButtonText: `NO `
+                })
+                if (indentRoute.isConfirmed) {
+                    try {
+                        const response = await CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
                             indent_route: "N",
                         })
-                        fetchData()
-                        // try {
-                        //     const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-                        //     console.log(response);
-                        //     if (response.data.Status === 1) {
-                        //         Swal.fire({
-                        //             title: 'Saved',
-                        //             text: 'Saved Sucessfully',
-                        //             icon: 'success',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //         handleClear()
-                        //         fetchData()
-                        //         localStorage.setItem("Navigation_state", true)
-                        //     } else {
-                        //         Swal.fire({
-                        //             title: 'Error',
-                        //             text: `${response.data.Error}` || 'Unknown Error',
-                        //             icon: 'error',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //     }
-                        // } catch (error) {
-                        //     Swal.fire({
-                        //         title: 'Error',
-                        //         text: 'Unknown Error',
-                        //         icon: 'error',
-                        //         customClass: {
-                        //             container: 'custom-swal-container'
-                        //         }
-                        //     });
-                        // }
+                        if (response.data.Status === 1) {
+                            fetchData()
+                        }
+                        else {
+                            Swal.fire({
+                                title: 'Error',
+                                text: `${response.data.Error}` || 'Unknown Error',
+                                icon: 'error',
+                                customClass: {
+                                    container: 'custom-swal-container'
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Unknown Error',
+                            icon: 'error',
+                            customClass: {
+                                container: 'custom-swal-container'
+                            }
+                        });
+                    }
+                    // try {
+                    //     const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
+                    //     console.log(response);
+                    //     if (response.data.Status === 1) {
+                    //         Swal.fire({
+                    //             title: 'Saved',
+                    //             text: 'Saved Sucessfully',
+                    //             icon: 'success',
+                    //             customClass: {
+                    //                 container: 'custom-swal-container'
+                    //             }
+                    //         });
+                    //         handleClear()
+                    //         fetchData()
+                    //         localStorage.setItem("Navigation_state", true)
+                    //     } else {
+                    //         Swal.fire({
+                    //             title: 'Error',
+                    //             text: `${response.data.Error}` || 'Unknown Error',
+                    //             icon: 'error',
+                    //             customClass: {
+                    //                 container: 'custom-swal-container'
+                    //             }
+                    //         });
+                    //     }
+                    // } catch (error) {
+                    //     Swal.fire({
+                    //         title: 'Error',
+                    //         text: 'Unknown Error',
+                    //         icon: 'error',
+                    //         customClass: {
+                    //             container: 'custom-swal-container'
+                    //         }
+                    //     });
+                    // }
 
-                    }
-                    if (indentRoute.isDenied) {
-                        setFormData((prevdata) => ({
-                            ...prevdata,
-                            indentRoute: false
-                        }))
-                    }
                 }
-
+                if (indentRoute.isDenied) {
+                    setFormData((prevdata) => ({
+                        ...prevdata,
+                        indentRoute: false
+                    }))
+                }
             }
+
         }
+
 
 
     }
@@ -542,304 +656,6 @@ export default function CustomerRouteDT() {
                 "indent_route": formData.indentRoute ? "Y" : "N",
                 "dist_batch_no": Number(formData.batch),
             }
-            // var valid = false;
-            // console.log(formData.billRoute);
-            // // =====================indent route selected=================================
-            // if (formData.indentRoute === true && formData.billRoute === false) {
-            //     const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-            //     if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-            //         valid = true
-            //     }
-            //     else if (resposne.data.items.length !== 0) {
-            //         const indentRouteExits = {
-            //             cust_route_id: resposne.data.items[0].cust_route_id,
-            //             customer_code: resposne.data.items[0].customer_code,
-            //             dist_batch_no: resposne.data.items[0].dist_batch_no,
-            //             route_code: resposne.data.items[0].route_code,
-            //             indent_route: resposne.data.items[0].indent_route,
-            //             dist_batch_name: resposne.data.items[0].dist_batch_name,
-            //             route_name: resposne.data.items[0].route_name,
-            //         }
-            //         if (resposne.data.items[0].status === 1) {
-            //             const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //             valid = false
-            //             const indentRoute = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Indent Route Exist  ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (indentRoute.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
-            //                     indent_route: "N",
-            //                 })
-            //                 valid = false
-            //                 try {
-            //                     const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                     console.log(response);
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     }
-            //                     else if (response.data.Status === 0) {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                     console.log(error);
-            //                 }
-            //                 fetchData()
-            //             }
-            //         }
-
-            //     }
-            // }
-            // // =====================indent route selected end=================================
-            // // =====================bill route selected=================================
-            // if (formData.indentRoute === false && formData.billRoute === true) {
-            //     const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-            //     console.log(resposne);
-            //     if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-            //         valid = true
-            //     }
-            //     else if (resposne.data.items.length !== 0) {
-            //         const billRoutes = {
-            //             bill_route: resposne.data.items[0].bill_route,
-            //             cust_route_id: resposne.data.items[0].cust_route_id,
-            //             customer_code: resposne.data.items[0].customer_code,
-            //             dist_batch_name: resposne.data.items[0].dist_batch_name,
-            //             dist_batch_no: resposne.data.items[0].dist_batch_no,
-            //             route_code: resposne.data.items[0].route_code,
-            //             route_name: resposne.data.items[0].route_name,
-            //         }
-            //         if (resposne.data.items[0].status === 1) {
-            //             valid = false
-            //             const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //             const billRouteExits = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Bill Route Exist  ${billRoutes.dist_batch_name}  batch and ${billRoutes.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (billRouteExits.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().billupadte(billRoutes.cust_route_id, { bill_route: "N" })
-            //                 valid = false;
-            //                 const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                 try {
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     } else {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
-            // // =====================bill route end=================================
-            // // =====================bill and indent route  selected=================================
-            // if (formData.indentRoute === true && formData.billRoute === true) {
-            //     const billRouteresposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-            //     const indentRouteresposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-            //     console.log(billRouteresposne);
-            //     console.log(indentRouteresposne);
-            //     if ((billRouteresposne.data.items.length === 0 || billRouteresposne.data.items[0].status === null)) {
-            //         valid = true
-            //     }
-            //     else if (billRouteresposne.data.items.length !== 0) {
-            //         const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //         const billRoutes = {
-            //             bill_route: billRouteresposne.data.items[0].bill_route,
-            //             cust_route_id: billRouteresposne.data.items[0].cust_route_id,
-            //             customer_code: billRouteresposne.data.items[0].customer_code,
-            //             dist_batch_name: billRouteresposne.data.items[0].dist_batch_name,
-            //             dist_batch_no: billRouteresposne.data.items[0].dist_batch_no,
-            //             route_code: billRouteresposne.data.items[0].route_code,
-            //             route_name: billRouteresposne.data.items[0].route_name,
-            //         }
-            //         if (billRouteresposne.data.items[0].status === 1) {
-            //             valid = false
-            //             const route = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Bill Route Exist  ${billRoutes.dist_batch_name}  batch and ${billRoutes.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (route.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().billupadte(billRoutes.cust_route_id, { bill_route: "N" })
-            //                 const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                 try {
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     } else {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                 }
-            //             }
-            //         }
-
-            //     }
-            //     if ((indentRouteresposne.data.items.length === 0 || indentRouteresposne.data.items[0].status === null)) {
-            //         valid = true
-            //     }
-            //     else if (billRouteresposne.data.items.length !== 0) {
-            //         const indentRouteExits = {
-            //             cust_route_id: indentRouteresposne.data.items[0].cust_route_id,
-            //             customer_code: indentRouteresposne.data.items[0].customer_code,
-            //             dist_batch_no: indentRouteresposne.data.items[0].dist_batch_no,
-            //             route_code: indentRouteresposne.data.items[0].route_code,
-            //             indent_route: indentRouteresposne.data.items[0].indent_route,
-            //             dist_batch_name: indentRouteresposne.data.items[0].dist_batch_name,
-            //             route_name: indentRouteresposne.data.items[0].route_name,
-            //         }
-            //         if (indentRouteresposne.data.items[0].status === 1) {
-            //             const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //             valid = false
-            //             const indentRoute = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Indent Route Exist  ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (indentRoute.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
-            //                     indent_route: "N",
-            //                 })
-            //                 valid = false
-            //                 try {
-            //                     const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                     console.log(response);
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     }
-            //                     else if (response.data.Status === 0) {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                     console.log(error);
-            //                 }
-            //                 fetchData()
-            //             }
-            //         }
-            //     }
-            // }
-            // if (formData.indentRoute === false && formData.billRoute === false) valid = true
             try {
                 const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
                 console.log(response);
@@ -876,9 +692,6 @@ export default function CustomerRouteDT() {
                 });
             }
         }
-
-
-
     }
     const columns = [
         {
@@ -956,16 +769,28 @@ export default function CustomerRouteDT() {
             field: 'indent_for',
             headerName: 'Indent For',
             width: 100,
+            valueGetter: (params) => {
+                const value = params.row.indent_for
+                return value === "TOD" ? "TODAY" : "TOMORROW"
+            }
         },
         {
             field: 'indent_route',
             headerName: 'Indent Route',
             width: 150,
+            valueGetter: (params) => {
+                const value = params.row.indent_route
+                return value === "Y" ? "YES" : "NO"
+            }
         },
         {
             field: 'bill_route',
             headerName: 'Bill Route',
             width: 150,
+            valueGetter: (params) => {
+                const value = params.row.bill_route
+                return value === "Y" ? "YES" : "NO"
+            }
         },
         {
             field: 'dist_batch_no',
@@ -1418,4 +1243,3 @@ export default function CustomerRouteDT() {
         </>
     )
 }
-
