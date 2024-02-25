@@ -76,7 +76,10 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
     const [rows, setRows] = useState([]);
     const [addressId, setAddressId] = useState(null);
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-        address_id: false
+        address_id: false,
+        city_code: false,
+        taluka_code: false,
+        district_code: false,
     })
     // const pincodeRegex = (/^[1-9]{1}[0-9]{5}|[1-9]{1}[0-9]{3}\\s[0-9]{3}$/)
     const pincodeRegex = /^[0-9]{6}$/;
@@ -557,6 +560,10 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
             field: 'address_type',
             headerName: 'Address Type',
             width: 200,
+            valueGetter: (params) => {
+                const value = params.row.address_type
+                return value === "S" ? "SHIPPING ADDRESS" : "BILLING ADDRESS"
+            }
         },
         {
             field: 'address1',
@@ -579,8 +586,18 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
             width: 150,
         },
         {
+            field: 'city_name',
+            headerName: 'City Name',
+            width: 150,
+        },
+        {
             field: 'district_code',
             headerName: 'District Code',
+            width: 150,
+        },
+        {
+            field: 'district_name',
+            headerName: 'District Name',
             width: 150,
         },
         {
@@ -599,9 +616,18 @@ export default function AddAddress({ CloseAddressDetails, customerCode, userCode
             width: 150,
         },
         {
+            field: 'taluka_name',
+            headerName: 'Taluka Name',
+            width: 150,
+        },
+        {
             field: 'addr_status',
             headerName: 'Address Status',
             width: 150,
+            valueGetter: (params) => {
+                const value = params.row.addr_status
+                return value === "Y" ? "ACTIVE" : "INACTIVE"
+            }
         },
 
     ];

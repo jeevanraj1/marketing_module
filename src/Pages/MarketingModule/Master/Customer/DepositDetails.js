@@ -120,6 +120,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         deposit_id: false,
         customer_code: false,
         dep_paymode_id: false,
+        deposit_type: false,
     })
     const [depositeId, setDepositeId] = useState(null);
     const [saveButton, setSaveButton] = useState(true);
@@ -794,21 +795,26 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             field: 'deposit_date',
             headerName: 'Deposite Date',
             width: 200,
+            valueGetter: (params) => dayjs(params.row.deposit_date).format("DD/MMM/YYYY")
         },
         {
             field: 'expiry_date',
             headerName: 'Expire Date',
             width: 200,
+            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
         },
         {
             field: 'gr_no',
             headerName: 'GR Number',
             width: 200,
+            align:"right",
+            type:'number',
         },
         {
             field: 'gr_date',
             headerName: 'GR Date',
             width: 200,
+            valueGetter: (params) => dayjs(params.row.gr_date).format("DD/MMM/YYYY")
         },
         {
             field: 'bank_name',
@@ -829,17 +835,22 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         {
             field: 'instrument_details',
             headerName: 'Back Docement Number',
-            width: 200
+            width: 200,
+            align:"right",
+            type:'number',
         },
         {
             field: 'bill_no',
             headerName: 'Bill Number',
-            width: 200
+            width: 200,
+            align:"right",
+            type:'number',
         },
         {
             field: 'bill_date',
             headerName: 'Bill Date',
-            width: 200
+            width: 200,
+            valueGetter: (params) => dayjs(params.row.gr_date).format("DD/MMM/YYYY")
         },
     ];
     const handleEdit = (row) => {

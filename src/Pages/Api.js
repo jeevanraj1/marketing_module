@@ -1,8 +1,11 @@
 import axios from "axios";
 
-const baseurl = `http://172.16.17.2:8080/ords/market/tbl/`
-// const baseurl = `http://103.21.232.59:8080/ords/market/tbl/`
-export const officerApi = {
+// const baseurl = `http://172.16.17.2:8080/ords/market/tbl/`
+const baseurl = `http://103.21.232.59:8080/ords/market/tbl/`
+
+// const siriM1 = 'http://172.16.17.2:8080/ords/m1/tbl/'
+const siriM1 = 'http://103.21.232.59:8080/ords/m1/tbl/'
+export const officerApi ={
     officerApi_master(url = baseurl + `officers`) {
         return {
             fetchAll: () => axios.get(url),
@@ -328,17 +331,6 @@ export const PacketsApi = {
     }
 };
 
-export const IndentEntryAPI = {
-    IndentEntryAPI_master(url = baseurl + 'indent_entry') {
-        return {
-            DD_fetch_district_batch_name: () => axios.get(baseurl + 'dd_dist_batch_name'),
-            // DD_fetch_customer_name:()=>axios.get(baseurl +`dd_indent_entry_customer`),
-            DD_fetch_customer_name:(id)=>axios.get(baseurl +`dd_indent_entry_customer_name?dist_batch_no=${id}`),
-            DD_fetch_route_name:(distbatchNo,CustomerCode)=>axios.get(baseurl + `dd_indent_entry_route_name?dist_batch_no=${distbatchNo}&customer_code=${CustomerCode}`)
-        };
-    }
-};
-
 export const DocumentMasterLinkApi = {
     DocumentMasterLinkApi_Master(url = baseurl + 'doc_master_link') {
         return {
@@ -355,6 +347,7 @@ export const DocumentMasterLinkApi = {
         }
     }
 }
+
 export const DocumentMasterApi = {
     DocumentMasterApi_Master(url = baseurl + 'doc_master') {
         return {
@@ -364,3 +357,14 @@ export const DocumentMasterApi = {
         }
     }
 }
+export const IndentEntryAPI = {
+    IndentEntryAPI_master(url = baseurl + 'indent_entry') {
+        return {
+            DD_fetch_district_batch_name: () => axios.get(siriM1 + 'dd_dist_batch_name'),
+            // DD_fetch_customer_name:()=>axios.get(baseurl +`dd_indent_entry_customer`),
+            DD_fetch_customer_name:(id)=>axios.get(siriM1 +`dd_indent_entry_customer_name?dist_batch_no=${id}`),
+            DD_fetch_route_name:(distbatchNo,CustomerCode)=>axios.get(siriM1 + `dd_indent_entry_route_name?dist_batch_no=${distbatchNo}&customer_code=${CustomerCode}`),
+            getGridRows:(indentNumber)=>axios.get(siriM1 +`get_gridRows_for_indentEntry?indent_number=${indentNumber}`)
+        };
+    }
+};
