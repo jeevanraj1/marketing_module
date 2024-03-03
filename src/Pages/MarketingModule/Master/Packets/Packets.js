@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PacketsApi } from '../../../Api';
 import Swal from 'sweetalert2';
-import dayjs from 'dayjs';
-import { getValue } from '@testing-library/user-event/dist/utils';
 import PacketsImages from './PacketsImages';
+import dayjs from 'dayjs';
 
 const textFiledStyle = {
     width: "100%",
@@ -121,6 +120,8 @@ export default function Packets() {
     const location = useLocation()
     const [updateButton, setUpdateButton] = useState(false);
     const [saveButton, setSaveButton] = useState(true);
+    const [enableImageGrid, setEnableImageGrid] = useState(false);
+
     const [formData, setFormData] = useState({
         // ======================================1.Variant Details===============================
         usersCode: '',
@@ -165,8 +166,6 @@ export default function Packets() {
     const [unitDD, setUnitDD] = useState([]);
     const [categoriesDD, setcategoriesDD] = useState([]);
     const [packetCode, setPacketCode] = useState(null);
-
-
 
     const validation = () => {
         const newErrors = {}
@@ -1133,6 +1132,7 @@ export default function Packets() {
                 console.log(newRecord);
                 const response = await PacketsApi.PacketsAPI_master().create(newRecord)
                 if (response.data.Status === 1) {
+                    setEnableImageGrid(true)
                     Swal.fire({
                         title: 'Saved',
                         text: 'Saved Sucessfully',
@@ -1141,8 +1141,9 @@ export default function Packets() {
                             container: 'custom-swal-container'
                         }
                     });
-                    handleClose()
+                    //handleClose()
                     localStorage.setItem("Navigation_state", true)
+                    setPacketCode(response.data.packet_code)
                     //handleClear()
                 } else {
                     Swal.fire({
@@ -1348,9 +1349,8 @@ export default function Packets() {
                 lastRateModifiedDate,   //new
 
             }))
-
             setPacketCode(packetCode)
-
+            setEnableImageGrid(true)
         }
         fetchProductNames()
         fetchUnitNames()
@@ -1985,17 +1985,7 @@ export default function Packets() {
                     </Grid>
                     {/* =========================Last Rate Modified Date======================== */}
                     <Grid item md={4} lg={4} sm={12} xs={12}>
-                        {/* <TextField
-                            id="outlined-basic"
-                            label="Last Rate Modified Rate"
-                            variant="standard"
-                            size='small'
-                            fullWidth
-                            sx={{ backgroundColor: 'yellow' }}
-                            InputProps={{ readOnly: true }} 
-                          // Commented dut to Trigger Binding from Backend
-                        /> */}
-                        <label> <b>Last Rate Modified Date :</b> <span><mark>12/08/1997</mark></span></label>
+                        {location.state !== null && (<label> <b>Last Rate Modified Date :</b> <span><mark>{dayjs().format("DD/MM/YYYY")}</mark></span></label>)}
                     </Grid>
                     {/* =========================Button======================== */}
                     <Grid item md={12} lg={12} sm={12} xs={12}>
@@ -2028,11 +2018,18 @@ export default function Packets() {
                     </Grid>
                 </Grid>
             </Paper>
-            <Box sx={{ mt: 2, p: 2 }}>
-                <PacketsImages />
-            </Box>
+
+            {enableImageGrid && (
+                <Grid container spacing={2} mt={1}>
+                    <Grid item md={12} lg={12} sm={12} xs={12}>
+                        <PacketsImages
+                            packetCodeforImages={packetCode}
+                            usersCode = {formData.usersCode}
+                            packetName={formData.packetName}
+                        />
+                    </Grid>
+                </Grid>)}
             {/* =========================Paper end======================== */}
         </>
     )
-
 }

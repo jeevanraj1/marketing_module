@@ -42,13 +42,12 @@ export default function PacketsDT() {
     const [DDPacketCode, setDDPacketCode] = useState([]);
     const [DDPacketName, setDDPacketName] = useState([]);
     const [packetCode, setpacketCode] = useState(null);
-   
-
 
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
         packet_code: false,
-        product_code:false,
-        category_id:false
+        product_code: false,
+        category_id: false,
+        unit_id: false,
     });
 
     const columns = [
@@ -85,12 +84,12 @@ export default function PacketsDT() {
         {
             field: 'packet_code',
             headerName: 'Packets Code',
-            width: 90
+            width: 110
         },
         {
             field: 'users_code',
             headerName: 'Packets Code',
-            width: 90
+            width: 110
         },
         {
             field: 'packet_name',
@@ -106,6 +105,10 @@ export default function PacketsDT() {
             field: 'milk_or_product',
             headerName: 'Milk Or Product',
             width: 190,
+            valueGetter: (params) => {
+                const value = params.row.milk_or_product;
+                return value === 0 ? "MILK" : "PRODUCT"
+            }
         },
         {
             field: 'product_code',
@@ -119,60 +122,82 @@ export default function PacketsDT() {
         },
         {
             field: 'unit_id',
-            headerName: 'Unit',
+            headerName: 'Unit ID',
             width: 190,
         },
-
+        {
+            field: 'uom_1',
+            headerName: 'Unit Name',
+            width: 190,
+        },
         {
             field: 'pack_size',
             headerName: 'Packet Size',
             width: 170,
+            type: "number",
         },
         {
             field: 'crates',
             headerName: 'Supplied In Crates',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.crates;
+                return value === 0 ? "YES" : "NO"
+            }
         },
         {
             field: 'crate_or_not',
-            headerName: 'Crate Or Not',
+            headerName: 'Packets Per Crate',
             width: 170,
+            type: 'number',
         },
         {
             field: 'terminated',
             headerName: 'Terminated',
             width: 190,
+            valueGetter: (params) => {
+                const value = params.row.terminated;
+                return value === 1 ? "YES" : "NO"
+            }
         },
         {
             field: 'utp_issue',
             headerName: 'Issue In UTP Rate',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.utp_issue;
+                return value === "Y" ? "YES" : "NO"
+            }
         },
         // {==========2.TAX DETAILS=================}
 
         {
             field: 'sac_no',
-            headerName: 'Product Name',
+            headerName: 'HSN Code',
             width: 190,
         },
         {
             field: 'gst',
-            headerName: 'Packets Alias',
+            headerName: 'GST Percentage',
             width: 170,
+            type: 'number'
         },
         {
             field: 'cgst',
-            headerName: 'Product Name',
+            headerName: 'CGST Percentage',
+            type: 'number',
             width: 190,
         },
         {
             field: 'sgst',
-            headerName: 'Packets Alias',
+            headerName: 'SGST Percentage',
+            type: 'number',
             width: 170,
         },
         {
             field: 'igst',
-            headerName: 'Product Name',
+            headerName: 'IGST Percentage',
+            type: 'number',
             width: 190,
         },
         // {==========3.ROUTE SHEET SETTINGS=================}   
@@ -180,39 +205,60 @@ export default function PacketsDT() {
             field: 'packet_position',
             headerName: 'Position',
             width: 170,
+            type: 'number'
         },
         {
             field: 'make_zero',
             headerName: 'Make Zero in Reset Indent',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.make_zero;
+                return value === 1 ? "YES" : "NO"
+            }
         },
         {
             field: 'packet_type',
             headerName: 'Display in Route Sheet',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.packet_type;
+                return value === "A" ? "ACROSS" : "DOWN"
+            }
         },
         // {==========4.APP SETTINGS=================}   
         {
             field: 'indent_in',
             headerName: 'Indent In',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.indent_in;
+                return value === "C" ? "CRATE" : "PACKET"
+            }
         },
         {
             field: 'allow_in_both',
             headerName: 'Allow In Both',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.allow_in_both;
+                return value === "Y" ? "YES" : "NO"
+            }
         },
         {
             field: 'notify_qty',
             headerName: 'Make Zero in Reset Indent',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.notify_qty;
+                return value === 1 ? "YES" : "NO"
+            }
         },
         {
             field: 'category_id',
             headerName: 'Category Id',
             width: 170,
         },
-           {
+        {
             field: 'cat_name',
             headerName: 'Category Name',
             width: 170,
@@ -222,39 +268,49 @@ export default function PacketsDT() {
             field: 'selected',
             headerName: 'Display in App',
             width: 170,
+            valueGetter: (params) => {
+                const value = params.row.selected;
+                return value === 1 ? "YES" : "NO"
+            }
         },
         {
             field: 'shelf_life',
             headerName: 'Shelf Life',
             width: 170,
+            type: 'number'
         },
         {
             field: 'min_order_qty',
             headerName: 'Minimum Order Quantity',
             width: 170,
+            type: 'number'
         },
 
         {
             field: 'max_order_qty',
             headerName: 'Maximum Order Quantity',
             width: 170,
+            type: 'number'
         },
-    
+
         // {==========5.RATES=================}   
         {
             field: 'mrp',
             headerName: 'MRP',
             width: 170,
+            type: 'number'
         },
         {
             field: 'agent_comm',
             headerName: 'Dealers Commission',
             width: 170,
+            type: 'number'
         },
         {
             field: 'sub_rate',
             headerName: 'Subsidy Rate',
             width: 170,
+            type: 'number'
         },
 
 
@@ -266,7 +322,7 @@ export default function PacketsDT() {
 
 
     const handleEdit = (row) => {
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
         //navigationPacketCode
         const Statevalue = {
             // ======================================1.Variant Details===============================
@@ -302,14 +358,14 @@ export default function PacketsDT() {
             maxOrderQty: row.max_order_qty,   //new
             // ======================================5.Rates=================================
             mRP: row.mrp,
-            dealersCommission:row.agent_comm,
+            dealersCommission: row.agent_comm,
             sUBSIDY: row.sub_rate,
             lastRateModifiedDate: row.last_rt_modified_dt,  //new
 
-            packetCode:row.packet_code,
+            packetCode: row.packet_code,
         }
         console.log(Statevalue);
-        navigate("CreatePackets",{state:Statevalue})
+        navigate("CreatePackets", { state: Statevalue })
     }
     const handleClick = () => {
         navigate("CreatePackets")

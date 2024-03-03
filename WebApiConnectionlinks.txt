@@ -1,0 +1,12 @@
+http://172.16.17.10:4666/api/Photo/GetAllFileNames - getalldocuments
+http://172.16.17.10:4666/api/Photo/SaveFileLocally       - Post
+http://172.16.17.10:4666/api/Photo/get1/{fileName}       - Single file fetch
+http://172.16.17.10:4666/api/Photo/get2                         - Multiple File fetch
+http://172.16.17.10:4666/api/Photo/delete/{fileName}     - Delete Api
+
+
+DELETED SUCCESSFULLY
+DELETE FAILED
+
+UPLOAD FAILED
+File saved locally successfully

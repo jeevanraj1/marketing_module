@@ -503,7 +503,6 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     amount: "Invalid Amount",
                 }))
             }
-
         }
         // =========================remarks======================== 
         if (fieldName === 'remarks') {
@@ -621,6 +620,8 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         setErrors({})
         emptyFields()
         localStorage.setItem("Navigation_state", true)
+        setSaveButton(true)
+        setUpadteButton(false)
     }
     const isBank = () => {
         setGridBankDocNumber(true)
@@ -787,7 +788,17 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             width: 200,
         },
         {
+            field: 'dep_mode',
+            headerName: 'Pay Mode',
+            width: 200,
+        },
+        {
             field: 'deposit_type',
+            headerName: 'Deposit Type',
+            width: 200,
+        },
+        {
+            field: 'dp_type',
             headerName: 'Deposit Type',
             width: 200,
         },
@@ -795,26 +806,26 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             field: 'deposit_date',
             headerName: 'Deposite Date',
             width: 200,
-            valueGetter: (params) => dayjs(params.row.deposit_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.deposit_date ? dayjs(params.row.deposit_date).format("DD/MMM/YYYY") : null
         },
         {
             field: 'expiry_date',
             headerName: 'Expire Date',
             width: 200,
-            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.expiry_date ? dayjs(params.row.expiry_date).format("DD/MMM/YYYY") : null
         },
         {
             field: 'gr_no',
             headerName: 'GR Number',
             width: 200,
-            align:"right",
-            type:'number',
+            align: "right",
+            type: 'number',
         },
         {
             field: 'gr_date',
             headerName: 'GR Date',
             width: 200,
-            valueGetter: (params) => dayjs(params.row.gr_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.gr_date ? dayjs(params.row.gr_date).format("DD/MMM/YYYY") : null
         },
         {
             field: 'bank_name',
@@ -836,21 +847,21 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             field: 'instrument_details',
             headerName: 'Back Docement Number',
             width: 200,
-            align:"right",
-            type:'number',
+            align: "right",
+            type: 'number',
         },
         {
             field: 'bill_no',
             headerName: 'Bill Number',
             width: 200,
-            align:"right",
-            type:'number',
+            align: "right",
+            type: 'number',
         },
         {
             field: 'bill_date',
             headerName: 'Bill Date',
             width: 200,
-            valueGetter: (params) => dayjs(params.row.gr_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.gr_date ? dayjs(params.row.gr_date).format("DD/MMM/YYYY") : null
         },
     ];
     const handleEdit = (row) => {
@@ -996,7 +1007,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             label="Deposit Date"
                             sx={datePickerStyle}
                             onChange={(value) => handleFieldChange("depositDate", value)}
-                            value={formData.depositDate}
+                            value={formData.depositDate || null}
                             slotProps={
                                 {
                                     textField:
@@ -1019,7 +1030,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             format='DD/MMM/YYYY'
                             minDate={(dayjs(formData.depositDate).add(1, "day"))}
                             onChange={(value) => handleFieldChange("expireDate", value)}
-                            value={formData.expireDate}
+                            value={formData.expireDate || null}
                             slotProps={
                                 {
                                     textField:
@@ -1059,7 +1070,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             format='DD/MMM/YYYY'
                             sx={datePickerStyle}
                             onChange={(value) => handleFieldChange("billDate", value)}
-                            value={formData.billDate}
+                            value={formData.billDate || null}
                             slotProps={
                                 {
                                     textField:
@@ -1097,7 +1108,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                             sx={datePickerStyle}
                             format='DD/MMM/YYYY'
                             onChange={(value) => handleFieldChange("grDate", value)}
-                            value={formData.grDate}
+                            value={formData.grDate || null}
                             slotProps={
                                 {
                                     textField:

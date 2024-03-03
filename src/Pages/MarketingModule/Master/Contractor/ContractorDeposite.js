@@ -839,29 +839,34 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             width: 120,
         },
         {
+            field: 'dp_type',
+            headerName: 'Deposit Type',
+            width: 120,
+        },
+        {
             field: 'deposit_date',
             headerName: 'Deposite Date',
             width: 120,
-            valueGetter: (params) => dayjs(params.row.deposit_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.deposit_date ? dayjs(params.row.deposit_date).format("DD/MMM/YYYY") : null
         },
         {
             field: 'expiry_date',
             headerName: 'Expire Date',
             width: 120,
-            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.expiry_date ? dayjs(params.row.expiry_date).format("DD/MMM/YYYY") : null
         },
         {
             field: 'gr_no',
             headerName: 'GR Number',
             width: 120,
-            type:"number",
-            align:'right',
+            type: "number",
+            align: 'right',
         },
         {
             field: 'gr_date',
             headerName: 'GR Date',
             width: 120,
-            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.expiry_date ? dayjs(params.row.expiry_date).format("DD/MMM/YYYY") : null
         },
         {
             field: 'bank_name',
@@ -888,14 +893,14 @@ export default function ContractorDeposite({ closeContractorDeposit, contractorC
             field: 'bill_no',
             headerName: 'Bill Number',
             width: 120,
-            type:"number",
-            align:'right',
+            type: "number",
+            align: 'right',
         },
         {
             field: 'bill_date',
             headerName: 'Bill Date',
             width: 120,
-            valueGetter: (params) => dayjs(params.row.expiry_date).format("DD/MMM/YYYY")
+            valueGetter: (params) => params.row.expiry_date ? dayjs(params.row.expiry_date).format("DD/MMM/YYYY") : null
         },
         {
             field: 'route_code',

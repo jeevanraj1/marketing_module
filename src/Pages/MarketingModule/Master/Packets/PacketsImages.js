@@ -1,373 +1,509 @@
 import React from 'react'
-import { Grid, Typography, Paper, Button, Box, TextField, Stack, Autocomplete } from '@mui/material'
-import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { useState,useRef,useEffect } from "react";
+import { Grid, Typography, Paper, Button, Box, TextField, Autocomplete, Modal } from '@mui/material'
+import { useState, useRef, useEffect } from "react";
 import Swal from 'sweetalert2';
-import { DataGrid } from '@mui/x-data-grid';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { styled,useTheme} from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-import * as XLSX from "xlsx";
-import CircularProgress from "@mui/material/CircularProgress";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
+import { PacketsApi } from "../../../Api";
 
-const textFiledStyle = {
-    width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(16px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
-}
-
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: "60%",
+  bgcolor: 'background.paper',
+  border: '2px solid #ddd',
+  boxShadow: 24,
+  border: "10px solid lightblue",
+  maxWidth: '600px',
+};
 const autoCompleteStyle = {
-    width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  width: "100%",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& .MuiInputLabel-root": {
+    color: "black",
+    "&.Mui-focused": {
+      transform: "translate(14px, -10px)",
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  },
+  "& input, & label": {
+    height: "15px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
 }
 
 const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
+function returnFileSize(number) {
+  if (number < 1024) {
+    return `${number} `; //bytes
+  } else if (number >= 1024 && number < 1048576) {
+    return `${(number / 1024).toFixed(1)}`; //KB
+  } else if (number >= 1048576) {
+    return `${(number / 1048576).toFixed(1)}`; //MB
+  }
+}
+
+function returnFileSize1(number) {
+  if (number < 1024) {
+    return `${number} `; //bytes
+  } else if (number >= 1024 && number < 1048576) {
+    return `${(number / 1024).toFixed(1)} KB`;
+  } else if (number >= 1048576) {
+    return `${(number / 1048576).toFixed(1)} MB`;
+  }
+}
+
+function validFileType(file) {
+  var validTypes = ['application/pdf', 'image/jpeg', "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
+  return validTypes.includes(file.type);
+}
+
+const getFileTypeFromFileName = (fileName) => {
+  const extension = fileName.split('.').pop().toLowerCase();
+  if (extension === 'pdf') {
+    return 'pdf';
+  } else if (extension === 'jpeg' || extension === 'jpg' || extension === 'png' || extension === 'gif') {
+    return 'image';
+  } else {
+    return 'unknown';
+  }
+};
+
+export default function PacketsImages({ packetCodeforImages, usersCode, packetName }) {
+  const [file, setFile] = useState("");
+  const [imagetypeDD, setImageTypeDD] = useState([]);
+  const [selectedFileName, setSelectedFileName] = useState(false);
+  const [browserClicked, setBrowserclicked] = useState(false);
+  const fileInputRef = useRef(null);
+  const [errors, setErrors] = useState({});
+  const [base64Url, setBase64Url] = useState("");
+  const [packtCode, setPacktCode] = useState(packetCodeforImages);
+  const [docementsBaseUrlFetch, setDocementsBaseUrlFetch] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [documentsModal, setDocumentsModal] = useState(false);
+  const [popupbase64url, setPopupbase64url] = useState("");
+  const [fileType, setFileType] = useState();
+
+  const [formData, setFormData] = useState({
+    imageType: ""
   });
 
-export default function PacketsImages() {
-    const theme = useTheme();
-    const [rows, setRows] = useState([]);
-    const [file, setFile] = useState("");
-    const [image, setImage] = useState(null);
-    const [failed_DataTable, setfailed_DataTable] = useState(false);
-    const [selectedFileName, setSelectedFileName] = useState('');
-    const [saveButton, setSaveButton] = useState(true);
-    const [updateButton, setUpdateButton] = useState(false);
-    const [failed_toUpload, setFailed_toUpload] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [browserClicked, setBrowserclicked] = useState(false);
-    const fileInputRef = useRef(null);
-    const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-        taluka_code: false
-    });
- 
-    
-    const getRowClassName = (params) => {
-        const rowIndex = params.indexRelativeToCurrentPage;
-        return rowIndex % 2 === 0 ? "row-even" : "row-odd";
-    };
-
-    const validation = ()=>{
-    }
-
-    const upload = async () => {
-    }
-
-    const expectedHeader = [
-        "TDATE",
-        "TSESSION",
-        "R_CODE",
-        "SOC_NAME",
-      ];
-
-      const varify = async (jsonData) => {
-        var filedError = false;
+  const handleBackdropMobileClick = (event) => {
+    event.stopPropagation();
+  };
+  const fetchImageNames = async () => {
+    try {
+      const response = await PacketsApi.PacketsAPI_master().fetchByMasterID()
+      if (response.status === 200) {
+        setImageTypeDD(response.data.items)
       }
-
-    const arraysEqual = (arr1, arr2) => {
-        return JSON.stringify(arr1) === JSON.stringify(arr2);
-      };
-
-    const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        setBrowserclicked(true)
-        if (file) {
-            const fileName = file.name;
-            setFile(fileName); // Update the file state with the selected file name
-            setSelectedFileName(fileName); // Update the selected file name state
-            const fileExtension = fileName.slice(
-                ((fileName.lastIndexOf(".") - 1) >>> 0) + 2
-            );
-    
-            if (["xls", "xlsx", "xml", "csv"].includes(fileExtension)) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, { type: "array" });
-                    const sheetName = workbook.SheetNames[0];
-                    const sheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(sheet, {
-                        defval: null,
-                        raw: false,
-                    });
-                    console.log("Parsed JSON data:", jsonData); 
-
-                    const actualHeader = Object.keys(jsonData[0] || {});
-    
-                    if (!arraysEqual(actualHeader, expectedHeader)) {
-                        Swal.fire(
-                            "Invalid file headers",
-                            "The header does not match the expected format.",
-                            "error"
-                        );
-                        setSelectedFileName("");
-                        setFile(""); // Clear the file state if the file is invalid
-                        return;
-                    }
-                    varify(jsonData);
-                };
-                reader.readAsArrayBuffer(file);
-            }
-        }
-        else{
-            setSelectedFileName("");    
-        }
-    };
-    
-    const handleClear = () => { 
-        setFailed_toUpload([]);
-        setfailed_DataTable(false);
-        setSelectedFileName("");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-          fileInputRef.current.disabled = false;
-          localStorage.setItem("Navigation_state", true);
-        }
-        setFile("")
-        setImage("")
+    } catch (error) {
+      console.log(error);
     }
+  }
 
-    const handleUpdate = async (e) => { }
-    const handleSubmit = async (e) => { }
 
-    const images = [
-        { label: 'Large'},
-        { label: 'Small'},
-    ];
-    const handleEdit = (row) => { }
-    const handleDeleteButtonClick = (row) => { }
-    useEffect(() => {
-        document.title = "ImagesDT"
-    }, [])
-    return (
-        <>
+  const validation = () => {
+    const newErrors = {}
+    // =====================================imageType==========================================
+    if (formData.imageType === "") newErrors.imageType = "Required"
+    else if (formData.imageType !== "") newErrors.imageType = errors.imageType
+
+    return newErrors
+  }
+
+
+  const handleClear = () => {
+    setSelectedFileName(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+      fileInputRef.current.disabled = false;
+      localStorage.setItem("Navigation_state", true);
+    }
+    setFile("")
+    setFormData((prevadata) => ({
+      ...prevadata,
+      imageType: "",
+    }))
+  }
+  const handleFieldChange = (fieldName, value) => {
+    if (fieldName === "imageType") {
+      if (value === "") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: 'Required'
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "",
+        }));
+      }
+      setFormData((prevData) => ({
+        ...prevData,
+        [fieldName]: value
+      }));
+    }
+  }
+
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+
+    setSelectedFileName(selectedFile.name);
+    setFile(selectedFile)
+    // console.log(Math.round(selectedFile.size / 1000) + ' kB');
+
+    if (!validFileType(selectedFile)) { // check for valid file type
+      Swal.fire({
+        title: 'Error',
+        text: "Upload Only in jpeg,Pdf,excel Format",
+        icon: 'error',
+        customClass: {
+          container: 'custom-swal-container'
+        }
+      });
+    }
+    if (Number(returnFileSize(selectedFile.size)) > 150) { // check for valid file size
+      Swal.fire({
+        title: 'Error',
+        text: `Upload Size Must be Less than 150 KB Your File size is ${returnFileSize1(selectedFile.size)}`,
+        icon: 'error',
+        customClass: {
+          container: 'custom-swal-container'
+        }
+      });
+    }
+    if (Number(returnFileSize(selectedFile.size)) < 150 && validFileType(selectedFile)) { //set image file to display
+      console.log("Ji");
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(selectedFile);
+      fileReader.onload = () => {
+        console.log(fileReader.result);
+        const imageDataUrl = fileReader.result.split(",")[1];;
+        console.log(imageDataUrl);
+        setBase64Url(imageDataUrl)
+        handleOpenModal()
+      };
+    }
+  };
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handelDocumentsModalOpen = (fileData, fileName) => {
+    setDocumentsModal(true);
+    setPopupbase64url(fileData);
+    setFileType(getFileTypeFromFileName(fileName)); // Assuming a function getFileTypeFromFileName is defined elsewhere
+  };
+
+  const handelDocumentsModalclose = () => {
+    setDocumentsModal(false);
+  };
+  const upload = async (e) => {
+    e.preventDefault()
+    const { doc_name } = imagetypeDD?.find(option => option.doc_id === formData.imageType)
+    const contCatFileName = packtCode + "-" + doc_name + "." + selectedFileName.split(".")[1]
+    const validationErorrs = validation()
+    setErrors(validationErorrs)
+    const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
+    console.log(validationErorrs);
+    if (!hasErrors) {
+      const newRecord = {
+        "packet_code": packetCodeforImages,
+        "doc_id": Number(formData.imageType),
+        "img_name": contCatFileName
+      }
+      const documentsUpload = {
+        "fileData": base64Url,
+        "fileName": contCatFileName,
+      }
+      try {
+        const responseOracle = await PacketsApi.PacketsAPI_master().create_pkt_images(newRecord)
+        const responsewebApi = await PacketsApi.PacketsAPI_master().postWebApiDocuments(documentsUpload)
+        if (responsewebApi.data.message === "File saved locally successfully" && responseOracle.data.Status === 1) {
+          Swal.fire({
+            title: 'Saved',
+            text: 'Saved Sucessfully',
+            icon: 'success',
+            customClass: {
+              container: 'custom-swal-container'
+            }
+          });
+          handleCloseModal()
+          fetchImagesOracleNames(packtCode)
+        }
+        else if (responseOracle.data.Status === 0) {
+          Swal.fire({
+            title: 'Error',
+            text: `${responseOracle.data.Error}` || 'Unknown Error',
+            icon: 'error',
+            customClass: {
+              container: 'custom-swal-container'
+            }
+          });
+        }
+        else if (responsewebApi.data.message === "UPLOAD FAILED") {
+          Swal.fire({
+            title: 'Error',
+            text: 'Image Upload Failed',
+            icon: 'error',
+            customClass: {
+              container: 'custom-swal-container'
+            }
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Unknown Error',
+          icon: 'error',
+          customClass: {
+            container: 'custom-swal-container'
+          }
+        });
+      }
+    }
+  }
+  const fetchImagesOracleNames = async (packtCode) => {
+    try {
+      const response = await PacketsApi.PacketsAPI_master().fetchAllImages(packtCode)
+      const promises = response.data.items.map(async (item) => {
+        try {
+          const response1 = await PacketsApi.PacketsAPI_master().getDocumentsWebApi(item.img_name)
+          return response1.data;
+        } catch (error) {
+          console.log(error);
+        }
+      });
+
+      const results = await Promise.all(promises);
+      setDocementsBaseUrlFetch(results.filter(result => result !== null))
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchImageNames()
+    fetchImagesOracleNames(packtCode)
+    document.title = "Packet Images"
+  }, [])
+  return (
+    <>
+      <Grid container spacing={2}>
+        <Grid item md={12} lg={12} sm={12} xs={12}>
+          <Paper sx={{ padding: 2, maxHeight: 250 }} elevation={3}>
             <Grid container spacing={2}>
-                <Grid item md={8} lg={8} sm={12} xs={12}>
-                    <Paper sx={{ padding: 2 }} elevation={3}>
-                        <Grid container spacing={2}>
-                            {/* =========================Taluk  Master======================== */}
-                            <Grid item md={12} lg={12} sm={12} xs={12}>
-                                <Typography variant='h5'>
-                                 Images
-                                </Typography>
-                            </Grid>
-                            {/* =========================Image Type======================== */}
-                            <Grid item md={3} lg={3} sm={12} xs={12}>
-                                <Autocomplete
-                                    disablePortal
-                                    id="combo-box-demo"
-                                    size='small'
-                                    value={image}
-                                    fullWidth
-                                    options={images}
-                                    sx={autoCompleteStyle}
-                                    onChange={(event, newValue) => {
-                                        setImage(newValue); // Update the state variable when an option is selected
-                                    }}
-                                    renderInput={(params) =>
-                                        <TextField
-                                            {...params}
-                                            label="Image Type"
-                                            required
-                                        />}
-                                />
-                            </Grid>
-
-                            <Grid item md={1.5} lg={1.5} sm={12} xs={12}>
-                            <Button
-                            component="label"
-                            role={undefined}
-                            variant="contained"
-                            tabIndex={-1}
-                            size='small'
-                            startIcon={<TravelExploreIcon />}
-                            fullWidth
-                            onClick={() => setBrowserclicked(true)}
-                            >
-                            Browse
-                           <VisuallyHiddenInput type="file"
-                            id="fileInput"
-                            onChange={handleFileChange}
-                            accept=".xls, .xlsx, .csv,.xml "
-                            ref={fileInputRef}
-                           />
-                           </Button>
-                           </Grid>
-
-                              {/* =========================file Name======================== */}
-
-                        {selectedFileName && browserClicked && (
-                       <Grid item xs={12} sm={12} md={2.5} lg={2.5}>                        {selectedFileName && (
-                        <div style={{ marginTop: -15 ,color:"red"}}>
-                         <p>Selected File: {selectedFileName}</p>
-                        </div>
-                        )}
-                        </Grid>
-                        )}
-                            {/* =========================Upload file======================== */}
-                          
-                           <Grid item md={1.5} lg={1.5} sm={12} xs={12}>
-                           <Button variant="contained"
-                                        color="error"
-                                        size='small'
-                                        fullWidth
-                                        onClick={upload}
-                                        disabled={loading || failed_DataTable || browserClicked === false}
-                                        >
-                                     {<CloudUploadIcon  sx={{marginRight:"8px",marginTop:"-4px"}}/>}
-                                        Upload
-                                    </Button>
-                            </Grid>
-                            {/* =========================Clear button======================== */}
-
-                            <Grid item md={1.5} lg={1.5} sm={12} xs={12} sx={{ width: "1000px" }}>
-                           <Button variant="contained"
-                                        color="secondary"
-                                        size='small'
-                                        fullWidth
-                                        onClick={handleClear} 
-                                        >
-                                        Clear
-                                    </Button>
-                            </Grid>
-                        </Grid>
-                    </Paper>
-
-                    <Grid item xs={12} sm={12} md={12} lg={12}>
-              {loading && (
-                <>
-                  <div style={{ width: "900px" }}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginTop: 18,
-                        marginLeft: 20,
-                      }}
+              <Grid item md={7} lg={7} sm={12} xs={12} style={{ borderRight: "1px dotted black" }}>
+                <Grid container spacing={2}>
+                  <Grid item md={12} lg={12} sm={12} xs={12} width={1000}>
+                    <Typography variant='h5'>
+                      Images
+                    </Typography>
+                  </Grid>
+                  {/* =========================Images Type======================== */}
+                  <Grid item md={5.5} lg={5.5} sm={12} xs={12}>
+                    <Autocomplete
+                      disablePortal
+                      size='small'
+                      fullWidth
+                      options={imagetypeDD}
+                      getOptionLabel={(options) => options.doc_name}
+                      isOptionEqualToValue={(option, value) => option.doc_id === value.doc_id}
+                      value={imagetypeDD?.find(option => option.doc_id === formData.imageType) || null}
+                      onChange={(e, v) => handleFieldChange("imageType", v?.doc_id || "")}
+                      sx={autoCompleteStyle}
+                      renderInput={(params) =>
+                        <TextField
+                          {...params}
+                          label="Image Type"
+                          required
+                          error={Boolean(errors.imageType)}
+                          helperText={errors.imageType}
+                        />}
+                    />
+                  </Grid>
+                  {/* =========================Browse Button======================== */}
+                  <Grid item md={2} lg={2} sm={12} xs={12}>
+                    <Button
+                      component="label"
+                      variant="contained"
+                      size='small'
+                      fullWidth
+                      startIcon={<TravelExploreIcon />}
+                      onClick={() => setBrowserclicked(true)}
+                      disabled={!formData.imageType}
                     >
-                      <CircularProgress size={60} />
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginLeft: 10,
-                      }}
+                      Browse
+                      <VisuallyHiddenInput
+                        type="file"
+                        onChange={handleFileChange}
+                        accept=".jpeg ,.pdf,.xlsx,.jpg"
+                        ref={fileInputRef}
+                      />
+                    </Button>
+                  </Grid>
+                  {/* =========================Clear button======================== */}
+                  <Grid item md={2} lg={2} sm={12} xs={12}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      size='small'
+                      fullWidth
+                      onClick={handleClear}
                     >
-                      <h3 style={{ marginLeft: 78 }}>
-                        Uploading Please Wait!!!
-                      </h3>
-                    </Box>
-                  </div>
-                </>
-              )}
-            </Grid>
+                      Clear
+                    </Button>
+                  </Grid>
+                  {/* =========================Clear button======================== */}
+                  <Grid item md={5.5} lg={5.5} sm={12} xs={12}>
+                  </Grid>
+                  {/* =========================Clear button======================== */}
 
-            {failed_DataTable && !loading && (
-              <>
-                <Grid item xs={12} sm={12} md={12} lg={12} mb={-1}>
-                  <h4 style={{ marginLeft: 300, color: "red" }}>
-                    {" "}
-                    Please rectify issues with the following data in excel and
-                    re-upload
-                  </h4>
+                  {/* =========================Clear button======================== */}
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12}>
-                  <Paper elevation={3}>
-                    <TableContainer>
-                      <Table>
-                        <TableHead>
-                          <TableRow >
-                            {/* Extracting headers from the first object in the array */}
-                            {Object.keys(failed_toUpload[0]).map(
-                              (header, index) => (
-                                <TableCell
-                                  key={index}
-                                  size="small"
+              </Grid>
+              {/* ============================== */}
+              <Grid item md={5} lg={5} sm={12} xs={12} mt={2}>
+                <div style={{ maxHeight: "199px", overflow: "auto" }}>
+                  <table border="1" style={{ width: "100%", borderCollapse: "collapse", }}>
+                    <thead>
+                      <tr>
+                        <th colSpan="2" style={{ padding: "2px", backgroundColor: "#f2f2f2", textAlign: "center", }}>Attachments</th>
+                      </tr>
+                      <tr>
+                        <th style={{ fontSize: "13px" }}>Sl No</th>
+                        <th style={{ padding: "1px", textAlign: "center", fontSize: "13px" }}>
+                          Click Here to Preview
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        docementsBaseUrlFetch.map((items, index) => (
+                          <React.Fragment key={index}>
+                            <tr>
+                              <td style={{ fontSize: "12px", textAlign: "center" }}>{index + 1}</td>
+                              <td>
+                                <Box onClick={() => handelDocumentsModalOpen(items.fileData, items.fileName)}
                                   sx={{
-                                    background: theme.palette.primary.main,
-                                    color: theme.palette.primary.contrastText,
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline',
+                                    '&:hover': {
+                                      color: 'blue', // Change color on hover
+                                    },
+                                    color: "blue"
                                   }}
                                 >
-                                  {header}
-                                </TableCell>
-                              )
-                            )}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {/* Mapping through each object in the array to display the values */}
-                          {failed_toUpload.map((row, rowIndex) => (
-                            <TableRow
-                              key={rowIndex}
-                              sx={{
-                                "&:nth-of-type(odd)": {
-                                  backgroundColor: theme.palette.action.hover,
-                                },
-                              }}
-                              hover
-                            >
-                              {Object.values(row).map((cell, cellIndex) => (
-                                <TableCell key={cellIndex} size="small">
-                                  {cell === null || cell === "" ? "Null" : cell}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Paper>
-                </Grid>
-              </>
-            )}    
-                </Grid>
+                                  {items.fileName}
+                                </Box>
+                              </td>
+                            </tr>
+                          </React.Fragment>
+                        ))
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </Grid>
+              {/* ============================== */}
             </Grid>
-        </>
-    )
+          </Paper>
+        </Grid>
+      </Grid>
+      {/* ===============================================PopUP===================================================================== */}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        BackdropProps={{ onClick: handleBackdropMobileClick }}
+      >
+        <Box sx={style}>
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", width: "550px", padding: "20px", }}>
+            {file && (
+              <object data={URL.createObjectURL(file)} width="100%" style={{ minHeight: "400px", }}></object>
+            )}
+          </Box>
+          {selectedFileName && browserClicked && (
+            <Box sx={{ color: "red", mt: -1, display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <p><strong style={{ color: "black" }}>Selected File:</strong> <span style={{ backgroundColor: "yellow", color: "red" }}>{selectedFileName}</span></p>
+            </Box>
+          )}
+          <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 1 }}>
+            <Button
+              variant="contained"
+              color="error"
+              size='small'
+              onClick={upload}
+              startIcon={<CloudUploadIcon />}
+              disabled={!formData.imageType || !browserClicked || !selectedFileName}
+            >
+              Upload
+            </Button>
+            <Button
+              onClick={handleCloseModal}
+              variant="contained"
+              color="secondary"
+              size='small'
+            >
+              Close
+            </Button>
+          </Box>
+        </Box>
+      </Modal >
+      {/* ======================================================== */}
+      <Modal
+        open={documentsModal}
+        onClose={handelDocumentsModalclose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        BackdropProps={{ onClick: handleBackdropMobileClick }}
+      >
+        <Box sx={style}>
+          {fileType === 'pdf' ? (
+            <object data={`data:application/pdf;base64,${popupbase64url}`} width="100%" style={{ minHeight: "400px" }}></object>
+          ) : fileType === 'image' ? (
+            <img src={`data:image/png;base64,${popupbase64url}`} alt="Preview" style={{ width: "100%", minHeight: "400px" }} />
+          ) : (
+            <Typography variant="body1">
+              Unable to determine file type. Please try again.
+            </Typography>
+          )}
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              onClick={handelDocumentsModalclose}
+              variant="contained"
+              color="secondary"
+              size='small'
+            >
+              Close
+            </Button>
+          </Box>
+        </Box>
+      </Modal >
+    </>
+  )
 }

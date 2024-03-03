@@ -92,7 +92,8 @@ export default function ProductsDt() {
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
         product_code: false,
         default_unit: false,
-        kg_per_ltr: false
+        kg_per_ltr: false,
+        prod_supply_id: false,
     });
 
     const [formData, setFormData] = useState({
@@ -407,11 +408,19 @@ export default function ProductsDt() {
             field: 'm_or_p',
             headerName: 'Milk or Product',
             width: 110,
+            valueGetter: (params) => {
+                const value = params.row.m_or_p;
+                return value === 1 ? "PRODUCT" : "MILK"
+            }
         },
         {
             field: 'consider_as_milk',
             headerName: 'Consider Under Milk',
             width: 150,
+            valueGetter: (params) => {
+                const value = params.row.consider_as_milk;
+                return value === "Y" ? "YES" : "NO"
+            }
         },
         {
             field: 'prod_position',
@@ -431,6 +440,11 @@ export default function ProductsDt() {
         {
             field: 'prod_supply_id',
             headerName: 'Product Suppler Code',
+            width: 150,
+        },
+        {
+            field: 'prod_supplier',
+            headerName: 'Product Suppler',
             width: 150,
         },
 

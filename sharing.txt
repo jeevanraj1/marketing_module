@@ -1,32 +1,35 @@
 import React from 'react'
-import { Grid, Typography, Paper, Button, Box, TextField, Stack, Autocomplete, FormControlLabel, Checkbox, FormHelperText, FormControl, RadioGroup, Radio } from '@mui/material'
-import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
+import { Grid, Typography, Paper, Button, Box, TextField, Autocomplete } from '@mui/material'
 import { useState, useEffect } from "react";
-import { CustomerRouteApi } from "../../../Api";
-import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 import Swal from 'sweetalert2';
-import { DataGrid } from '@mui/x-data-grid'
-import { cyan } from '@mui/material/colors';
-const textFiledStyle = {
-    width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(16px, -10px)",
+import {
+    GridRowModes,
+    DataGrid,
+    GridActionsCellItem,
+    GridRowEditStopReasons,
+} from '@mui/x-data-grid';
+import dayjs from 'dayjs';
+import { IndentEntryAPI } from "../../../Api";
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Close';
+import { styled } from '@mui/material/styles';
+
+const StyledBox = styled('div')(({ theme }) => ({
+    height: 369,
+    width: '100%',
+    '& .MuiDataGrid-cell--editing': {
+        backgroundColor: 'rgb(255,215,115, 0.19)',
+        color: '#1a3e72',
+        '& .MuiInputBase-root': {
+            height: '100%',
         },
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    '& .Mui-error': {
+        backgroundColor: `rgb(126,10,15, ${theme.palette.mode === 'dark' ? 0 : 0.1})`,
+        color: theme.palette.error.main,
     },
-}
-
+}));
 const autoCompleteStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
@@ -47,1375 +50,471 @@ const autoCompleteStyle = {
     },
 }
 
-const Indent_For = [
-    { name: "TODAY", value: "TOD" },
-    { name: "TOMORROW", value: "TOM" },
-]
-export default function CustomerRouteDT() {
+export default function IndentEntry() {
     const [rows, setRows] = useState([]);
-    const [saveButton, setSaveButton] = useState(true);
-    const [updateButton, setUpdateButton] = useState(false);
+    const [DDshiftsNames, setDDShiftsNames] = useState([]);
+    const [DDcustomerNames, setDDCustomerNames] = useState([]);
+    const [DDrouteNames, setDDRouteNames] = useState([]);
+    const [rowModesModel, setRowModesModel] = useState({});
+    const [pktedit, setPktedit] = useState(true);
+    const [crtedit, setCrtedit] = useState(true);
     const [formData, setFormData] = useState({
-        routeName: '',
-        customerName: "",
-        positionOnRoute: "",
-        indentFor: "",
-        billRoute: false,
-        indentRoute: false,
-        batch: "",
+        shifts: "",
+        noLabel: "",
+        customer: "",
+        route: "",
+        creditLimit: "",
+        phoneNumber: "",
     });
-    const [routeNames, setRouteNames] = useState([]);
-    const [customerNames, setCustomerNames] = useState([]);
-    const [errors, setErrors] = useState({});
-    const [batchNames, setBatchNames] = useState([]);
-    const [customerRouteId, setCustomerRouteId] = useState(null);
-    const [searchRoute, setSearchRoute] = useState(true);
-    const [seacrchCustomerName, setSeacrchCustomerName] = useState(false);
-    const [DDrouteSearch, setDDRouteSearch] = useState([]);
-    const [DDCustomerSearch, setDDCustomerSearch] = useState([]);
-    const [routeSearch, setRouteSearch] = useState(null);
-    const [customerSearch, setCustomerSearch] = useState(null);
-
-
 
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-        cust_route_id: false,
-        route_code: false,
-        customer_code: false,
-        dist_batch_no: false,
+        indent_number: false,
+        packet_code: false,
+        indent_position: false,
+        crate_or_not: false,
+        packet_position: false,
     });
+
     const getRowClassName = (params) => {
         const rowIndex = params.indexRelativeToCurrentPage;
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
     };
-    const validation = () => {
-        const newErrors = {}
-        //=============================================routeName==================================================
-        if (formData.routeName === "") newErrors.routeName = "Required"
-        else if (formData.routeName !== "") newErrors.routeName = errors.routeName
-        //=============================================customerName===============================================
-        if (formData.customerName === "") newErrors.customerName = "Required"
-        else if (formData.customerName !== "") newErrors.customerName = errors.customerName
-        //=============================================positionOnRoute============================================
-        if (formData.positionOnRoute === "") newErrors.positionOnRoute = "Required"
-        else if (formData.positionOnRoute !== "") newErrors.positionOnRoute = errors.positionOnRoute
-        //=============================================indentFor==================================================
-        if (formData.indentFor === "") newErrors.indentFor = "Required"
-        else if (formData.indentFor !== "") newErrors.indentFor = errors.indentFor
-        //=============================================billRoute==================================================
-        if (formData.billRoute === false) newErrors.billRoute = ""
-        else if (formData.billRoute !== "") newErrors.billRoute = errors.billRoute
-        //=============================================indentRoute=================================================
-        if (formData.indentRoute === false) newErrors.indentRoute = ""
-        else if (formData.indentRoute !== "") newErrors.indentRoute = errors.indentRoute
-        //=============================================batch=================================================
-        if (formData.batch === "") newErrors.batch = "Required"
-        else if (formData.batch !== "") newErrors.batch = errors.batch
-        return newErrors
-    }
-    const handleFieldChange = async (fieldName, value) => {
-        setErrors((prevErrors) => ({
-            ...prevErrors,
-            [fieldName]: ""
-        }))
-        //=============================================batch==================================================
-        if (fieldName === "batch") {
+
+    const handleFieldChange = (fieldName, value) => {
+        //===================================================== shifts=============================================================
+        if (fieldName === "shifts") {
             if (value === "") {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [fieldName]: "Required"
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    noLabel: ""
                 }))
-                setRouteNames([])
+                setDDRouteNames([])
+                setDDCustomerNames([])
             }
-            DD_RouteName(value)
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value,
-            }))
-        }
-        //=============================================routeName==================================================
-        if (fieldName === "routeName") {
-            if (value === "") {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [fieldName]: "Required"
+            else if (value) {
+                setFormData((prevdata) => ({
+                    ...prevdata,
+                    noLabel: value
                 }))
-            }
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value,
-            }))
-        }
-        //=============================================customerName===============================================
-        if (fieldName === "customerName") {
-            if (value === "") {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [fieldName]: "Required"
-                }))
-            }
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value,
-            }))
-        }
-        //=============================================positionOnRoute============================================
-        if (fieldName === 'positionOnRoute') {
-            if (value === '') {
-                setFormData((prevErrors) => ({
-                    ...prevErrors,
-                    [fieldName]: "Required",
-                }));
-            }
-            else if (!/^\d{0,4}(\.\d{1,4})?$/.test(value)) {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [fieldName]: "Invalid position On Route",
-                }))
+                fetchCustomerNames(value)
+                setDDRouteNames([])
             }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
             }))
         }
-        //=============================================indentFor==================================================
-        if (fieldName === "indentFor") {
+        //===================================================== noLabel=============================================================
+        if (fieldName === "noLabel") {
             if (value === "") {
-                setErrors((prevErrors) => ({
-                    ...prevErrors,
-                    [fieldName]: "Required"
-                }))
+            }
+            else if (value) {
+                setDDRouteNames([])
+                fetchCustomerNames(value)
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value,
+                [fieldName]: value
             }))
         }
-        //=============================================billRoute==================================================
-        if (fieldName === "billRoute") {
+        //===================================================== customer=============================================================
+        if (fieldName === "customer") {
+            if (value === "") {
+            }
+            else if (value) {
+                fetchRouteNames(formData.noLabel, value)
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value,
+                [fieldName]: value
             }))
-            mulitpleBillRoute()
         }
-        //=============================================indentRoute================================================
-        if (fieldName === "indentRoute") {
+        //===================================================== route=============================================================
+        if (fieldName === "route") {
+            if (value === "") {
+            }
+            else if (value) {
+                getGridRows(value)
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value,
+                [fieldName]: value
             }))
-            multipleIndentRoute()
         }
-
+        //===================================================== creditLimit=============================================================
+        //===================================================== phoneNumber=============================================================
     }
     const handleClear = () => {
-        setSaveButton(true)
-        setUpdateButton(false)
-        setErrors({})
-        setFormData({
-            routeName: '',
-            customerName: "",
-            positionOnRoute: "",
-            indentFor: "",
-            billRoute: false,
-            indentRoute: false,
-            batch: "",
-        })
-        setRouteNames([])
-    }
-
-
-    const handleUpdate = async (e) => {
-        e.preventDefault()
-        const validationErorrs = validation()
-        setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
-        if (!hasErrors) {
-            const newRecord = {
-                "route_code": Number(formData.routeName),
-                "customer_code": Number(formData.customerName),
-                "pos_on_route": Number(formData.positionOnRoute),
-                "days": null,
-                "indent_for": formData.indentFor,
-                "bill_route": formData.billRoute ? "Y" : "N",
-                "indent_route": formData.indentRoute ? "Y" : "N",
-                "dist_batch_no": Number(formData.batch),
-            }
-            const valid = false
-            if (formData.indentRoute === true) {
-                const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-                console.log(resposne);
-                console.log(resposne.data.items.length);
-                if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-                    valid = true
-                    console.log("hi");
-                }
-                else if (resposne.data.items.length !== 0) {
-                    const indentRouteExits = {
-                        cust_route_id: resposne.data.items[0].cust_route_id,
-                        customer_code: resposne.data.items[0].customer_code,
-                        dist_batch_no: resposne.data.items[0].dist_batch_no,
-                        route_code: resposne.data.items[0].route_code,
-                        indent_route: resposne.data.items[0].indent_route,
-                        dist_batch_name: resposne.data.items[0].dist_batch_name,
-                        route_name: resposne.data.items[0].route_name,
-                    }
-                    if (resposne.data.items[0].status === 1) {
-                        const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-                        console.log(routeNames.find(option => option.route_code === formData.routeName));
-                        Swal.fire({
-                            title: "Route Exits",
-                            text: `Indent Route Exist for ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-                            showDenyButton: true,
-                            confirmButtonText: "Save",
-                            icon: "warning",
-                            confirmButtonText: "Yes",
-                            reverseButtons: true,
-                            denyButtonText: `NO `
-                        })
-                            .then(async (result) => {
-                                if (result.isConfirmed) {
-                                    try {
-                                        await CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
-                                            indent_route: "N",
-                                        })
-                                        await CustomerRouteApi.PacketsUnitsAPi_master().update(customerRouteId, newRecord)
-                                        fetchData()
-                                    } catch (error) {
-                                        Swal.fire("Error", 'Unknown Error', "error")
-                                    }
-                                }
-                                else if (result.isDenied) {
-                                    // Swal.fire("Changes are not saved", "", "info");
-                                }
-                            })
-                        valid = false;
-                    }
-
-                }
-            }
-            else if (formData.indentRoute === false) {
-                valid = true
-            }
-            else if (formData.billRoute === true) {
-                const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-                console.log(resposne);
-            }
-            else if (formData.billRoute === false) {
-                valid = true
-            }
-            if (valid) {
-                const update = async (newRecord) => {
-                    try {
-                        const response = await CustomerRouteApi.PacketsUnitsAPi_master().update(customerRouteId, newRecord)
-                        if (response.data.Status === 1) {
-                            Swal.fire({
-                                title: 'Saved',
-                                text: 'Updated Sucessfully',
-                                icon: 'success',
-                                customClass: {
-                                    container: 'custom-swal-container'
-                                }
-                            });
-                            handleClear()
-                            fetchData()
-                            localStorage.setItem("Navigation_state", true)
-                        } else {
-                            Swal.fire({
-                                title: 'Error',
-                                text: `${response.data.Error}` || 'Unknown Error',
-                                icon: 'error',
-                                customClass: {
-                                    container: 'custom-swal-container'
-                                }
-                            });
-                        }
-                    } catch (error) {
-                        Swal.fire({
-                            title: 'Error',
-                            text: 'Unknown Error',
-                            icon: 'error',
-                            customClass: {
-                                container: 'custom-swal-container'
-                            }
-                        });
-                    }
-                }
-                update(newRecord)
-            }
-
-        }
-    }
-
-    const mulitpleBillRoute = async () => {
-        console.log(formData.billRoute);
-        if (formData.indentRoute === false) {
-            // const newRecord = {
-            //     "route_code": Number(formData.routeName),
-            //     "customer_code": Number(formData.customerName),
-            //     "pos_on_route": Number(formData.positionOnRoute),
-            //     "days": null,
-            //     "indent_for": formData.indentFor,
-            //     "indent_route": "Y",
-            //     "bill_route": "N",
-            //     "dist_batch_no": Number(formData.batch),
-            // }
-            const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-            if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-
-            }
-            else if (resposne.data.items.length !== 0) {
-                const billRoutes = {
-                    bill_route: resposne.data.items[0].bill_route,
-                    cust_route_id: resposne.data.items[0].cust_route_id,
-                    customer_code: resposne.data.items[0].customer_code,
-                    dist_batch_name: resposne.data.items[0].dist_batch_name,
-                    dist_batch_no: resposne.data.items[0].dist_batch_no,
-                    route_code: resposne.data.items[0].route_code,
-                    route_name: resposne.data.items[0].route_name,
-                }
-                if (resposne.data.items[0].status === 1) {
-                    const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-                    const billRouteExits = await Swal.fire({
-                        title: "Route Exits",
-                        text: `Bill Route Exist  ${billRoutes.dist_batch_name}  batch and ${billRoutes.route_name} Route would you like to change this to ${route_name}`,
-                        showDenyButton: true,
-                        confirmButtonText: "Save",
-                        icon: "warning",
-                        confirmButtonText: "Yes",
-                        reverseButtons: true,
-                        denyButtonText: `NO `
-                    })
-                    if (billRouteExits.isConfirmed) {
-                        CustomerRouteApi.PacketsUnitsAPi_master().billupadte(billRoutes.cust_route_id, { bill_route: "N" })
-                        fetchData()
-                        // const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-                        // try {
-                        //     if (response.data.Status === 1) {
-                        //         Swal.fire({
-                        //             title: 'Saved',
-                        //             text: 'Saved Sucessfully',
-                        //             icon: 'success',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //         handleClear()
-                        //         fetchData()
-                        //         localStorage.setItem("Navigation_state", true)
-                        //     } else {
-                        //         Swal.fire({
-                        //             title: 'Error',
-                        //             text: `${response.data.Error}` || 'Unknown Error',
-                        //             icon: 'error',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //     }
-                        // } catch (error) {
-                        //     Swal.fire({
-                        //         title: 'Error',
-                        //         text: 'Unknown Error',
-                        //         icon: 'error',
-                        //         customClass: {
-                        //             container: 'custom-swal-container'
-                        //         }
-                        //     });
-                        // }
-                    }
-                }
-            }
-        }
-
-
-    }
-
-    const multipleIndentRoute = async () => {
-        console.log(` multipleIndentRoute ${formData.indentRoute}`);
-        if (formData.indentRoute === false) {
-            // const newRecord = {
-            //     "route_code": Number(formData.routeName),
-            //     "customer_code": Number(formData.customerName),
-            //     "pos_on_route": Number(formData.positionOnRoute),
-            //     "days": null,
-            //     "indent_for": formData.indentFor,
-            //     "indent_route": "Y",
-            //     "bill_route": "N",
-            //     "dist_batch_no": Number(formData.batch),
-            // }
-            const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-            if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-
-            }
-            else if (resposne.data.items.length !== 0) {
-                const indentRouteExits = {
-                    cust_route_id: resposne.data.items[0].cust_route_id,
-                    customer_code: resposne.data.items[0].customer_code,
-                    dist_batch_no: resposne.data.items[0].dist_batch_no,
-                    route_code: resposne.data.items[0].route_code,
-                    indent_route: resposne.data.items[0].indent_route,
-                    dist_batch_name: resposne.data.items[0].dist_batch_name,
-                    route_name: resposne.data.items[0].route_name,
-                }
-                if (resposne.data.items[0].status === 1) {
-                    const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-                    const indentRoute = await Swal.fire({
-                        title: "Route Exits",
-                        text: `Indent Route Exist  ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-                        showDenyButton: true,
-                        confirmButtonText: "Save",
-                        icon: "warning",
-                        confirmButtonText: "Yes",
-                        reverseButtons: true,
-                        denyButtonText: `NO `
-                    })
-                    if (indentRoute.isConfirmed) {
-                        CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
-                            indent_route: "N",
-                        })
-                        fetchData()
-                        // try {
-                        //     const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-                        //     console.log(response);
-                        //     if (response.data.Status === 1) {
-                        //         Swal.fire({
-                        //             title: 'Saved',
-                        //             text: 'Saved Sucessfully',
-                        //             icon: 'success',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //         handleClear()
-                        //         fetchData()
-                        //         localStorage.setItem("Navigation_state", true)
-                        //     } else {
-                        //         Swal.fire({
-                        //             title: 'Error',
-                        //             text: `${response.data.Error}` || 'Unknown Error',
-                        //             icon: 'error',
-                        //             customClass: {
-                        //                 container: 'custom-swal-container'
-                        //             }
-                        //         });
-                        //     }
-                        // } catch (error) {
-                        //     Swal.fire({
-                        //         title: 'Error',
-                        //         text: 'Unknown Error',
-                        //         icon: 'error',
-                        //         customClass: {
-                        //             container: 'custom-swal-container'
-                        //         }
-                        //     });
-                        // }
-
-                    }
-                    if (indentRoute.isDenied) {
-                        setFormData((prevdata) => ({
-                            ...prevdata,
-                            indentRoute: false
-                        }))
-                    }
-                }
-
-            }
-        }
-
-
-    }
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        const validationErorrs = validation()
-        setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
-        if (!hasErrors) {
-            const newRecord = {
-                "route_code": Number(formData.routeName),
-                "customer_code": Number(formData.customerName),
-                "pos_on_route": Number(formData.positionOnRoute),
-                "days": null,
-                "indent_for": formData.indentFor,
-                "bill_route": formData.billRoute ? "Y" : "N",
-                "indent_route": formData.indentRoute ? "Y" : "N",
-                "dist_batch_no": Number(formData.batch),
-            }
-            // var valid = false;
-            // console.log(formData.billRoute);
-            // // =====================indent route selected=================================
-            // if (formData.indentRoute === true && formData.billRoute === false) {
-            //     const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-            //     if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-            //         valid = true
-            //     }
-            //     else if (resposne.data.items.length !== 0) {
-            //         const indentRouteExits = {
-            //             cust_route_id: resposne.data.items[0].cust_route_id,
-            //             customer_code: resposne.data.items[0].customer_code,
-            //             dist_batch_no: resposne.data.items[0].dist_batch_no,
-            //             route_code: resposne.data.items[0].route_code,
-            //             indent_route: resposne.data.items[0].indent_route,
-            //             dist_batch_name: resposne.data.items[0].dist_batch_name,
-            //             route_name: resposne.data.items[0].route_name,
-            //         }
-            //         if (resposne.data.items[0].status === 1) {
-            //             const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //             valid = false
-            //             const indentRoute = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Indent Route Exist  ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (indentRoute.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
-            //                     indent_route: "N",
-            //                 })
-            //                 valid = false
-            //                 try {
-            //                     const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                     console.log(response);
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     }
-            //                     else if (response.data.Status === 0) {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                     console.log(error);
-            //                 }
-            //                 fetchData()
-            //             }
-            //         }
-
-            //     }
-            // }
-            // // =====================indent route selected end=================================
-            // // =====================bill route selected=================================
-            // if (formData.indentRoute === false && formData.billRoute === true) {
-            //     const resposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-            //     console.log(resposne);
-            //     if (resposne.data.items.length === 0 || resposne.data.items[0].status === null) {
-            //         valid = true
-            //     }
-            //     else if (resposne.data.items.length !== 0) {
-            //         const billRoutes = {
-            //             bill_route: resposne.data.items[0].bill_route,
-            //             cust_route_id: resposne.data.items[0].cust_route_id,
-            //             customer_code: resposne.data.items[0].customer_code,
-            //             dist_batch_name: resposne.data.items[0].dist_batch_name,
-            //             dist_batch_no: resposne.data.items[0].dist_batch_no,
-            //             route_code: resposne.data.items[0].route_code,
-            //             route_name: resposne.data.items[0].route_name,
-            //         }
-            //         if (resposne.data.items[0].status === 1) {
-            //             valid = false
-            //             const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //             const billRouteExits = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Bill Route Exist  ${billRoutes.dist_batch_name}  batch and ${billRoutes.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (billRouteExits.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().billupadte(billRoutes.cust_route_id, { bill_route: "N" })
-            //                 valid = false;
-            //                 const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                 try {
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     } else {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
-            // // =====================bill route end=================================
-            // // =====================bill and indent route  selected=================================
-            // if (formData.indentRoute === true && formData.billRoute === true) {
-            //     const billRouteresposne = await CustomerRouteApi.PacketsUnitsAPi_master().billRouteValidation(formData.customerName)
-            //     const indentRouteresposne = await CustomerRouteApi.PacketsUnitsAPi_master().indentRouteValidation(formData.batch, formData.customerName)
-            //     console.log(billRouteresposne);
-            //     console.log(indentRouteresposne);
-            //     if ((billRouteresposne.data.items.length === 0 || billRouteresposne.data.items[0].status === null)) {
-            //         valid = true
-            //     }
-            //     else if (billRouteresposne.data.items.length !== 0) {
-            //         const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //         const billRoutes = {
-            //             bill_route: billRouteresposne.data.items[0].bill_route,
-            //             cust_route_id: billRouteresposne.data.items[0].cust_route_id,
-            //             customer_code: billRouteresposne.data.items[0].customer_code,
-            //             dist_batch_name: billRouteresposne.data.items[0].dist_batch_name,
-            //             dist_batch_no: billRouteresposne.data.items[0].dist_batch_no,
-            //             route_code: billRouteresposne.data.items[0].route_code,
-            //             route_name: billRouteresposne.data.items[0].route_name,
-            //         }
-            //         if (billRouteresposne.data.items[0].status === 1) {
-            //             valid = false
-            //             const route = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Bill Route Exist  ${billRoutes.dist_batch_name}  batch and ${billRoutes.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (route.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().billupadte(billRoutes.cust_route_id, { bill_route: "N" })
-            //                 const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                 try {
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     } else {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                 }
-            //             }
-            //         }
-
-            //     }
-            //     if ((indentRouteresposne.data.items.length === 0 || indentRouteresposne.data.items[0].status === null)) {
-            //         valid = true
-            //     }
-            //     else if (billRouteresposne.data.items.length !== 0) {
-            //         const indentRouteExits = {
-            //             cust_route_id: indentRouteresposne.data.items[0].cust_route_id,
-            //             customer_code: indentRouteresposne.data.items[0].customer_code,
-            //             dist_batch_no: indentRouteresposne.data.items[0].dist_batch_no,
-            //             route_code: indentRouteresposne.data.items[0].route_code,
-            //             indent_route: indentRouteresposne.data.items[0].indent_route,
-            //             dist_batch_name: indentRouteresposne.data.items[0].dist_batch_name,
-            //             route_name: indentRouteresposne.data.items[0].route_name,
-            //         }
-            //         if (indentRouteresposne.data.items[0].status === 1) {
-            //             const { route_name } = routeNames.find(option => option.route_code === formData.routeName)
-            //             valid = false
-            //             const indentRoute = await Swal.fire({
-            //                 title: "Route Exits",
-            //                 text: `Indent Route Exist  ${indentRouteExits.dist_batch_name}  batch and ${indentRouteExits.route_name} Route would you like to change this to ${route_name}`,
-            //                 showDenyButton: true,
-            //                 confirmButtonText: "Save",
-            //                 icon: "warning",
-            //                 confirmButtonText: "Yes",
-            //                 reverseButtons: true,
-            //                 denyButtonText: `NO `
-            //             })
-            //             if (indentRoute.isConfirmed) {
-            //                 CustomerRouteApi.PacketsUnitsAPi_master().indetupdate(indentRouteExits.cust_route_id, {
-            //                     indent_route: "N",
-            //                 })
-            //                 valid = false
-            //                 try {
-            //                     const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-            //                     console.log(response);
-            //                     if (response.data.Status === 1) {
-            //                         Swal.fire({
-            //                             title: 'Saved',
-            //                             text: 'Saved Sucessfully',
-            //                             icon: 'success',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                         handleClear()
-            //                         fetchData()
-            //                         localStorage.setItem("Navigation_state", true)
-            //                     }
-            //                     else if (response.data.Status === 0) {
-            //                         Swal.fire({
-            //                             title: 'Error',
-            //                             text: `${response.data.Error}` || 'Unknown Error',
-            //                             icon: 'error',
-            //                             customClass: {
-            //                                 container: 'custom-swal-container'
-            //                             }
-            //                         });
-            //                     }
-            //                 } catch (error) {
-            //                     Swal.fire({
-            //                         title: 'Error',
-            //                         text: 'Unknown Error',
-            //                         icon: 'error',
-            //                         customClass: {
-            //                             container: 'custom-swal-container'
-            //                         }
-            //                     });
-            //                     console.log(error);
-            //                 }
-            //                 fetchData()
-            //             }
-            //         }
-            //     }
-            // }
-            // if (formData.indentRoute === false && formData.billRoute === false) valid = true
-            try {
-                const response = await CustomerRouteApi.PacketsUnitsAPi_master().create(newRecord)
-                console.log(response);
-                if (response.data.Status === 1) {
-                    Swal.fire({
-                        title: 'Saved',
-                        text: 'Saved Sucessfully',
-                        icon: 'success',
-                        customClass: {
-                            container: 'custom-swal-container'
-                        }
-                    });
-                    handleClear()
-                    fetchData()
-                    localStorage.setItem("Navigation_state", true)
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: `${response.data.Error}` || 'Unknown Error',
-                        icon: 'error',
-                        customClass: {
-                            container: 'custom-swal-container'
-                        }
-                    });
-                }
-            } catch (error) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Unknown Error',
-                    icon: 'error',
-                    customClass: {
-                        container: 'custom-swal-container'
-                    }
-                });
-            }
-        }
-
-
-
+        setFormData((prevdata) => ({
+            ...prevdata,
+            // shifts: "",
+            noLabel: "",
+            customer: "",
+            route: "",
+            creditLimit: "",
+            phoneNumber: "",
+        }))
+        setDDRouteNames([])
+        setDDCustomerNames([])
     }
     const columns = [
         {
-            field: "action",
-            headerName: "Action",
-            width: 69,
-            renderCell: (params) => (
-                <>
-                    <ModeEditOutlineRoundedIcon
-                        sx={{ color: "blue", marginRight: 2 }}
-                        style={{
-                            cursor: "pointer",
-                            opacity: 1,
-                            transition: "opacity 0.3s",
-                        }}
-                        onMouseOver={(e) => {
-                            e.currentTarget.style.opacity = 0.7;
-                            e.currentTarget.style.color = "lightblue";
-                        }}
-                        onMouseOut={(e) => {
-                            e.currentTarget.style.opacity = 1;
-                            e.currentTarget.style.color = "blue";
-                        }}
-                        onClick={() => { handleEdit(params.row) }}
-                    >
-                        Edit
-                    </ModeEditOutlineRoundedIcon>
-                </>
-
-            ),
-        },
-        {
-            field: 'cust_route_id',
-            headerName: 'Customer Route ID',
+            field: 'indent_number',
+            headerName: 'Indent Number',
             width: 150,
         },
         {
-            field: 'dist_batch_name',
-            headerName: 'Distbution Batch Name',
+            field: 'packet_code',
+            headerName: 'Packet Code',
             width: 150,
         },
         {
-            field: 'route_code',
-            headerName: 'Route Code',
-            width: 150,
+            field: 'packet_name',
+            headerName: 'Packet Name',
+            width: 175,
         },
         {
-            field: 'route_name',
-            headerName: 'Route Name',
-            width: 150,
+            field: 'crate_or_not',
+            headerName: 'Crate Or not',
+            width: 175,
         },
         {
-            field: 'customer_code',
-            headerName: 'Customer Code',
+            field: 'crt',
+            headerName: 'Crate Indent',
             width: 150,
+            editable: true,
+            type: 'number',
+            preProcessEditCellProps: (params) => {
+                console.log(params);
+                const row = params.row;
+                const value = params.props.value;
+                const { rate, crt, crate_or_not } = row;
+                const crateIndent = value;
+                const packetIndent = crateIndent * crate_or_not;
+                const amount = Number(packetIndent * rate)
+                const update = { ...params.row, pkt: packetIndent, crt: crateIndent, amt: amount }
+                params.otherFieldsProps.pkt.value = packetIndent
+                processRowUpdate(update)
+            }
         },
         {
-            field: 'customer_name',
-            headerName: 'Customer Name',
+            field: 'pkt',
+            headerName: 'Packet Indent',
             width: 150,
+            editable: true,
+            type: 'number',
+            preProcessEditCellProps: (params) => {
+                console.log(params);
+                const row = params.row;
+                const value = params.props.value;
+                const { rate, crt, crate_or_not } = row;
+                const packetIndent = value
+                const crateIndent = packetIndent / crate_or_not
+                const amount = packetIndent * rate
+                const upadte = { ...params.row, pkt: packetIndent, crt: crateIndent, amt: amount }
+                params.otherFieldsProps.crt.value = crateIndent
+                processRowUpdate(upadte)
+            }
         },
         {
-            field: 'dist_batch_no',
-            headerName: 'Distbution Batch Number',
-            width: 150,
-        },
-
-        {
-            field: 'pos_on_route',
-            headerName: 'Position On Route',
-            width: 70,
+            field: 'rate',
+            headerName: 'Packets Rate',
+            width: 110,
             type: 'number'
         },
         {
-            field: 'indent_for',
-            headerName: 'Indent For',
-            width: 100,
+            field: 'amt',
+            headerName: 'Amount',
+            width: 110,
+            type: 'number'
         },
         {
-            field: 'indent_route',
-            headerName: 'Indent Route',
-            width: 150,
+            field: 'packet_position',
+            headerName: 'packet Position',
         },
         {
-            field: 'bill_route',
-            headerName: 'Bill Route',
+            field: 'actions',
+            type: 'actions',
+            headerName: 'Actions',
             width: 150,
-        },
-        {
-            field: 'dist_batch_no',
-            headerName: 'Distrubution Batch Number',
-            width: 150,
-        },
-    ];
-
-    const handleEdit = async (row) => {
-        setCustomerRouteId(row.cust_route_id)
-        setUpdateButton(true)
-        setSaveButton(false)
-        setErrors({})
-        await DD_RouteName(row.dist_batch_no)
-        let bill_route = null;
-        let indent_route = null;
-        if (row.bill_route === "Y") bill_route = true
-        else if (row.bill_route === "N") bill_route = false
-
-        if (row.indent_route === "Y") indent_route = true
-        else if (row.indent_route === "N") indent_route = false
-        setFormData((prevdata) => ({
-            ...prevdata,
-            routeName: row.route_code,
-            customerName: row.customer_code,
-            positionOnRoute: row.pos_on_route,
-            indentFor: row.indent_for,
-            billRoute: bill_route,
-            indentRoute: indent_route,
-            batch: row.dist_batch_no,
-        }))
-    }
-    const handleRadio = (e) => {
-        const { value } = e.target;
-        if (value === "route") {
-            setSearchRoute(true)
-            setSeacrchCustomerName(false)
-            fetchData()
-        }
-        if (value === "Name") {
-            setSearchRoute(false)
-            setSeacrchCustomerName(true)
-            fetchData()
-        }
-
-    }
-    const handlefieldChangeSearch = (fieldname, value) => {
-        if (fieldname === "Route") {
-            if (value === "") fetchData()
-            else if (value) setRouteSearch(value)
-        }
-
-        if (fieldname === "name") {
-            if (value === "") fetchData()
-            else if (value) setCustomerSearch(value)
-        }
-    }
-    const handleSearch = async () => {
-        if (searchRoute) {
-            try {
-                console.log(routeSearch);
-                const respone = await CustomerRouteApi.PacketsUnitsAPi_master().searchRouteName(routeSearch)
-                if (respone.status === 200) {
-                    setRows(respone.data.items);
+            cellClassName: 'actions',
+            getActions: ({ id }) => {
+                const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+                if (isInEditMode) {
+                    return [
+                        <GridActionsCellItem
+                            icon={<SaveIcon />}
+                            label="Save"
+                            sx={{
+                                color: 'primary.main',
+                            }}
+                            onClick={handleSaveClick(id)}
+                        />,
+                        <GridActionsCellItem
+                            icon={<CancelIcon />}
+                            label="Cancel"
+                            className="textPrimary"
+                            onClick={handleCancelClick(id)}
+                            color="inherit"
+                        />,
+                    ];
                 }
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        if (seacrchCustomerName) {
-            console.log(customerSearch);
-            try {
-                const respone = await CustomerRouteApi.PacketsUnitsAPi_master().searchCustomerName(customerSearch)
-                if (respone.status === 200) {
-                    setRows(respone.data.items);
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        }
+
+                return [
+                    <GridActionsCellItem
+                        icon={<EditIcon />}
+                        label="Edit"
+                        className="textPrimary"
+                        onClick={handleEditClick(id)}
+                        color="inherit"
+                    />,
+                ];
+            },
+        },
+    ]
+    const handleSaveClick = (id) => () => {
+        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    };
+
+    const handleCancelClick = (id) => () => {
+        setRowModesModel({
+            ...rowModesModel,
+            [id]: { mode: GridRowModes.View, ignoreModifications: true },
+        });
     }
-    const DD_RouteName = async (id) => {
-        try {
-            const respone = await CustomerRouteApi.PacketsUnitsAPi_master().dd_RouteNames(id)
-            if (respone.status === 200) {
-                setRouteNames(respone.data.items);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    const DD_CustomerName = async () => {
-        try {
-            const respone = await CustomerRouteApi.PacketsUnitsAPi_master().dd_CustomerName()
-            if (respone.status === 200) {
-                setCustomerNames(respone.data.items);
-            }
-        } catch (error) {
-            console.log(error);
+
+    const handleEditClick = (id) => () => {
+        setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+    };
+    const fetchShiftNames = async () => {
+        const response = await IndentEntryAPI.IndentEntryAPI_master().DD_fetch_district_batch_name()
+        if (response.status === 200) {
+            setDDShiftsNames(response.data.items);
         }
     }
 
-    const DD_Batch_Name = async () => {
-        try {
-            const respone = await CustomerRouteApi.PacketsUnitsAPi_master().dd_fetch_distribution_batch_name()
-            if (respone.status === 200) {
-                setBatchNames(respone.data.items);
-            }
-        } catch (error) {
-            console.log(error);
+    const handleRowEditStop = (params, event) => {
+        console.log(params);
+        if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+            event.defaultMuiPrevented = true;
+        }
+    };
+    const handleRowModesModelChange = (newRowModesModel) => {
+        setRowModesModel(newRowModesModel);
+    };
+    const processRowUpdate = async (newRow) => {
+        const updatedRow = { ...newRow };
+        setRows(rows.map((row) => (row.packet_code === newRow.packet_code ? updatedRow : row)));
+        console.log(updatedRow);
+        return updatedRow;
+    }
+
+
+    const fetchCustomerNames = async (id) => {
+        const response = await IndentEntryAPI.IndentEntryAPI_master().DD_fetch_customer_name(id)
+        if (response.status === 200) {
+            setDDCustomerNames(response.data.items);
         }
     }
-    const fetchData = async () => {
-        try {
-            const respone = await CustomerRouteApi.PacketsUnitsAPi_master().fetchAll()
-            if (respone.status === 200) {
-                setRows(respone.data.items);
-            }
-        } catch (error) {
-            console.log(error);
+    const fetchRouteNames = async (dist_batch_no, customer_code) => {
+        const response = await IndentEntryAPI.IndentEntryAPI_master().DD_fetch_route_name(dist_batch_no, customer_code)
+        if (response.status === 200) {
+            setDDRouteNames(response.data.items);
         }
     }
-    const DDSearchRoute = async () => {
-        try {
-            const respone = await CustomerRouteApi.PacketsUnitsAPi_master().dd_searchRoute()
-            if (respone.status === 200) {
-                setDDRouteSearch(respone.data.items);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
-    const DDSearchCustomerName = async () => {
-        try {
-            const respone = await CustomerRouteApi.PacketsUnitsAPi_master().dd_CustomerName()
-            if (respone.status === 200) {
-                setDDCustomerSearch(respone.data.items);
-            }
-        } catch (error) {
-            console.log(error);
+    const getGridRows = async (indentNumber) => {
+        const response = await IndentEntryAPI.IndentEntryAPI_master().getGridRows(indentNumber)
+        if (response.status === 200) {
+            setRows(response.data.items);
         }
     }
     useEffect(() => {
-        DD_CustomerName()
-        DD_Batch_Name()
-        fetchData()
-        DDSearchRoute()
-        DDSearchCustomerName()
-        document.title = "Customer Route"
+        fetchShiftNames()
+        //fetchCustomerNames()
+        document.title = "Indent entry"
     }, [])
+    // const fetchCustomerNames = async () => {
+    //     const response = await IndentEntryAPI.IndentEntryAPI_master().DD_fetch_customer_name()
+    //     console.log(response);
+    //     if (response.status === 200) {
+    //         setDDCustomerNames(response.data.items);
+    //     }
+    // }
     return (
         <>
-            {/* ====================================================================================== */}
             <Grid container spacing={2}>
-                <Grid item md={10} lg={10} sm={12} xs={12}>
-                    {/* =================================Paper=========================================== */}
+                <Grid item md={12} lg={12} sm={12} xs={12}>
                     <Paper sx={{ padding: 2 }} elevation={3}>
-                        <Grid container spacing={2} mb={2}>
-                            <Grid item md={3} lg={3} sm={12} xs={12}>
-                                <Typography variant='h5'>
-                                    Customer Route
-                                </Typography>
+                        <Grid container spacing={2}>
+                            {/* =========================Indent Entry======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Typography variant='h5'>Indent Entry</Typography>
                             </Grid>
-                            {/* =====================  */}
-                            <Grid item md={4} lg={4} sm={12} xs={12} style={{ marginTop: "-8px" }}>
-                                <FormControl>
-                                    <RadioGroup
-                                        row
-                                        aria-labelledby="demo-controlled-radio-buttons-group"
-                                        name="Search"
-                                        onChange={(e) => { handleRadio(e) }}
-                                    >
-                                        <FormControlLabel
-                                            value="route"
-                                            control={<Radio style={{ fontSize: 14 }} checked={searchRoute} />}
-                                            label={<span style={{ fontSize: 12, fontWeight: "bolder" }}>Route</span>}
-                                        />
-                                        <FormControlLabel
-                                            value="Name"
-                                            control={<Radio style={{ fontSize: 14 }} checked={seacrchCustomerName} />}
-                                            label={<span style={{ fontSize: 12, fontWeight: "bolder" }}>Customer Name</span>}
-                                        />
-                                    </RadioGroup>
-                                </FormControl>
-                            </Grid>
-                            {searchRoute && (
-                                <Grid item md={3} lg={3} sm={12} xs={12}>
-                                    <Autocomplete
-                                        disablePortal
-                                        id="combo-box-demo"
-                                        options={DDrouteSearch}
-                                        getOptionLabel={(options) => options.route_name}
-                                        isOptionEqualToValue={(option, value) => option.route_code === value.route_code}
-                                        onChange={(event, value) => handlefieldChangeSearch("Route", value?.route_code || "")}
-                                        size='small'
-                                        fullWidth
-                                        sx={autoCompleteStyle}
-                                        renderInput={(params) =>
-                                            <TextField
-                                                {...params}
-                                                label="Route"
-                                            />}
-                                    />
-                                </Grid>
-                            )}
-                            {seacrchCustomerName && (
-                                <Grid item md={3} lg={3} sm={12} xs={12}>
-                                    <Autocomplete
-                                        disablePortal
-                                        id="combo-box-demo"
-                                        options={DDCustomerSearch}
-                                        getOptionLabel={(options) => options.customer_name}
-                                        isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
-                                        onChange={(event, value) => handlefieldChangeSearch("name", value?.customer_code || "")}
-                                        size='small'
-                                        fullWidth
-                                        sx={autoCompleteStyle}
-                                        renderInput={(params) =>
-                                            <TextField
-                                                {...params}
-                                                label="Customer Name"
-                                            />}
-                                    />
-                                </Grid>
-                            )}
+                            {/* =========================Indent Date======================== */}
                             <Grid item md={2} lg={2} sm={12} xs={12}>
-                                <Button variant="contained"
-                                    size='small'
-                                    onClick={handleSearch}
-                                >
-                                    <SearchTwoToneIcon />
-                                </Button>
+                                <Typography component='h4' sx={{ fontWeight: "bolder" }}>Indent Date : {dayjs().format("DD-MM-YYYY")}</Typography>
                             </Grid>
-                        </Grid>
-                        {/* ============================  */}
-                        <Grid container spacing={2} >
-                            {/* =========================Batch======================== */}
-                            <Grid item md={2.5} lg={2.5} sm={12} xs={12}>
+                            {/* =========================Shifts======================== */}
+                            <Grid item md={3} lg={3} sm={12} xs={12} >
                                 <Autocomplete
                                     disablePortal
-                                    id="combo-box-demo"
                                     size='small'
                                     fullWidth
-                                    options={batchNames}
+                                    options={DDshiftsNames}
                                     sx={autoCompleteStyle}
                                     getOptionLabel={(options) => options.dist_batch_name}
                                     isOptionEqualToValue={(option, value) => option.dist_batch_no === value.dist_batch_no}
-                                    value={batchNames.find(option => option.dist_batch_no === formData.batch) || null}
-                                    onChange={(e, v) => handleFieldChange("batch", v?.dist_batch_no || "")}
+                                    value={DDshiftsNames.find(option => option.dist_batch_no === formData.shifts) || null}
+                                    onChange={(e, v) => handleFieldChange("shifts", v?.dist_batch_no || "")}
                                     renderInput={(params) =>
                                         <TextField
                                             {...params}
-                                            label="Batch"
+                                            label="Shifts"
                                             required
-                                            error={Boolean(errors.batch)}
-                                            helperText={errors.batch}
                                         />}
                                 />
                             </Grid>
-                            {/* =========================Route Name======================== */}
-                            <Grid item md={4} lg={4} sm={12} xs={12}>
-                                <Autocomplete
-                                    disablePortal
-                                    id="combo-box-demo"
-                                    size='small'
-                                    fullWidth
-                                    options={routeNames}
-                                    sx={autoCompleteStyle}
-                                    getOptionLabel={(options) => options.route_name}
-                                    isOptionEqualToValue={(option, value) => option.route_code === value.route_code}
-                                    value={routeNames.find(option => option.route_code === formData.routeName) || null}
-                                    onChange={(e, v) => handleFieldChange("routeName", v?.route_code || "")}
-                                    renderInput={(params) =>
-                                        <TextField
-                                            {...params}
-                                            label="Route Name"
-                                            required
-                                            error={Boolean(errors.routeName)}
-                                            helperText={errors.routeName}
-                                        />}
-                                />
-                            </Grid>
-                            {/* =========================Customer Name======================== */}
-                            <Grid item md={4} lg={4} sm={12} xs={12}>
-                                <Autocomplete
-                                    disablePortal
-                                    id="combo-box-demo"
-                                    size='small'
-                                    fullWidth
-                                    options={customerNames}
-                                    sx={autoCompleteStyle}
-                                    getOptionLabel={(options) => options.customer_name}
-                                    isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
-                                    value={customerNames.find(option => option.customer_code === formData.customerName) || null}
-                                    onChange={(e, v) => handleFieldChange("customerName", v?.customer_code || "")}
-                                    renderInput={(params) =>
-                                        <TextField
-                                            {...params}
-                                            label="Customer Name"
-                                            required
-                                            error={Boolean(errors.customerName)}
-                                            helperText={errors.customerName}
-                                        />}
-                                />
-                            </Grid>
-                            {/* =========================Position on route======================== */}
-                            <Grid item md={2.5} lg={2.5} sm={12} xs={12}>
-                                <TextField
-                                    id="outlined-basic"
-                                    label="Position on route"
-                                    variant="outlined"
-                                    size='small'
-                                    name='statusName'
-                                    required
-                                    sx={textFiledStyle}
-                                    fullWidth
-                                    value={formData.positionOnRoute}
-                                    onChange={(e) => handleFieldChange("positionOnRoute", e.target.value.replace(/[^0-9.]/g, '').replace(/(\.\d{4})\d*$/, '$1'))}
-                                    error={Boolean(errors.positionOnRoute)}
-                                    helperText={errors.positionOnRoute}
-                                />
-                            </Grid>
-                            {/* =========================Indent For======================== */}
-                            <Grid item md={3} lg={3} sm={12} xs={12}>
-                                <Autocomplete
-                                    disablePortal
-                                    id="combo-box-demo"
-                                    size='small'
-                                    fullWidth
-                                    options={Indent_For}
-                                    sx={autoCompleteStyle}
-                                    getOptionLabel={(options) => options.name}
-                                    isOptionEqualToValue={(option, value) => option.value === value.value}
-                                    value={Indent_For.find(option => option.value === formData.indentFor) || null}
-                                    onChange={(e, v) => handleFieldChange("indentFor", v?.value || "")}
-                                    renderInput={(params) =>
-                                        <TextField
-                                            {...params}
-                                            label="Indent For"
-                                            required
-                                            error={Boolean(errors.indentFor)}
-                                            helperText={errors.indentFor}
-                                        />}
-                                />
-                            </Grid>
-                            {/* =========================Bill Route======================== */}
-                            <Grid item md={2.3} lg={2.3} sm={12} xs={12}>
-                                <FormControl error={Boolean(errors.billRoute)}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                size="small"
-                                                checked={formData.billRoute}
-                                                sx={{
-                                                    color: cyan[500],
-                                                    '&.Mui-checked': {
-                                                        color: cyan[900],
-                                                    },
-                                                }}
-                                                onChange={(e, v) => handleFieldChange("billRoute", v)}
-                                            />
-                                        }
-                                        label="Bill Route"
-                                    />
-                                    <FormHelperText>{errors.billRoute}</FormHelperText>
-                                </FormControl>
-                            </Grid>
-                            {/* =========================Indent Route======================== */}
-                            <Grid item md={3} lg={3} sm={12} xs={12}>
-                                <FormControl error={Boolean(errors.indentRoute)}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                size="small"
-                                                checked={formData.indentRoute}
-                                                sx={{
-                                                    color: cyan[500],
-                                                    '&.Mui-checked': {
-                                                        color: cyan[900],
-                                                    },
-                                                }}
-                                                onChange={(e, v) => handleFieldChange("indentRoute", v)}
-                                            />
-                                        }
-                                        label="App Indent Route"
-                                    />
-                                    <FormHelperText>{errors.indentRoute}</FormHelperText>
-                                </FormControl>
-                            </Grid>
-                            {/* =========================Button======================== */}
-                            <Grid item md={12} lg={12} sm={12} xs={12}>
-                                <Stack direction="row" spacing={2}>
-                                    {saveButton && (
-                                        <Button
-                                            variant="contained"
-                                            onClick={handleSubmit}
-                                            type='submit'
-                                            size='small'>
-                                            Save
-                                        </Button>
-                                    )}
-                                    {updateButton && (
-                                        <Button
-                                            variant="contained"
-                                            onClick={handleUpdate}
-                                            type='submit'
-                                            size='small'>
-                                            Update
-                                        </Button>
-                                    )}
-                                    <Button variant="contained"
-                                        onClick={handleClear}
-                                        color="error"
-                                        size='small'>
-                                        Clear
-                                    </Button>
-                                </Stack>
-                            </Grid>
+                            {/* ================================================= */}
                         </Grid>
                     </Paper>
-                    {/* =================================Paper=========================================== */}
-                    <Paper elevation={3}>
-                        <Grid xs={12} sm={12} md={12} lg={12}>
-                            <Box sx={{ height: 305, width: '100%', marginTop: '20px' }}>
-                                <DataGrid
-                                    rows={rows}
-                                    columns={columns}
-                                    getRowId={(row) => row.cust_route_id.toString()}
-                                    initialState={{
-                                        pagination: {
-                                            paginationModel: {
-                                                pageSize: 5,
-                                            },
-                                        },
-                                    }}
-                                    columnVisibilityModel={columnVisibilityModel}
-                                    onColumnVisibilityModelChange={(newModel) =>
-                                        setColumnVisibilityModel(newModel)
-                                    }
-                                    pageSizeOptions={[5, 10, 20]}
-                                    disableRowSelectionOnClick
-                                    getRowHeight={() => 35}
-                                    getRowClassName={getRowClassName}
+                </Grid>
+                {/* ================================  */}
+                <Grid item md={3.5} lg={3.5} sm={12} xs={12}>
+                    <Paper sx={{ padding: 2 }} elevation={3}>
+                        <Grid container spacing={2}>
+                            {/* =========================""======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    size='small'
+                                    fullWidth
+                                    options={DDshiftsNames}
+                                    sx={autoCompleteStyle}
+                                    getOptionLabel={(options) => options.dist_batch_name}
+                                    isOptionEqualToValue={(option, value) => option.dist_batch_no === value.dist_batch_no}
+                                    value={DDshiftsNames.find(option => option.dist_batch_no === formData.noLabel) || null}
+                                    onChange={(e, v) => handleFieldChange("noLabel", v?.dist_batch_no || "")}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
+                                            label=""
+                                            required
+                                        //error={Boolean(errors.districtName)}
+                                        //helperText={errors.districtName}
+                                        />}
                                 />
-                            </Box>
+                            </Grid>
+                            {/* =========================Customer======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    size='small'
+                                    fullWidth
+                                    options={DDcustomerNames}
+                                    sx={autoCompleteStyle}
+                                    getOptionLabel={(options) => options.user_code}
+                                    loading={DDcustomerNames.length === 0}
+                                    isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
+                                    value={DDcustomerNames.find(option => option.customer_code === formData.customer) || null}
+                                    onChange={(e, v) => handleFieldChange("customer", v?.customer_code || "")}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
+                                            label="Customer"
+                                            required
+                                        //error={Boolean(errors.districtName)}
+                                        //helperText={errors.districtName}
+                                        />}
+                                />
+                            </Grid>
+                            {/* =========================Route======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    size='small'
+                                    fullWidth
+                                    options={DDrouteNames}
+                                    sx={autoCompleteStyle}
+                                    getOptionLabel={(options) => options.route_name}
+                                    isOptionEqualToValue={(option, value) => option.indent_number === value.indent_number}
+                                    value={DDrouteNames.find(option => option.indent_number === formData.route) || null}
+                                    onChange={(e, v) => handleFieldChange("route", v?.indent_number || "")}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
+                                            label="Route"
+                                            required
+                                        //error={Boolean(errors.districtName)}
+                                        //helperText={errors.districtName}
+                                        />}
+                                />
+                            </Grid>
+                            {/* =========================Credit Limit======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Typography component="h4" sx={{ fontWeight: "bolder" }}>Credit Limit:</Typography>
+                            </Grid>
+                            {/* =========================Mobile Number======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12}>
+                                <Typography component="h4" sx={{ fontWeight: "bolder" }}>Mobile Number:</Typography>
+                            </Grid>
+                            {/* =========================Route Name======================== */}
+                            <Grid item md={12} lg={12} sm={12} xs={12} display="flex" justifyContent="flex-end">
+                                <Button variant="contained"
+                                    color="error"
+                                    size='small'
+                                    onClick={handleClear}
+                                >
+                                    Clear
+                                </Button>
+                            </Grid>
+                            {/* ================================================= */}
                         </Grid>
+                    </Paper>
+                </Grid>
+                {/* ================================  */}
+                <Grid item md={8.5} lg={8.5} sm={12} xs={12}>
+                    <Paper sx={{ padding: 1 }} elevation={3}>
+                        <StyledBox>
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                getRowId={(row) => row.packet_code.toString()}
+                                columnVisibilityModel={columnVisibilityModel}
+                                onColumnVisibilityModelChange={(newModel) =>
+                                    setColumnVisibilityModel(newModel)
+                                }
+                                disableRowSelectionOnClick
+                                getRowClassName={getRowClassName}
+                                getRowHeight={() => 35}
+                                editMode="row"
+                                hideFooter={true}
+                                slotProps={{
+                                    toolbar: { setRows, setRowModesModel },
+                                }}
+                                // processRowUpdate={processRowUpdate}
+                                rowModesModel={rowModesModel}
+                                onRowModesModelChange={handleRowModesModelChange}
+                                onProcessRowUpdateError={(error) => console.error("Error updating row:", error)}
+                                // onRowEditStart={(params, event) => console.log(params, event.target.innerText)}
+                                // onRowEditStop={handleRowEditStop}
+                                // onRowEditCommit={(id, event) => console.log(id, event)}
+                                // onRowEditStop={(params, event)=>{console.log(params,event.target.innerText)}}
+                                // onCellEditStart={(params, event) => console.log(params,event)}
+                                // onCellEditStop={(params, event) => console.log(params,event)}
+                                // loading={rows.length === 0}
+                            />
+                        </StyledBox>
+                        {/* =====================  */}
+                        <Box display="flex" justifyContent="end">
+                            <Typography component="h4" sx={{ fontWeight: "bolder" }}>Total Amount: {rows.reduce((accumulator, currentValue) => accumulator + currentValue.amt, 0)}</Typography>
+                        </Box>
+                        {/* =====================  */}
                     </Paper>
                 </Grid>
             </Grid>
         </>
     )
 }
-
