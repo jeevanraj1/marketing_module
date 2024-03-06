@@ -9,39 +9,44 @@ import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRound
 const autoCompleteStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "14px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
+      marginTop:"-2px",
     },
 }
 const textFiledStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "10px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
     },
 }
 const status = [

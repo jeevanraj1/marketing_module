@@ -1,10 +1,12 @@
 import React from 'react'
 import { Grid, Typography, Paper, Button, Box, TextField, Stack, Autocomplete } from '@mui/material'
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { useState, useEffect } from "react";
-import { PacketsUnitsAPi } from "../../../Api";
 import Swal from 'sweetalert2';
 import { DataGrid } from '@mui/x-data-grid'
+import { fileTypesAllowedApi } from "../../../Api";
+
 
 const textFiledStyle = {
     width: "100%",
@@ -50,135 +52,123 @@ const autoCompleteStyle = {
     marginTop:"-2px",
   },
 }
-export default function PacketUnitsDT() {
+
+export default function FileTypesAllowed() {
     const [rows, setRows] = useState([]);
     const [saveButton, setSaveButton] = useState(true);
     const [updateButton, setUpdateButton] = useState(false);
-    const [DDGSTUnits, setDDGSTUnits] = useState([]);
-    const [formdata, setFormdata] = useState({
-        unitName: "",
-        gstUnits: ""
-    });
+    const [documentNameDD, setDocumentNameDD] = useState([]);
+    const [fileTypeNameDD, setFileTypeNameDD] = useState([]);
+    const [typeId, setTypeId] = useState(null);
     const [errors, setErrors] = useState({});
-    const [unitId, setUnitId] = useState(null);
-
 
     const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-        unit_id: false
+        type_id: false,
+        doc_id: false,
+        ft_id: false,
     });
 
+    const [formData, setFormData] = useState({
+        documentName: "",
+        fileTypeName: ""
+    });
 
+    const fetchDocumentNames = async () => {
+        try {
+            const response = await fileTypesAllowedApi.fileTypesAllowedApi_Master().DD_fetch_documentName()
+            if (response.status === 200) {
+                setDocumentNameDD(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const fetchFileTypeNames = async () => {
+        try {
+            const response = await fileTypesAllowedApi.fileTypesAllowedApi_Master().DD_fetch_file_typeName()
+            if (response.status === 200) {
+                setFileTypeNameDD(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const fetchData = async () => {
+        try {
+            const response = await fileTypesAllowedApi.fileTypesAllowedApi_Master().fetchAll()
+            console.log(response);
+            if (response.status === 200) {
+                setRows(response.data.items)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
     const getRowClassName = (params) => {
         const rowIndex = params.indexRelativeToCurrentPage;
         return rowIndex % 2 === 0 ? "row-even" : "row-odd";
     };
+    const handleFieldChange = (fieldName, value) => {
+        localStorage.setItem("Navigation_state", false)
+        //====================================documentName============================================
+        if (fieldName === "documentName") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }));
+            } else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: "",
+                }));
+            }
+            setFormData((prevData) => ({
+                ...prevData,
+                [fieldName]: value
+            }));
+        }
+        //====================================fileTypeName============================================
+        if (fieldName === "fileTypeName") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: 'Required'
+                }));
+            } else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: "",
+                }));
+            }
+            setFormData((prevData) => ({
+                ...prevData,
+                [fieldName]: value
+            }));
+        }
+    }
     const validation = () => {
         const newErrors = {}
-        // ===========================================================unitName===========================================
-        if (formdata.unitName === "") newErrors.unitName = "Required"
-        else if (formdata.unitName !== "") newErrors.unitName = errors.unitName
-        // ===========================================================gstUnits===========================================
-        if (formdata.gstUnits === "") newErrors.gstUnits = "Required"
-        else if (formdata.gstUnits !== "") newErrors.gstUnits = errors.gstUnits
+        //====================================documentName==================================
+        if (formData.documentName === "") newErrors.documentName = "Required"
+        else if (formData.documentName !== "") newErrors.documentName = errors.documentName
+        //====================================fileTypeName=======================================
+        if (formData.fileTypeName === "") newErrors.fileTypeName = "Required"
+        else if (formData.fileTypeName !== "") newErrors.fileTypeName = errors.fileTypeName
 
         return newErrors
     }
     const handleClear = () => {
+        setFormData({
+            documentName: "",
+            fileTypeName: ""
+        })
         setSaveButton(true)
         setUpdateButton(false)
         setErrors({})
-        setFormdata({
-            gstUnits: "",
-            unitName: "",
-        })
+        // setMasterID(null)
+        fetchData()
         localStorage.setItem("Navigation_state", true)
-    }
-    const handleFieldChange = (fieldname, value) => {
-        localStorage.setItem("Navigation_state", false)
-        setErrors((preErrors) => ({
-            ...preErrors,
-            [fieldname]: ''
-        }))
-        // ===========================================================unitName===========================================
-        if (fieldname === "unitName") {
-            if (value === "") {
-                setErrors((preErrors) => ({
-                    ...preErrors,
-                    [fieldname]: "Required",
-                }))
-            }
-            else if (value.trim().length > 10) {
-                setErrors((preErrors) => ({
-                    ...preErrors,
-                    [fieldname]: "Value Must Be less than 10 Charaters",
-                }))
-            }
-            setFormdata((prevdata) => ({
-                ...prevdata,
-                [fieldname]: value,
-            }))
-        }
-        // ===========================================================gstUnits===========================================
-        if (fieldname === "gstUnits") {
-            if (value === "") {
-                setErrors((preErrors) => ({
-                    ...preErrors,
-                    [fieldname]: "Required",
-                }))
-            }
-            setFormdata((prevdata) => ({
-                ...prevdata,
-                [fieldname]: value,
-            }))
-        }
-
-    }
-    const handleUpdate = async (e) => { 
-        e.preventDefault()
-        const validationErorrs = validation()
-        setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
-        if (!hasErrors) {
-            const newRecord = {
-                "uom": formdata.unitName.trim(),
-                "gst_unit": formdata.gstUnits,
-                "description": null,
-            }
-            try {
-                const response = await PacketsUnitsAPi.PacketsUnitsAPi_master().update(unitId,newRecord);
-                if (response.data.Status === 1) {
-                    Swal.fire({
-                        title: 'Saved',
-                        text: 'Updated Sucessfully',
-                        icon: 'success',
-                        customClass: {
-                            container: 'custom-swal-container'
-                        }
-                    });
-                    handleClear()
-                    fetchData()
-                    localStorage.setItem("Navigation_state", true)
-                } else {
-                    Swal.fire({
-                        title: 'Error',
-                        text: `${response.data.Error}` || 'Unknown Error',
-                        icon: 'error',
-                        customClass: {
-                            container: 'custom-swal-container'
-                        }
-                    });
-                }
-            } catch (error) {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Unknown Error',
-                    icon: 'error',
-                    customClass: {
-                        container: 'custom-swal-container'
-                    }
-                });
-            }
-        }
     }
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -187,12 +177,12 @@ export default function PacketUnitsDT() {
         const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
         if (!hasErrors) {
             const newRecord = {
-                "uom": formdata.unitName.trim(),
-                "gst_unit": formdata.gstUnits,
-                "description": null,
+                "doc_id": formData.documentName,
+                "ft_id": formData.fileTypeName,
             }
             try {
-                const response = await PacketsUnitsAPi.PacketsUnitsAPi_master().create(newRecord)
+                console.log(newRecord);
+                const response = await fileTypesAllowedApi.fileTypesAllowedApi_Master().create(newRecord)
                 if (response.data.Status === 1) {
                     Swal.fire({
                         title: 'Saved',
@@ -202,9 +192,9 @@ export default function PacketUnitsDT() {
                             container: 'custom-swal-container'
                         }
                     });
-                    handleClear()
                     fetchData()
                     localStorage.setItem("Navigation_state", true)
+                    handleClear()
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -227,6 +217,104 @@ export default function PacketUnitsDT() {
             }
         }
     }
+    const handleUpdate = async (e) => {
+        e.preventDefault()
+        const validationErorrs = validation()
+        setErrors(validationErorrs)
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null && error !== undefined)
+        if (!hasErrors) {
+            const newRecord = {
+                "doc_id": formData.documentName,
+                "ft_id": formData.fileTypeName,
+            }
+            try {
+                console.log(newRecord);
+                const response = await fileTypesAllowedApi.fileTypesAllowedApi_Master().update(typeId, newRecord)
+                if (response.data.Status === 1) {
+                    Swal.fire({
+                        title: 'Saved',
+                        text: 'Updated Sucessfully',
+                        icon: 'success',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                    fetchData()
+                    localStorage.setItem("Navigation_state", true)
+                    handleClear()
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: `${response.data.Error}` || 'Unknown Error',
+                        icon: 'error',
+                        customClass: {
+                            container: 'custom-swal-container'
+                        }
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Unknown Error',
+                    icon: 'error',
+                    customClass: {
+                        container: 'custom-swal-container'
+                    }
+                });
+            }
+        }
+    }
+
+    const handleDeleteButtonClick = async (params) => {
+        await handleDeleteConfirm(params);
+    };
+
+    const handleDeleteConfirm = async (row) => {
+        try {
+            const shouldDelete = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this data!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it',
+                reverseButtons: true,
+            });
+
+            if (shouldDelete.isConfirmed) {
+                console.log("Hi");
+                console.log(row);
+                const response = await fileTypesAllowedApi.fileTypesAllowedApi_Master().delete(row.type_id);
+                console.log(response);
+                if (response.data.Status === 1) {
+                    Swal.fire(`Deleted Successfully`, '', 'success');
+                    fetchData();
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.data.Error || 'Unknown Error',
+                        icon: 'error',
+                    });
+                }
+            }
+        } catch (error) {
+            Swal.fire('Error', 'Error Deleting Data', 'error');
+        }
+    };
+    const handleEdit = (row) => {
+        console.log(row);
+        setUpdateButton(true)
+        setSaveButton(false)
+        setFormData((prevdata) => ({
+            ...prevdata,
+            documentName: row.doc_id,
+            fileTypeName: row.ft_id
+        }))
+        setTypeId(row.type_id)
+        setErrors({})
+        localStorage.setItem("Navigation_state", true);
+    }
+
     const columns = [
         {
             field: "action",
@@ -253,61 +341,62 @@ export default function PacketUnitsDT() {
                     >
                         Edit
                     </ModeEditOutlineRoundedIcon>
+                    <DeleteForeverIcon
+                        sx={{ color: "red" }}
+                        style={{
+                            cursor: "pointer",
+                            opacity: 1,
+                            transition: "opacity 0.3s",
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.opacity = 0.7;
+                            e.currentTarget.style.color = "rgba(255, 0, 0, 0.7)";
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.opacity = 1;
+                            e.currentTarget.style.color = "red";
+                        }}
+                        onClick={() => handleDeleteButtonClick(params.row)}
+                    >
+                        Delete
+                    </DeleteForeverIcon>
                 </>
-
             ),
         },
         {
-            field: 'unit_id',
-            headerName: 'Taluka Code',
+            field: 'type_id',
+            headerName: 'Type ID',
+            width: 80,
+        },
+        {
+            field: 'doc_id',
+            headerName: 'Document ID',
             width: 150,
         },
         {
-            field: 'uom',
-            headerName: 'Unit Name',
+            field: 'doc_name',
+            headerName: 'Document Name',
             width: 150,
         },
         {
-            field: 'gst_unit',
-            headerName: 'GST Units',
-            width: 110,
+            field: 'ft_id',
+            headerName: 'File Type ID',
+            width: 150,
         },
-
+        {
+            field: 'file_type',
+            headerName: 'File Type',
+            width: 150,
+        },
     ];
-    const fetchGSTUnits = async () => {
-        try {
-            const response = await PacketsUnitsAPi.PacketsUnitsAPi_master().DD_gst_units()
-            if (response.status === 200) {
-                setDDGSTUnits(response.data.items)
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
-    const fetchData = async () => {
-        const response = await PacketsUnitsAPi.PacketsUnitsAPi_master().fetchAll()
-        if (response.status === 200) {
-            setRows(response.data.items)
-        }
-    }
-    const handleEdit = (row) => {
-        setSaveButton(false)
-        setUpdateButton(true)
-        setFormdata((prevdata) => ({
-            ...prevdata,
-            unitName: row.uom,
-            gstUnits: row.gst_unit,
-        }))
-        setErrors({})
-        setUnitId(row.unit_id)
-        localStorage.setItem("Navigation_state", true)
-    }
     useEffect(() => {
+        fetchDocumentNames()
+        fetchFileTypeNames()
         fetchData()
-        fetchGSTUnits()
-        document.title = "Packets Units"
+        document.title = "File Types Allowed"
     }, [])
+
     return (
         <>
             <Grid container spacing={2}>
@@ -317,50 +406,54 @@ export default function PacketUnitsDT() {
                             {/* =========================Taluk  Master======================== */}
                             <Grid item md={12} lg={12} sm={12} xs={12}>
                                 <Typography variant='h5'>
-                                    Packet Units
+                                    File Types Allowed
                                 </Typography>
                             </Grid>
-                            {/* =========================Unit Name======================== */}
+                            {/* =========================Document Name======================== */}
                             <Grid item md={4} lg={4} sm={12} xs={12}>
-                                <TextField
-                                    id="outlined-basic"
-                                    label="Unit Name"
-                                    variant="outlined"
-                                    size='small'
-                                    required
-                                    sx={textFiledStyle}
-                                    fullWidth
-                                    value={formdata.unitName}
-                                    onChange={(e) => handleFieldChange("unitName", e.target.value.toUpperCase())}
-                                    error={Boolean(errors.unitName)}
-                                    helperText={errors.unitName}
-                                />
-                            </Grid>
-                            {/* =========================GSt Units======================== */}
-                            <Grid item md={8} lg={8} sm={12} xs={12}>
                                 <Autocomplete
                                     disablePortal
                                     id="combo-box-demo"
                                     size='small'
                                     fullWidth
-                                    options={DDGSTUnits}
+                                    options={documentNameDD}
                                     sx={autoCompleteStyle}
-                                    getOptionLabel={(options) => options.unit_name}
-                                    renderOption={(props, options) => (
-                                        <Box component="li" {...props}>
-                                            {options.unit_name} ({options.gst_unit})
-                                        </Box>
-                                    )}
-                                    isOptionEqualToValue={(option, value) => option.gst_unit === value.gst_unit}
-                                    value={DDGSTUnits.find(option => option.gst_unit === formdata.gstUnits) || null}
-                                    onChange={(e, v) => handleFieldChange("gstUnits", v?.gst_unit || "")}
+                                    getOptionLabel={(options) => options.doc_name}
+                                    isOptionEqualToValue={(option, value) => option.doc_id === value.doc_id}
+                                    value={documentNameDD.find(option => option.doc_id === formData.documentName) || null}
+                                    onChange={(e, v) => handleFieldChange("documentName", v?.doc_id || "")}
                                     renderInput={(params) =>
                                         <TextField
                                             {...params}
-                                            label="GST Units"
+                                            label="Document Name"
                                             required
-                                            error={Boolean(errors.gstUnits)}
-                                            helperText={errors.gstUnits}
+                                            error={Boolean(errors.documentName)}
+                                            helperText={errors.documentName}
+                                        />}
+                                />
+                            </Grid>
+
+                            {/* =========================Extension======================== */}
+                            <Grid item md={4} lg={4} sm={12} xs={12}>
+                                <Autocomplete
+                                    disablePortal
+                                    id="combo-box-demo"
+                                    size='small'
+                                    fullWidth
+
+                                    options={fileTypeNameDD}
+                                    sx={autoCompleteStyle}
+                                    getOptionLabel={(options) => options.file_type}
+                                    isOptionEqualToValue={(option, value) => option.ft_id === value.ft_id}
+                                    value={fileTypeNameDD.find(option => option.ft_id === formData.fileTypeName) || null}
+                                    onChange={(e, v) => handleFieldChange("fileTypeName", v?.ft_id || "")}
+                                    renderInput={(params) =>
+                                        <TextField
+                                            {...params}
+                                            label="Extension"
+                                            required
+                                            error={Boolean(errors.fileTypeName)}
+                                            helperText={errors.fileTypeName}
                                         />}
                                 />
                             </Grid>
@@ -401,7 +494,7 @@ export default function PacketUnitsDT() {
                             <DataGrid
                                 rows={rows}
                                 columns={columns}
-                                getRowId={(row) => row.unit_id.toString()}
+                                getRowId={(row) => row.type_id.toString()}
                                 initialState={{
                                     pagination: {
                                         paginationModel: {

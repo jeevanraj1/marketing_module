@@ -1,11 +1,13 @@
 import axios from "axios";
 
-const baseurl = `http://172.16.17.2:8080/ords/market/tbl/`
-// const baseurl = `http://103.21.232.59:8080/ords/market/tbl/`
+// const baseurl = `http://172.16.17.2:8080/ords/market/tbl/`
+const baseurl = `http://103.21.232.59:8080/ords/market/tbl/`
 
 const siriM1 = 'http://172.16.17.2:8080/ords/m1/tbl/'
 // const siriM1 = 'http://103.21.232.59:8080/ords/m1/tbl/'
 
+const documentsUploadBaseUrl = `http://172.16.17.10:4666/api/Photo/`
+// const documentsUploadBaseUrl = `http://103.21.232.59:4666/api/Photo/`
 export const officerApi = {
     officerApi_master(url = baseurl + `officers`) {
         return {
@@ -320,7 +322,7 @@ export const PacketsApi = {
         return {
             fetchAll: () => axios.get(url),
             create: newRecord => axios.post(url, newRecord),
-            update: (id, updateRecord) => axios.put(url + `?    =${id}`, updateRecord),
+            update: (id, updateRecord) => axios.put(url + `?packet_code=${id}`, updateRecord),
 
             DD_fetch_product_name: () => axios.get(baseurl + 'dd_prd_product_name'),
             DD_fetch_unit_name: () => axios.get(baseurl + 'dd_packet_unit_name'),
@@ -332,11 +334,14 @@ export const PacketsApi = {
             fetchByPacketCode: (id) => axios.get(url + `?packet_code=${id}`),
 
             //FOR PACKET IMAGES after save
-            fetchAllImages:(packetCode)=>axios.get(baseurl + `pkt_images?packet_code=${packetCode}`), //pkt_images?packet_code=1
+            fetchAllImages: (packetCode) => axios.get(baseurl + `pkt_images?packet_code=${packetCode}`), //pkt_images?packet_code=1
             fetchByMasterID: () => axios.get(baseurl + `doc_master_link_pkt?master_id=${3}`),
             create_pkt_images: newRecord => axios.post(baseurl + `pkt_images`, newRecord),
-            postWebApiDocuments:(newRecord)=>axios.post("http://172.16.17.10:4666/api/Photo/SaveFileLocally",newRecord),
-            getDocumentsWebApi:(fileName)=>axios.get(`http://172.16.17.10:4666/api/Photo/get1/${fileName}`)
+            postWebApiDocuments: (newRecord) => axios.post(documentsUploadBaseUrl + "SaveFileLocally", newRecord),
+            getDocumentsWebApi: (fileName) => axios.get(documentsUploadBaseUrl + `get1/${fileName}`),
+            typeCheckDocuments: (id) => axios.get(baseurl + `dd_pkt_images_upload_file_typeCheck?doc_id=${id}`),
+            deleteImageWebApi: (FileName) => axios.delete(documentsUploadBaseUrl + `delete/${FileName}`),
+            deleteOracle: (fileName) => axios.delete(baseurl + `pkt_images?img_name=${fileName}`)
         };
     }
 };
@@ -377,3 +382,27 @@ export const IndentEntryAPI = {
         };
     }
 };
+
+export const fileTypesApi = {
+    fileTypesApi_Master(url = baseurl + 'file_types') {
+        return {
+            fetchAll: () => axios.get(url),
+            create: (newRecord) => axios.post(url, newRecord),
+            update: (id, newRecord) => axios.put(url + `?ft_id=${id}`, newRecord)
+        }
+    }
+}
+
+export const fileTypesAllowedApi = {
+    fileTypesAllowedApi_Master(url = baseurl + 'file_types_allowed') {
+        return {
+            fetchAll: () => axios.get(url),
+            create: (newRecord) => axios.post(url, newRecord),
+            update: (id, newRecord) => axios.put(url + `?type_id=${id}`, newRecord),
+            delete: id => axios.delete(url + `?type_id=${id}`),
+
+            DD_fetch_documentName: () => axios.get(baseurl + 'dd_doc_master_documentName'),
+            DD_fetch_file_typeName: () => axios.get(baseurl + 'dd_file_type_fileTypeName'),
+        }
+    }
+}

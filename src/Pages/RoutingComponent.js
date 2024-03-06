@@ -43,6 +43,8 @@ import CustomerRouteDT from './MarketingModule/Master/CustomerRoute/CustomerRout
 import DocumentMaster from './MarketingModule/Master/DocumentMaster/DocumentMaster';
 import DocumentsMasterLink from './MarketingModule/Master/DocumentsMasterLink/DocumentsMasterLink';
 import IndentEntry from './MarketingModule/Master/IndentEntry/IndentEntry';
+import FileTypes from './MarketingModule/Master/FileTypes/FileTypes';
+import FileTypesAllowed from './MarketingModule/Master/FileTypesAllowed/FileTypesAllowed';
 
 
 export default function RoutingComponent() {
@@ -126,6 +128,10 @@ export default function RoutingComponent() {
                     <Route path='DocumentsMasterLink' element={<ErrorBoundary key={location.pathname} componentName="DocumentsMasterLink" ><DocumentsMasterLink /></ErrorBoundary>} />
 
                     <Route path='IndentEntry' element={<ErrorBoundary key={location.pathname} componentName="IndentEntry" ><IndentEntry /></ErrorBoundary>} />
+
+                    <Route path='FileTypes' element={<ErrorBoundary key={location.pathname} componentName="FileTypes" ><FileTypes /></ErrorBoundary>} />
+
+                    <Route path='FileTypesAllowed' element={<ErrorBoundary key={location.pathname} componentName="FileTypesAllowed" ><FileTypesAllowed /></ErrorBoundary>} />
 
                 </Route>
 

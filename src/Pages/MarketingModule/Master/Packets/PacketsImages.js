@@ -6,6 +6,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import { PacketsApi } from "../../../Api";
+import { saveAs } from 'file-saver';
 
 const style = {
   position: 'absolute',
@@ -24,18 +25,21 @@ const autoCompleteStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
   },
 }
 
@@ -71,10 +75,7 @@ function returnFileSize1(number) {
   }
 }
 
-function validFileType(file) {
-  var validTypes = ['application/pdf', 'image/jpeg', "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"];
-  return validTypes.includes(file.type);
-}
+
 
 const getFileTypeFromFileName = (fileName) => {
   const extension = fileName.split('.').pop().toLowerCase();
@@ -100,8 +101,9 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
   const [openModal, setOpenModal] = useState(false);
   const [documentsModal, setDocumentsModal] = useState(false);
   const [popupbase64url, setPopupbase64url] = useState("");
-  const [fileType, setFileType] = useState();
-
+  const [fileType, setFileType] = useState("");
+  const [getFilevalidFileType, setGetFilevalidFileType] = useState([])
+  const [deleteFileName, setDeleteFileName] = useState("");
   const [formData, setFormData] = useState({
     imageType: ""
   });
@@ -119,7 +121,6 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
       console.log(error);
     }
   }
-
 
   const validation = () => {
     const newErrors = {}
@@ -143,10 +144,14 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
       ...prevadata,
       imageType: "",
     }))
+    setErrors({})
+    setBrowserclicked(false)
   }
   const handleFieldChange = (fieldName, value) => {
     if (fieldName === "imageType") {
+      getValidFileType(value)
       if (value === "") {
+        setBrowserclicked(false)
         setErrors((prevErrors) => ({
           ...prevErrors,
           [fieldName]: 'Required'
@@ -164,17 +169,19 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
     }
   }
 
+  function validFileType(file) {
+    return getFilevalidFileType.includes(file.type);
+  }
   const handleFileChange = async (e) => {
     const selectedFile = e.target.files[0];
 
     setSelectedFileName(selectedFile.name);
     setFile(selectedFile)
-    // console.log(Math.round(selectedFile.size / 1000) + ' kB');
 
     if (!validFileType(selectedFile)) { // check for valid file type
       Swal.fire({
         title: 'Error',
-        text: "Upload Only in jpeg,Pdf,excel Format",
+        text: "Not a Valid File Format",
         icon: 'error',
         customClass: {
           container: 'custom-swal-container'
@@ -192,7 +199,6 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
       });
     }
     if (Number(returnFileSize(selectedFile.size)) < 150 && validFileType(selectedFile)) { //set image file to display
-      console.log("Ji");
       const fileReader = new FileReader();
       fileReader.readAsDataURL(selectedFile);
       fileReader.onload = () => {
@@ -210,11 +216,13 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
 
   const handleCloseModal = () => {
     setOpenModal(false);
+    handleClear()
   };
 
   const handelDocumentsModalOpen = (fileData, fileName) => {
     setDocumentsModal(true);
     setPopupbase64url(fileData);
+    setDeleteFileName(fileName)
     setFileType(getFileTypeFromFileName(fileName)); // Assuming a function getFileTypeFromFileName is defined elsewhere
   };
 
@@ -286,9 +294,93 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
       }
     }
   }
+
+  const handleDeleteClick = async (e) => {
+    const DeleteConfirm = await Swal.fire({
+      title: '',
+      text: `Are You Sure You want To delete ${deleteFileName.substring(2,deleteFileName.length)} ? You Will Not be Able to Recover This`,
+      icon: "warning",
+      showDenyButton: true,
+      showConfirmButton: true,
+      reverseButtons: true,
+      denyButtonText: "NO",
+      confirmButtonText: "YES",
+      customClass: {
+        container: 'custom-swal-container'
+      }
+    })
+    if (DeleteConfirm.isConfirmed) {
+      try {
+        const webApiDeleteResponse = await PacketsApi.PacketsAPI_master().deleteImageWebApi(deleteFileName)
+        const oracleDeleteResponse = await PacketsApi.PacketsAPI_master().deleteOracle(deleteFileName)
+        console.log(webApiDeleteResponse);
+        console.log(oracleDeleteResponse);
+        if (webApiDeleteResponse.data === "DELETED SUCCESSFULLY" && oracleDeleteResponse.data.Status === 1) {
+          Swal.fire({
+            title: 'Sucess',
+            text: 'Deleted Successfully',
+            icon: 'success',
+            customClass: {
+              container: 'custom-swal-container'
+            }
+          });
+          fetchImagesOracleNames(packtCode)
+          handelDocumentsModalclose()
+        }
+        else if (oracleDeleteResponse.data.Status === 0) {
+          Swal.fire({
+            title: 'Error',
+            text: `${oracleDeleteResponse.data.Error}` || 'Unknown Error',
+            icon: 'error',
+            customClass: {
+              container: 'custom-swal-container'
+            }
+          });
+        }
+        else if (webApiDeleteResponse.data === "DELETE FAILED") {
+          Swal.fire({
+            title: 'Error',
+            text: 'Unknown Error',
+            icon: 'error',
+            customClass: {
+              container: 'custom-swal-container'
+            }
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Unknown Error',
+          icon: 'error',
+          customClass: {
+            container: 'custom-swal-container'
+          }
+        });
+      }
+    }
+    if (DeleteConfirm.isDenied) {
+
+    }
+  }
+  const convertBase64ToFile = (base64String, fileName) => {
+    let mime = base64String;
+    let bstr = atob(base64String);
+    let n = bstr.length;
+    let uint8Array = new Uint8Array(n);
+    while (n--) {
+      uint8Array[n] = bstr.charCodeAt(n);
+    }
+    let file = new File([uint8Array], fileName, { type: mime });
+    return file;
+  }
+  const handleDownload = () => {
+    let file = convertBase64ToFile(popupbase64url, deleteFileName);
+    saveAs(file, deleteFileName);
+  }
   const fetchImagesOracleNames = async (packtCode) => {
     try {
       const response = await PacketsApi.PacketsAPI_master().fetchAllImages(packtCode)
+      console.log(response.data.items);
       const promises = response.data.items.map(async (item) => {
         try {
           const response1 = await PacketsApi.PacketsAPI_master().getDocumentsWebApi(item.img_name)
@@ -304,7 +396,18 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
       console.log(error);
     }
   };
-
+  const getValidFileType = async (doc_id) => {
+    try {
+      const response = await PacketsApi.PacketsAPI_master().typeCheckDocuments(doc_id)
+      if (response.status === 200) {
+        const array = response.data.items.map(item => item.file_type)
+        setGetFilevalidFileType(array)
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     fetchImageNames()
     fetchImagesOracleNames(packtCode)
@@ -354,13 +457,14 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
                       fullWidth
                       startIcon={<TravelExploreIcon />}
                       onClick={() => setBrowserclicked(true)}
-                      disabled={!formData.imageType}
+                      disabled={!formData.imageType && getFilevalidFileType.length === 0}
                     >
                       Browse
                       <VisuallyHiddenInput
                         type="file"
                         onChange={handleFileChange}
-                        accept=".jpeg ,.pdf,.xlsx,.jpg"
+                        // accept=".jpeg,.pdf,.xlsx,.jpg,.doc,.docx,.ppt,.pptx,.xls"
+                        accept={`${getFilevalidFileType}`}
                         ref={fileInputRef}
                       />
                     </Button>
@@ -417,7 +521,7 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
                                     color: "blue"
                                   }}
                                 >
-                                  {items.fileName}
+                                  {items.fileName.substring(2,items.fileName.length)}
                                 </Box>
                               </td>
                             </tr>
@@ -492,7 +596,24 @@ export default function PacketsImages({ packetCodeforImages, usersCode, packetNa
               Unable to determine file type. Please try again.
             </Typography>
           )}
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+            <Button
+              onClick={handleDownload}
+              variant="contained"
+              color="secondary"
+              size='small'
+            // sx={{display:"none"}}
+            >
+              Download
+            </Button>
+            <Button
+              onClick={handleDeleteClick}
+              variant="contained"
+              color="error"
+              size='small'
+            >
+              Delete
+            </Button>
             <Button
               onClick={handelDocumentsModalclose}
               variant="contained"

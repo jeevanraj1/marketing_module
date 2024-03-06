@@ -10,18 +10,20 @@ const textFiledStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
   },
 }
 
@@ -65,6 +67,12 @@ export default function RateCategoryDT() {
           catagName: 'Must be less than 5 Characters'
         }))
         value = value.substring(0, 5)
+        setTimeout(() => {
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            catagName: ''
+          }))
+        }, 1000);
       }
       else {
         setErrors((prevErrors) => ({

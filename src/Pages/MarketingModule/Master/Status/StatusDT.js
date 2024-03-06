@@ -8,25 +8,26 @@ import { DataGrid } from '@mui/x-data-grid'
 
 const textFiledStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(16px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+  },
 }
 export default function StatusDT() {
-
     const [rows, setRows] = useState([]);
     const [statusID, setstatusID] = useState([]);
     const [saveButton, setSaveButton] = useState(true);
@@ -47,36 +48,41 @@ export default function StatusDT() {
         setstatusID(row.status_id)
         setUpdateButton(true)
         setSaveButton(false)
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
 
     const handleFiledChange = (fieldName, value) => {
-        localStorage.setItem("Navigation_state",false)
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
         }));
-        if (fieldName === "statusName" && value.length <= 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                statusName: 'Value must greater than 3 charaters',
-            }));
+        if (fieldName === "statusName") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    statusName: 'Required',
+                }));
+            }
+            else if (value.length > 25) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    statusName: 'Value must be less Than 25 charaters',
+                }));
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    statusName: '',
+                }));
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
             }))
 
         }
-        else if (fieldName === "statusName" && value.length > 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                statusName: '',
-            }));
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
-        }
+
     }
 
     const handleClear = () => {
@@ -90,7 +96,7 @@ export default function StatusDT() {
             ...prevdata,
             statusName: ""
         }))
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
 
     const fetchData = async () => {
@@ -118,7 +124,7 @@ export default function StatusDT() {
         const validationErorrs = validation()
         console.log(validationErorrs);
         setErrors(validationErorrs)
-        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null )
+        const hasErrors = Object.values(validationErorrs).some(error => error !== "" && error !== null)
         if (!hasErrors) {
             try {
                 const newRecord = {
@@ -129,7 +135,7 @@ export default function StatusDT() {
                     Swal.fire('Saved', 'Successfully', 'success');
                     handleClear();
                     fetchData();
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -159,7 +165,7 @@ export default function StatusDT() {
                     Swal.fire('Saved', 'Updated Sucessfully', 'success');
                     handleClear();
                     fetchData();
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire({
                         title: 'Error',
@@ -225,7 +231,7 @@ export default function StatusDT() {
         const newErrors = {}
         if (formData.statusName === "") {
             newErrors.statusName = "Required "
-        } else if (formData.statusName.length <= 3) {
+        } else if (formData.statusName !== "") {
             newErrors.statusName = errors.statusName
         }
         return newErrors

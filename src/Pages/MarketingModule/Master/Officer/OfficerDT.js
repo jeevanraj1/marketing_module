@@ -6,22 +6,24 @@ import { officerApi } from '../../../Api';
 import Swal from 'sweetalert2';
 
 const textFiledStyle = {
-    width: "100%",
+    wiwidth: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
     },
 }
 export default function OfficerDT() {
@@ -102,7 +104,7 @@ export default function OfficerDT() {
         setOfficerCode(row.officer_code)
         SetUpdateButton(true)
         SetSaveButton(false)
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
     const fetchData = async () => {
         try {
@@ -117,28 +119,30 @@ export default function OfficerDT() {
 
 
     const handleFiledChange = (fieldName, value) => {
-        localStorage.setItem("Navigation_state",false)
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
         }));
-
-        if (fieldName === "officerName" && value.length <= 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                officerName: 'Value must greater than 3 charaters',
-            }));
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
-
-        }
-        else if (fieldName === "officerName" && value.length > 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                officerName: '',
-            }));
+        if (fieldName === "officerName") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    officerName: 'Required',
+                }));
+            }
+            else if (value.length > 40) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    officerName: 'Value must be less Than 40 charaters',
+                }));
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    officerName: '',
+                }));
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
@@ -185,7 +189,7 @@ export default function OfficerDT() {
             officerName: '',
             officerZone: ""
         }));
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
 
     const validation = () => {
@@ -222,7 +226,7 @@ export default function OfficerDT() {
                     Swal.fire("sucess", "Saved Sucessfully", "success")
                     handleClear()
                     fetchData()
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire('Error' `${respone.data.Error}`, 'error')
                 }
@@ -248,7 +252,7 @@ export default function OfficerDT() {
                     Swal.fire("sucess", "Updated Sucessfully", "success")
                     handleClear()
                     fetchData()
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire('Error' `${respone.data.Error}`, 'error')
                 }

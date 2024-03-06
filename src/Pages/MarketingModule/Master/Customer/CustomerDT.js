@@ -12,26 +12,29 @@ import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
 import { customerApi } from '../../../Api';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-import dayjs from 'dayjs';
+import Swal from 'sweetalert2';
 
 const autocompleteStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
+  },
 }
 export default function CustomerDT() {
     const navigate = useNavigate()
@@ -181,7 +184,7 @@ export default function CustomerDT() {
             field: 'account_no',
             headerName: 'Account Number',
             width: 200,
-            align:'right',
+            align: 'right',
         },
         {
             field: 'fd_lock',
@@ -239,7 +242,7 @@ export default function CustomerDT() {
         {
             field: 'registration_date',
             headerName: 'Registration Date',
-            width: 200,           
+            width: 200,
         },
         {
             field: 'tcs_perc',
@@ -255,13 +258,13 @@ export default function CustomerDT() {
         {
             field: 'main_customer_code',
             headerName: 'Main Customer Code',
-            width: 160,          
+            width: 160,
         },
         {
             field: 'customer_name1',
             headerName: 'Main Customer Name',
             width: 150,
-          },
+        },
 
     ];
     const getRowClassName = (params) => {
@@ -306,7 +309,7 @@ export default function CustomerDT() {
             relationName: row.rel_name,
             officerName: row.officer_code,
             registrationDate: row.registration_date,
-            mainCustomerName:row.main_customer_code,
+            mainCustomerName: row.main_customer_code,
             // ======================================Customer Category===============================
             customerType: row.customer_type,
             billCategory: row.bill_catag,
@@ -361,7 +364,15 @@ export default function CustomerDT() {
         }
     }
     const handleSearch = () => {
-        if (customerCode === "") FetchData()
+        if (customerCode === "" || customerCode === null) {
+            Swal.fire({
+                title: "select a value to search",
+                timer: 1500,
+                icon: 'warning',
+                showConfirmButton: false
+            })
+            FetchData()
+        }
         else if (customerCode !== "") fetchCustomerDeatils(customerCode)
     }
     const fetchCustomerDeatils = async (id) => {

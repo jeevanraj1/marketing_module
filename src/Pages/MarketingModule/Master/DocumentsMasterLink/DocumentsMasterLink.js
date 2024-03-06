@@ -8,43 +8,27 @@ import Swal from 'sweetalert2';
 import { DataGrid } from '@mui/x-data-grid'
 import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
 
-const textFiledStyle = {
-  width: "100%",
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": { borderColor: "black", borderWidth: "2px" },
-  },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(16px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
-    display: "flex",
-    alignItems: "center",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-}
 
 const autoCompleteStyle = {
   width: "100%",
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
   },
 }
 export default function DocumentsMasterLink() {
@@ -59,7 +43,7 @@ export default function DocumentsMasterLink() {
 
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    link_id: true,
+    link_id: false,
     master_id: false,
     doc_id: false
   });

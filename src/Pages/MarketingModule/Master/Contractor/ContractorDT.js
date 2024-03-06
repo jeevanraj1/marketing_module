@@ -15,26 +15,20 @@ const textFiledStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
   "& input": {
-    height: "10px",
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
   },
   "& label": {
-    height: "14px",
+    height: "11px",
     display: "flex",
     alignItems: "center",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "bold",
-    marginTop: "-1px",
+    color:"black",
   },
 }
 
@@ -43,14 +37,8 @@ const autoCompleteStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
   "& input": {
-    height: "10px",
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
@@ -60,9 +48,10 @@ const autoCompleteStyle = {
     height: "14px",
     display: "flex",
     alignItems: "center",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "bold",
-    marginTop: "-1px",
+    color:"black",
+    marginTop:"-2px",
   },
 }
 const datePickerStyle = {
@@ -71,22 +60,16 @@ const datePickerStyle = {
     "& fieldset": {
       borderColor: "black",
       borderWidth: "2px",
-      height: "32px",
+      height: "33px",
       paddingBottom: "5px",
 
     },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -8px)",
-    },
-  },
   "& input": {
-    height: "12px",
+    height: "11px",
     display: "flex",
     alignItems: "center",
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: "bold",
     marginTop: "-1px",
   },
@@ -94,7 +77,7 @@ const datePickerStyle = {
     height: "14px",
     display: "flex",
     alignItems: "center",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "bold",
     marginTop: "-1px",
   },
@@ -413,6 +396,18 @@ export default function ContractorDT() {
           }))
         }, [])
       }
+      else if (value?.trim().length < 10) {
+        setMasterErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: "Invalid Phone Number"
+        }))
+      }
+      else {
+        setMasterErrors((prevErrors) => ({
+          ...prevErrors,
+          [fieldName]: ""
+        }))
+      }
       setMasterFormData((prevdata) => ({
         ...prevdata,
         [fieldName]: value
@@ -716,7 +711,7 @@ export default function ContractorDT() {
       headerName: 'Account Number',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'pan_no',
@@ -738,7 +733,7 @@ export default function ContractorDT() {
       headerName: 'Surcharge',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'phone_no',
@@ -756,7 +751,7 @@ export default function ContractorDT() {
       field: 'tds_prc',
       headerName: 'TDS Percentage',
       align: "right",
-      type:"number",
+      type: "number",
       width: 150,
     },
     {
@@ -798,28 +793,28 @@ export default function ContractorDT() {
       headerName: 'Rate Per Km',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'vehicle_no',
       headerName: 'Vehicle Number',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'vehicle_capacity',
       headerName: 'Vehicle Capacity',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'order_number',
       headerName: 'Order Number',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'order_date',
@@ -832,7 +827,7 @@ export default function ContractorDT() {
       headerName: 'Notification Number',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'notification_date',
@@ -850,7 +845,7 @@ export default function ContractorDT() {
       headerName: 'extension Order Number',
       width: 150,
       align: "right",
-      type:"number",
+      type: "number",
     },
     {
       field: 'contract_closed',
@@ -858,7 +853,7 @@ export default function ContractorDT() {
       width: 150,
       valueGetter: (params) => {
         const value = params.row.contract_closed
-        return value === "Y" ? "YES":"NO"
+        return value === "Y" ? "YES" : "NO"
       }
     },
     {
@@ -872,7 +867,7 @@ export default function ContractorDT() {
       width: 150,
       valueGetter: (params) => {
         const value = params.row.contract_type
-        return value === "T" ? "TEMPORARY":"PERMANENT"
+        return value === "T" ? "TEMPORARY" : "PERMANENT"
       }
     },
   ];
@@ -1378,7 +1373,7 @@ export default function ContractorDT() {
   const handlefieldChange = (fieldName, value) => {
     if (fieldName === "contractorName") {
       if (value === "") {
-
+        setSearchContractorCode("")
       }
       else if (value) {
         setSearchContractorCode(value)
@@ -1386,7 +1381,7 @@ export default function ContractorDT() {
     }
     if (fieldName === "contractorCode") {
       if (value === "") {
-
+        setSearchContractorCode("")
       }
       else if (value) {
         setSearchContractorCode(value)
@@ -1394,39 +1389,49 @@ export default function ContractorDT() {
     }
   }
   const handleSearch = async () => {
-    try {
-      const response = await ContractorAPi.ContractorAPi_master().fetchById(searchContractorCode)
-      if (response.status === 200) {
-        console.log(response.data.items);
-        MasterHandleFieldChange("bankName", response.data.items[0].bank_code)
-        MasterHandleFieldChange("branchName", response.data.items[0].branch_code)
-        const ifsc = await ContractorAPi.ContractorAPi_master().fetch_ifcs(response.data.items[0].branch_code)
-        setMasterFormData((prevdata) => ({
-          ...prevdata,
-          usersCode: response.data.items[0].users_code,
-          contractorName: response.data.items[0].contractor_name,
-          tds: response.data.items[0].tds,
-          tdsPercentage: response.data.items[0].tds_prc,
-          panNo: response.data.items[0].pan_no,
-          surcharge: response.data.items[0].sur_chg,
-          phoneNumber: response.data.items[0].phone_no,
-          // bankName: response.data.items[0],
-          //branchName: response.data.items[0],
-          ifcsCode: ifsc.data.items[0].ifsc_code,
-          accountNumber: response.data.items[0].account_no,
-        }))
-        setContractorCode(response.data.items[0].contractor_code2)
-        fetchData(response.data.items[0].contractor_code2)
-        setShowContractorDetails(true)
-        setMasterUpdateButton(true)
-        setMasterSaveButton(false)
-        if (response.data.items[0].cont_det_code !== null) {
-          setShowGrid(true)
+    if(searchContractorCode === null || searchContractorCode === ""){
+      Swal.fire({
+        title: "select a value to search",
+        timer: 1500,
+        icon: 'warning',
+        showConfirmButton: false
+    })
+    }
+    else {
+      try {
+        const response = await ContractorAPi.ContractorAPi_master().fetchById(searchContractorCode)
+        if (response.status === 200) {
+          console.log(response.data.items);
+          MasterHandleFieldChange("bankName", response.data.items[0].bank_code)
+          MasterHandleFieldChange("branchName", response.data.items[0].branch_code)
+          const ifsc = await ContractorAPi.ContractorAPi_master().fetch_ifcs(response.data.items[0].branch_code)
+          setMasterFormData((prevdata) => ({
+            ...prevdata,
+            usersCode: response.data.items[0].users_code,
+            contractorName: response.data.items[0].contractor_name,
+            tds: response.data.items[0].tds,
+            tdsPercentage: response.data.items[0].tds_prc,
+            panNo: response.data.items[0].pan_no,
+            surcharge: response.data.items[0].sur_chg,
+            phoneNumber: response.data.items[0].phone_no,
+            // bankName: response.data.items[0],
+            //branchName: response.data.items[0],
+            ifcsCode: ifsc.data.items[0].ifsc_code,
+            accountNumber: response.data.items[0].account_no,
+          }))
+          setContractorCode(response.data.items[0].contractor_code2)
+          fetchData(response.data.items[0].contractor_code2)
           setShowContractorDetails(true)
+          setMasterUpdateButton(true)
+          setMasterSaveButton(false)
+          if (response.data.items[0].cont_det_code !== null) {
+            setShowGrid(true)
+            setShowContractorDetails(true)
+          }
         }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
     }
   }
   const fetchContractorCode = async () => {
@@ -1507,7 +1512,7 @@ export default function ContractorDT() {
                   Contractor  Master
                 </Typography>
               </Grid>
-              <Grid item md={4} lg={4} sm={12} xs={12}>
+              <Grid item md={5} lg={5} sm={12} xs={12}>
                 <FormControl>
                   <RadioGroup
                     row
@@ -1538,6 +1543,7 @@ export default function ContractorDT() {
                     getOptionLabel={(options) => options.users_code}
                     isOptionEqualToValue={(option, value) => option.contractor_code === value.contractor_code}
                     onChange={(event, value) => handlefieldChange("contractorCode", value?.contractor_code || "")}
+                    value={DDcontractorCode.find(item=>item.contractor_code === searchContractorCode) || null}
                     size='small'
                     fullWidth
                     sx={autoCompleteStyle}
@@ -1558,6 +1564,7 @@ export default function ContractorDT() {
                     getOptionLabel={(options) => options.contractor_name}
                     isOptionEqualToValue={(option, value) => option.contractor_code === value.contractor_code}
                     onChange={(event, value) => handlefieldChange("contractorName", value?.contractor_code || "")}
+                    value={DDContractorName.find(item=>item.contractor_code === searchContractorCode) || null}
                     size='small'
                     fullWidth
                     sx={autoCompleteStyle}

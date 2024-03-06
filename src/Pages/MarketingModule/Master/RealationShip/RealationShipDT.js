@@ -7,22 +7,24 @@ import Swal from 'sweetalert2';
 
 const textFiledStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+  },
 }
 
 export default function RealationShipDT() {
@@ -88,35 +90,39 @@ export default function RealationShipDT() {
             relationName: relationName,
         }))
         setRelationId(relationId)
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
 
     const handleFiledChange = (fieldName, value) => {
-        localStorage.setItem("Navigation_state",false)
+        localStorage.setItem("Navigation_state", false)
         setErrors((prevErrors) => ({
             ...prevErrors,
             [fieldName]: "",
         }));
-        if (fieldName === "relationName" && value.length <= 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                relationName: 'Value must greater than 3 charaters',
-            }));
+        if (fieldName === "relationName") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    relationName: 'Required',
+                }));
+            }
+            else if (value.length > 40) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    relationName: 'Value must be less Than 40 charaters',
+                }));
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    relationName: '',
+                }));
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
             }))
 
-        }
-        else if (fieldName === "relationName" && value.length > 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                relationName: '',
-            }));
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
         }
     }
 
@@ -125,7 +131,7 @@ export default function RealationShipDT() {
         if (formData.relationName === "") {
             newErrors.relationName = "Required"
         }
-        else if (formData.relationName.length <= 3) {
+        else if (formData.relationName !== "") {
             newErrors.relationName = errors.relationName
         }
         return newErrors
@@ -145,7 +151,7 @@ export default function RealationShipDT() {
                     Swal.fire('Saved', 'Successfully', 'success');
                     handleClear();
                     fetchData();
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire("Erorr", `${response.status.Error}`, 'error');
                 }
@@ -159,7 +165,7 @@ export default function RealationShipDT() {
         setUpdateButton(false)
         setFormData({ relationName: '' })
         setErrors({ relationName: '' })
-        localStorage.setItem("Navigation_state",true)
+        localStorage.setItem("Navigation_state", true)
     }
     const handleUpadte = async (e) => {
         e.preventDefault()
@@ -171,12 +177,12 @@ export default function RealationShipDT() {
                 const newRecord = {
                     rel_name: formData.relationName.trim()
                 }
-                const response = await RelationApi.RelationApi_master().update(relationId,newRecord)
+                const response = await RelationApi.RelationApi_master().update(relationId, newRecord)
                 if (response.data.Status === 1) {
                     Swal.fire('Saved', 'Updated Sucessfully', 'success');
                     handleClear();
                     fetchData();
-                    localStorage.setItem("Navigation_state",true)
+                    localStorage.setItem("Navigation_state", true)
                 } else {
                     Swal.fire("Erorr", `${response.status.Error}`, 'error');
                 }
@@ -288,7 +294,7 @@ export default function RealationShipDT() {
                                 onColumnVisibilityModelChange={(newModel) =>
                                     setColumnVisibilityModel(newModel)
                                 }
-                                pageSizeOptions={[5,10, 20]}
+                                pageSizeOptions={[5, 10, 20]}
                                 disableRowSelectionOnClick
                                 getRowHeight={() => 35}
                                 getRowClassName={getRowClassName}

@@ -11,40 +11,23 @@ const textFiledStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(16px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
   },
 }
 
-const autoCompleteStyle = {
-  width: "100%",
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": { borderColor: "black", borderWidth: "2px" },
-  },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
-    display: "flex",
-    alignItems: "center",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-}
 export default function DocumentMaster() {
   const [rows, setRows] = useState([]);
   const [saveButton, setSaveButton] = useState(true);

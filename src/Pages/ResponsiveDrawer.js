@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -52,6 +52,15 @@ import MenuItem from '@mui/material/MenuItem';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import Contractor from './MarketingModule/Images/icons/Contractor.svg';
+import Products from './MarketingModule/Images/icons/products.svg';
+import PacketUnits from './MarketingModule/Images/icons/Packet-Units.svg';
+import PacketsMaster from './MarketingModule/Images/icons/Packets-Master.svg';
+import DocumentMasterLink from './MarketingModule/Images/icons/document-link.svg';
+import DocumentMaster from './MarketingModule/Images/icons/Document-Master .svg';
+import Indententry from './MarketingModule/Images/icons/Indent-Entry.svg';
+import filetype from './MarketingModule/Images/icons/File-Types.svg';
+import filetypeAllowed from './MarketingModule/Images/icons/File-Types-Allowed.svg';
 
 const drawerWidth = 240;
 
@@ -137,7 +146,6 @@ export default function ResponsiveDrawer() {
     const location = useLocation()
     const [open, setOpen] = useState(true);
     const [openMarketingModule, setOpenMarketingModule] = useState(false);
-    const [openDrawer, setOpenDrawer] = useState(null);
 
     const [openMaster, setopenMaster] = useState(false);
     const popOverIconStyle = {
@@ -196,6 +204,8 @@ export default function ResponsiveDrawer() {
             else if (route === "/DocumentsMaster") navigate("DocumentsMaster")
             else if (route === "/DocumentsMasterLink") navigate("DocumentsMasterLink")
             else if (route === "/IndentEntry") navigate("IndentEntry")
+            else if (route === "/FileTypes") navigate("FileTypes")
+            else if (route === "/FileTypesAllowed") navigate("FileTypesAllowed")
         }
         else {
             const handleNavigate = async (text) => {
@@ -282,9 +292,7 @@ export default function ResponsiveDrawer() {
 
     const [anchorE5, setAnchorE5] = useState(null);
 
-    const handleDrawerOpen1 = () => {
-        setOpenDrawer(true);
-    };
+
 
     const handleMenuOpen = (event) => {
         setAnchorE5(event.currentTarget);
@@ -319,7 +327,7 @@ export default function ResponsiveDrawer() {
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="h6" noWrap component="div">
-                            Milk Bill Module
+                            Marketing Module
                         </Typography>
                         <Stack spacing={2} direction="row">
                             <IconButton
@@ -929,14 +937,14 @@ export default function ResponsiveDrawer() {
                                                         mr: open ? 3 : 'auto',
                                                         justifyContent: 'center',
                                                     }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                    <img src={Contractor} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
                                                     primary="Contractor" />
                                             </ListItemButton>
                                         </ListItem>
-                                        {/* ======== Contractor Type end =========== */}
+                                        {/* ======== Contractor  end =========== */}
                                         <ListItem disablePadding sx={{ display: 'block' }}>
                                             <ListItemButton
                                                 sx={{
@@ -957,7 +965,7 @@ export default function ResponsiveDrawer() {
                                                         mr: open ? 3 : 'auto',
                                                         justifyContent: 'center',
                                                     }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                    <img src={Products} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
@@ -985,7 +993,7 @@ export default function ResponsiveDrawer() {
                                                         mr: open ? 3 : 'auto',
                                                         justifyContent: 'center',
                                                     }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                    <img src={PacketUnits} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
@@ -1013,7 +1021,7 @@ export default function ResponsiveDrawer() {
                                                         mr: open ? 3 : 'auto',
                                                         justifyContent: 'center',
                                                     }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                    <img src={PacketsMaster} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
@@ -1041,7 +1049,7 @@ export default function ResponsiveDrawer() {
                                                         mr: open ? 3 : 'auto',
                                                         justifyContent: 'center',
                                                     }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                    <img src={DocumentMaster} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
@@ -1069,7 +1077,7 @@ export default function ResponsiveDrawer() {
                                                         mr: open ? 3 : 'auto',
                                                         justifyContent: 'center',
                                                     }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                    <img src={DocumentMasterLink} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
@@ -1097,7 +1105,7 @@ export default function ResponsiveDrawer() {
                                                         mr: open ? 3 : 'auto',
                                                         justifyContent: 'center',
                                                     }}>
-                                                    <img src={DistrictIcon} alt="" width={20} />
+                                                    <img src={Indententry} alt="" width={20} />
                                                 </ListItemIcon>
                                                 <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
                                                     className="calibriFont"
@@ -1105,6 +1113,62 @@ export default function ResponsiveDrawer() {
                                             </ListItemButton>
                                         </ListItem>
                                         {/* ======== IndentEntry end=========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/FileTypes") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={filetype} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="File Types" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== FileTypes end=========== */}
+                                        <ListItem disablePadding sx={{ display: 'block' }}>
+                                            <ListItemButton
+                                                sx={{
+                                                    height: 30,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 6,
+                                                    '&:hover': {
+                                                        backgroundColor: '#1976D2',
+                                                        color: 'white',
+                                                    },
+                                                }}
+                                                aria-describedby={ida}
+                                                onClick={() => { handleListItemClick("/FileTypesAllowed") }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 'auto',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    <img src={filetypeAllowed} alt="" width={20} />
+                                                </ListItemIcon>
+                                                <ListItemText sx={{ opacity: open ? 1 : 0, ml: -1 }}
+                                                    className="calibriFont"
+                                                    primary="File Types Allowed" />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        {/* ======== FileTypesAllowed end=========== */}
                                     </Collapse>
                                 </ListItem>
                             </Collapse>

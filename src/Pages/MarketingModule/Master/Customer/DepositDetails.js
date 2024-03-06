@@ -9,81 +9,80 @@ import { DataGrid } from '@mui/x-data-grid'
 import { customerApi } from '../../../Api';
 import dayjs from 'dayjs';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+
 
 const textFiledStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
     },
 }
 
 const autoCompleteStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
+  },
 }
 
 const datePickerStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": {
-            borderColor: "black",
-            borderWidth: "2px",
-            height: "35px",
-            paddingBottom: "5px",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "black",
+      borderWidth: "2px",
+      height: "33px",
+      paddingBottom: "5px",
 
-        },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -8px)",
-        },
-    },
-    "& input": {
-        height: "12px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-        marginTop: "-1px",
-    },
-    "& label": {
-        height: "14px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-        marginTop: "-1px",
-    },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginTop: "-1px",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: "-1px",
+  },
 }
 export default function DepositDetails({ closeDepositeDetails, customerCode, userCode, customerName }) {
     const [Errors, setErrors] = useState({});
@@ -229,12 +228,12 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
                     "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
                     "gr_date": formData.grDate !== "" ? formData.grDate : null,
-                    "bank_name": formData.bankName != "" ? formData.bankName : null,
-                    "amount": formData.amount != "" ? formData.amount : null,
-                    "remarks": formData.remarks != "" ? formData.remarks : null,
-                    "instrument_details": formData.bankDocNumber != "" ? formData.bankDocNumber : null,
-                    "bill_no": formData.billNumber != "" ? formData.billNumber : null,
-                    "bill_date": formData.billDate != "" ? formData.billDate : null,
+                    "bank_name": formData.bankName !== "" ? formData.bankName : null,
+                    "amount": formData.amount !== "" ? formData.amount : null,
+                    "remarks": formData.remarks !== "" ? formData.remarks : null,
+                    "instrument_details": formData.bankDocNumber !== "" ? formData.bankDocNumber : null,
+                    "bill_no": formData.billNumber !== "" ? formData.billNumber : null,
+                    "bill_date": formData.billDate !== "" ? formData.billDate : null,
                 }
                 console.log(newRecord);
                 const response = await customerApi.customerMaster().AddDeposit(newRecord)
@@ -290,12 +289,12 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
                     "expiry_date": formData.expireDate !== "" ? formData.expireDate : null,
                     "gr_no": formData.grNumber !== "" ? formData.grNumber : null,
                     "gr_date": formData.grDate !== "" ? formData.grDate : null,
-                    "bank_name": formData.bankName != "" ? formData.bankName : null,
-                    "amount": formData.amount != "" ? formData.amount : null,
-                    "remarks": formData.remarks != "" ? formData.remarks : null,
-                    "instrument_details": formData.bankDocNumber != "" ? formData.bankDocNumber : null,
-                    "bill_no": formData.billNumber != "" ? formData.billNumber : null,
-                    "bill_date": formData.billDate != "" ? formData.billDate : null,
+                    "bank_name": formData.bankName !== "" ? formData.bankName : null,
+                    "amount": formData.amount !== "" ? formData.amount : null,
+                    "remarks": formData.remarks !== "" ? formData.remarks : null,
+                    "instrument_details": formData.bankDocNumber !== "" ? formData.bankDocNumber : null,
+                    "bill_no": formData.billNumber !== "" ? formData.billNumber : null,
+                    "bill_date": formData.billDate !== "" ? formData.billDate : null,
                 }
                 console.log(newRecord);
                 console.log(depositeId);
@@ -416,7 +415,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value.trim()
+                [fieldName]: value
             }))
         }
         // =========================bankName======================== 
@@ -441,7 +440,7 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================depositDate======================== 
@@ -515,12 +514,12 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             else if (value.trim().length > 100) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    remarks: "",
+                    remarks: "Value Must be less than 100 Charaters",
                 }));
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================billNumber======================== 
@@ -534,12 +533,12 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             else if (value.trim().length > 20) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    remarks: "",
+                    billNumber: "Value Must be less than 20 Charaters",
                 }));
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================billDate======================== 
@@ -573,12 +572,12 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
             else if (value.trim().length > 20) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    grNumber: "",
+                    grNumber: "Value Must be less than 20 Charaters",
                 }));
             }
             setFormData((prevdata) => ({
                 ...prevdata,
-                [fieldName]: value?.trim()
+                [fieldName]: value
             }))
         }
         // =========================grDate======================== 
@@ -722,7 +721,6 @@ export default function DepositDetails({ closeDepositeDetails, customerCode, use
         fetch_DepositePaymode_DD()
         fetch_DepositeType_DD()
         fetchData(CustomerCode)
-        console.log(customerCode);
     }, [])
     const columns = [
         {

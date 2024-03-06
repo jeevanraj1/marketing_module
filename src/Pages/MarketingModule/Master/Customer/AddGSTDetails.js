@@ -14,56 +14,53 @@ import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRound
 
 const datePickerStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": {
-            borderColor: "black",
-            borderWidth: "2px",
-            height: "35px",
-            paddingBottom: "5px",
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      borderColor: "black",
+      borderWidth: "2px",
+      height: "33px",
+      paddingBottom: "5px",
 
-        },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -8px)",
-        },
-    },
-    "& input": {
-        height: "12px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-        marginTop: "-1px",
-    },
-    "& label": {
-        height: "14px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-        marginTop: "-1px",
-    },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginTop: "-1px",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    marginTop: "-1px",
+  },
 }
 const autoCompleteStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
+  },
 }
 const status = [
     { name: "INFORCE", value: "I" },

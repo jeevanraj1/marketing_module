@@ -3,8 +3,6 @@ import { useState, useEffect } from "react";
 import translate from "translate";
 import { DataGrid } from "@mui/x-data-grid";
 import { Paper, Box, TextField, Button, Grid, Typography, Stack } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { BankMasterApi } from "../../../Api";
 import Swal from 'sweetalert2';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
@@ -12,20 +10,22 @@ import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRound
 const textFiledStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
     },
 }
 export default function BankMasterDT() {
@@ -136,6 +136,17 @@ export default function BankMasterDT() {
             }));
         }
 
+        if(englishText.length > 50){
+            setErrors({
+                englishText: "Maximum 50 Characters Allowed"
+            })
+        }
+        else {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                englishText: null,
+            }));
+        }
         setEnglishText(newEnglishText);
         setKannadaText("");
 

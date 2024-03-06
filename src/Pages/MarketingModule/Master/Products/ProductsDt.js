@@ -13,58 +13,47 @@ import { DataGrid } from '@mui/x-data-grid'
 
 const textFiledStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input": {
-        height: "10px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
-    "& label": {
-        height: "14px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-        marginTop: "-1px",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+  },
 }
 
 const autoCompleteStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input": {
-        height: "10px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
-    "& label": {
-        height: "14px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-        marginTop: "-1px",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
+  },
 }
 
 const MILK_OR_PRODUCT = [
@@ -160,7 +149,15 @@ export default function ProductsDt() {
     }
 
     const handleSearch = () => {
-        if (productCode === "") fetchData()
+        if (productCode === "" || productCode === null) {
+            Swal.fire({
+                title: "select a value to search",
+                timer: 1500,
+                icon:'warning',
+                showConfirmButton: false
+            })
+            fetchData()
+        }
         else if (productCode !== "") fetchProductDetails(productCode)
     }
 
@@ -514,6 +511,12 @@ export default function ProductsDt() {
                     }))
                 }, 1000)
             }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    usersCode: "",
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
@@ -539,6 +542,12 @@ export default function ProductsDt() {
                         productName: "",
                     }))
                 }, 1000)
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    productName: "",
+                }))
             }
             setFormData((prevdata) => ({
                 ...prevdata,
@@ -566,6 +575,12 @@ export default function ProductsDt() {
                     }))
                 }, 1000)
             }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    shortName: "",
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
@@ -585,6 +600,12 @@ export default function ProductsDt() {
                     [fieldName]: ''
                 }))
             }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ''
+                }))
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value?.value
@@ -592,13 +613,20 @@ export default function ProductsDt() {
         }
         //====================================considerUnderMilk============================================
         if (fieldName === "considerUnderMilk") {
-            if (value === "") {
+            console.log(value);
+            if (value === "" || value === null) {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     [fieldName]: 'Required'
                 }))
             }
             else if (value) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ''
+                }))
+            }
+            else {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     [fieldName]: ''
@@ -618,6 +646,12 @@ export default function ProductsDt() {
                 }))
             }
             else if (value) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ''
+                }))
+            }
+            else {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     [fieldName]: ''
@@ -648,6 +682,12 @@ export default function ProductsDt() {
                         positionFor: "",
                     }))
                 }, 1000)
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    [fieldName]: ''
+                }))
             }
             setFormData((prevdata) => ({
                 ...prevdata,

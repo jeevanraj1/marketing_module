@@ -9,42 +9,47 @@ import { DataGrid } from '@mui/x-data-grid'
 
 const textFiledStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(16px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+  },
 }
 
 const autoCompleteStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
+  },
 }
 const active = [
     { name: "YES", value: "Y" },
@@ -148,10 +153,10 @@ export default function DistributionRouteDT() {
                     [fieldName]: 'Value Must be Less Than 15 Charaters'
                 }))
             }
-            else if (value?.trim().length < 3) {
+            else {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
-                    [fieldName]: 'Value Must be more Than 3 Charaters'
+                    [fieldName]: ''
                 }))
             }
             setFormData((prevdata) => ({
@@ -360,7 +365,7 @@ export default function DistributionRouteDT() {
             }
             try {
                 console.log(newRecord);
-                const response = await DistrubutionRoutesAPI.DistrubutionRoutesAPI_master().update(routeCode,newRecord)
+                const response = await DistrubutionRoutesAPI.DistrubutionRoutesAPI_master().update(routeCode, newRecord)
                 if (response.data.Status === 1) {
                     Swal.fire({
                         title: 'Saved',
@@ -476,7 +481,7 @@ export default function DistributionRouteDT() {
                         Edit
                     </ModeEditOutlineRoundedIcon>
                     <DeleteForeverIcon
-                        sx={{ color: "red" }}
+                        sx={{ color: "red", display: 'none' }}
                         style={{
                             cursor: "pointer",
                             opacity: 1,
@@ -547,6 +552,10 @@ export default function DistributionRouteDT() {
             field: 'active',
             headerName: 'Active',
             width: 110,
+            valueGetter: (params) => {
+                const value = params.row.active
+                return value === "Y" ? "YES" : "NO"
+            }
         },
         {
             field: 'vehicle_no',
@@ -565,12 +574,13 @@ export default function DistributionRouteDT() {
         setUpdateButton(true)
         setSaveButton(false)
         setRouteCode(row.route_code)
+        handleFieldChange("contractorName", row.contractor_code)
         setFormData((prevdata) => ({
             ...prevdata,
             distrubutionBatchName: row.dist_batch_no,
             routeCode: row.users_code,
             routeName: row.route_name,
-            contractorName: row.contractor_code,
+            // contractorName: row.contractor_code,
             vehicleNumber: row.vehicle_no,
             active: row.active,
             routeAlias: row.route_alias,

@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
-import { PacketsApi, customerApi } from '../../../Api';
+import { PacketsApi } from '../../../Api';
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
 import Swal from 'sweetalert2';
 
@@ -18,20 +18,23 @@ import Swal from 'sweetalert2';
 const autocompleteStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "14px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
+      marginTop:"-2px",
     },
 }
 export default function PacketsDT() {
@@ -107,7 +110,7 @@ export default function PacketsDT() {
             width: 190,
             valueGetter: (params) => {
                 const value = params.row.milk_or_product;
-                return value === 0 ? "MILK" : "PRODUCT"
+                return value === 1 ? "PRODUCT" :"MILK";
             }
         },
         {
@@ -410,7 +413,15 @@ export default function PacketsDT() {
     }
 
     const handleSearch = () => {
-        if (packetCode === null) Swal.fire("jasdn")
+        if (packetCode === null || packetCode === ""){
+            Swal.fire({
+                title: "select a value to search",
+                timer: 1500,
+                icon: 'warning',
+                showConfirmButton: false
+            })
+            fetchData()
+        } 
         else if (packetCode !== "") fetchPacketDetails(packetCode)
 
         setpacketCode(null)
@@ -514,6 +525,7 @@ export default function PacketsDT() {
                                         getOptionLabel={(options) => options.users_code}
                                         isOptionEqualToValue={(option, value) => option.packet_code === value.packet_code}
                                         onChange={(event, value) => handlefieldChangeSearch("PacketCode", value?.packet_code || "")}
+                                        value={DDPacketCode.find(item=>item.packet_code === packetCode) || null}
                                         size='small'
                                         fullWidth
                                         sx={autocompleteStyle}
@@ -533,6 +545,7 @@ export default function PacketsDT() {
                                         getOptionLabel={(options) => options.packet_name}
                                         isOptionEqualToValue={(option, value) => option.packet_code === value.packet_code}
                                         onChange={(event, value) => handlefieldChangeSearch("PacketName", value?.packet_code || "")}
+                                        value={DDPacketName.find(item=>item.packet_code === packetCode) || null}
                                         size='small'
                                         fullWidth
                                         sx={autocompleteStyle}

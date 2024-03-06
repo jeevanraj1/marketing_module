@@ -30,18 +30,20 @@ const textFiledStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
   },
 }
 
@@ -50,18 +52,21 @@ const autoCompleteStyle = {
   "& .MuiOutlinedInput-root": {
     "& fieldset": { borderColor: "black", borderWidth: "2px" },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -10px)",
-    },
-  },
-  "& input, & label": {
-    height: "15px",
+  "& input": {
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
   },
 }
 const datePickerStyle = {
@@ -70,19 +75,13 @@ const datePickerStyle = {
     "& fieldset": {
       borderColor: "black",
       borderWidth: "2px",
-      height: "35px",
+      height: "33px",
       paddingBottom: "5px",
 
     },
   },
-  "& .MuiInputLabel-root": {
-    color: "black",
-    "&.Mui-focused": {
-      transform: "translate(14px, -8px)",
-    },
-  },
   "& input": {
-    height: "12px",
+    height: "11px",
     display: "flex",
     alignItems: "center",
     fontSize: 12,
@@ -93,7 +92,7 @@ const datePickerStyle = {
     height: "14px",
     display: "flex",
     alignItems: "center",
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "bold",
     marginTop: "-1px",
   },
@@ -280,10 +279,6 @@ export default function Customer() {
       ...prevErrors,
       [fieldName]: "",
     }));
-    setFormData((prevdata) => ({
-      ...prevdata,
-      [fieldName]: value
-    }))
     // ======================================customerCode=================================
     if (fieldName === "customerCode") {
       setFormData((prevdata) => ({
@@ -318,10 +313,6 @@ export default function Customer() {
     }
     // ======================================customerName=================================
     if (fieldName === "customerName") {
-      setFormData((prevdata) => ({
-        ...prevdata,
-        [fieldName]: value
-      }))
       if (value.trim() === "") {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -333,7 +324,7 @@ export default function Customer() {
           ...prevErrors,
           customerName: "Value must be Not More than 50 Characters",
         }));
-        value = value.substring(0, 10)
+        value = value.substring(0, 50)
         setTimeout(() => {
           setErrors((prevErrors) => ({
             ...prevErrors,
@@ -347,6 +338,10 @@ export default function Customer() {
           customerName: "",
         }));
       }
+      setFormData((prevdata) => ({
+        ...prevdata,
+        [fieldName]: value
+      }))
     }
     // ======================================customerAlias=================================
     if (fieldName === "customerAlias") {
@@ -1406,6 +1401,7 @@ export default function Customer() {
                 renderInput={(params) =>
                   <TextField
                     {...params}
+                    required
                     label="Main Customer Name"
                   />}
               />

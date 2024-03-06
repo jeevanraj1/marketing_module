@@ -10,41 +10,46 @@ import { cyan } from '@mui/material/colors';
 const textFiledStyle = {
     width: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(16px, -10px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
     },
 }
 
 const autoCompleteStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "14px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+    marginTop:"-2px",
+  },
 }
 
 const Indent_For = [
@@ -839,36 +844,57 @@ export default function CustomerRouteDT() {
     }
     const handlefieldChangeSearch = (fieldname, value) => {
         if (fieldname === "Route") {
-            if (value === "") fetchData()
+            if (value === "") { fetchData(); setRouteSearch(value) }
             else if (value) setRouteSearch(value)
+
         }
 
         if (fieldname === "name") {
-            if (value === "") fetchData()
+            if (value === "") { fetchData(); setCustomerSearch(value) }
             else if (value) setCustomerSearch(value)
         }
     }
     const handleSearch = async () => {
         if (searchRoute) {
-            try {
-                console.log(routeSearch);
-                const respone = await CustomerRouteApi.PacketsUnitsAPi_master().searchRouteName(routeSearch)
-                if (respone.status === 200) {
-                    setRows(respone.data.items);
+            if (routeSearch === "" || routeSearch === null) {
+                Swal.fire({
+                    title: "select a value to search",
+                    timer: 1500,
+                    icon: 'warning',
+                    showConfirmButton: false
+                })
+                fetchData()
+            }
+            else {
+                try {
+                    const respone = await CustomerRouteApi.PacketsUnitsAPi_master().searchRouteName(routeSearch)
+                    if (respone.status === 200) {
+                        setRows(respone.data.items);
+                    }
+                } catch (error) {
+                    console.log(error);
                 }
-            } catch (error) {
-                console.log(error);
             }
         }
         if (seacrchCustomerName) {
-            console.log(customerSearch);
-            try {
-                const respone = await CustomerRouteApi.PacketsUnitsAPi_master().searchCustomerName(customerSearch)
-                if (respone.status === 200) {
-                    setRows(respone.data.items);
+            if (customerSearch === "" || customerSearch === null) {
+                Swal.fire({
+                    title: "select a value to search",
+                    timer: 1500,
+                    icon: 'warning',
+                    showConfirmButton: false
+                })
+                fetchData()
+            }
+            else {
+                try {
+                    const respone = await CustomerRouteApi.PacketsUnitsAPi_master().searchCustomerName(customerSearch)
+                    if (respone.status === 200) {
+                        setRows(respone.data.items);
+                    }
+                } catch (error) {
+                    console.log(error);
                 }
-            } catch (error) {
-                console.log(error);
             }
         }
     }
@@ -985,6 +1011,7 @@ export default function CustomerRouteDT() {
                                         getOptionLabel={(options) => options.route_name}
                                         isOptionEqualToValue={(option, value) => option.route_code === value.route_code}
                                         onChange={(event, value) => handlefieldChangeSearch("Route", value?.route_code || "")}
+                                        value={DDrouteSearch.find(item => item.route_code === routeSearch) || null}
                                         size='small'
                                         fullWidth
                                         sx={autoCompleteStyle}
@@ -1005,6 +1032,7 @@ export default function CustomerRouteDT() {
                                         getOptionLabel={(options) => options.customer_name}
                                         isOptionEqualToValue={(option, value) => option.customer_code === value.customer_code}
                                         onChange={(event, value) => handlefieldChangeSearch("name", value?.customer_code || "")}
+                                        value={DDCustomerSearch.find(item => item.customer_code === customerSearch) || null}
                                         size='small'
                                         fullWidth
                                         sx={autoCompleteStyle}

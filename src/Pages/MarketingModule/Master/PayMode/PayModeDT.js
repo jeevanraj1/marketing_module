@@ -16,20 +16,22 @@ const textFiledStyle = {
 
     width: "100%",
     "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
+      "& fieldset": { borderColor: "black", borderWidth: "2px" },
     },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -5px)",
-        },
+    "& input": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 12,
+      fontWeight: "bold",
     },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
+    "& label": {
+      height: "11px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+      color:"black",
     },
 }
 
@@ -124,24 +126,32 @@ export default function PayModeDT() {
             ...prevErrors,
             [fieldName]: "",
         }));
-        if (fieldName === "paymode" && value.length > 2) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                paymode: 'Value must be within 2 characters',
-            }));
-            setTimeout(() => {
+        if (fieldName === "paymode") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    paymode: 'Required',
+                }));
+            }
+            else if (value.length > 2) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    paymode: 'Value must be less Than 2 characters',
+                }));
+                value = value.substring(0, 2)
+                setTimeout(() => {
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        paymode: '',
+                    }));
+                }, 1000);
+            }
+            else {
                 setErrors((prevErrors) => ({
                     ...prevErrors,
                     paymode: '',
                 }));
-            }, 1000)
-        }
-        else if (fieldName === "paymode" && value.length <= 2) {
-
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                paymode: '',
-            }));
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value
@@ -149,23 +159,32 @@ export default function PayModeDT() {
         }
 
 
-        if (fieldName === "description" && value.length <= 3) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                description: 'Value must greater than 3 charaters',
-            }));
-            setFormData((prevdata) => ({
-                ...prevdata,
-                [fieldName]: value
-            }))
-
-        }
-        else if (fieldName === "description" && value.length > 3) {
-
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                description: '',
-            }));
+        if (fieldName === "description") {
+            if (value === "") {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    description: 'Required',
+                }));
+            }
+            else if (value.length > 15) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    description: 'Value must be less Than 16 characters',
+                }));
+                value = value.substring(0, 16)
+                setTimeout(() => {
+                    setErrors((prevErrors) => ({
+                        ...prevErrors,
+                        description: '',
+                    }));
+                }, 1000);
+            }
+            else {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    description: '',
+                }));
+            }
             setFormData((prevdata) => ({
                 ...prevdata,
                 [fieldName]: value

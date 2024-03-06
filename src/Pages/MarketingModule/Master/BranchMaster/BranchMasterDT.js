@@ -4,34 +4,34 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import ModeEditOutlineRoundedIcon from "@mui/icons-material/ModeEditOutlineRounded";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SearchIcon from "@mui/icons-material/Search";
 import { Autocomplete, Paper, Stack } from "@mui/material";
 import { BranchMasterApi, BankMasterApi } from "../../../Api";
 import { useState, useEffect } from "react";
-import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import translate from "translate";
 import Swal from 'sweetalert2';
 
 const textFiledStyle = {
     width: "100%",
-    "& .MuiOutlinedInput-root": {
-        "& fieldset": { borderColor: "black", borderWidth: "2px" },
-    },
-    "& .MuiInputLabel-root": {
-        color: "black",
-        "&.Mui-focused": {
-            transform: "translate(14px, -10px)",
-        },
-    },
-    "& input, & label": {
-        height: "15px",
-        display: "flex",
-        alignItems: "center",
-        fontSize: 12,
-        fontWeight: "bold",
-    },
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": { borderColor: "black", borderWidth: "2px" },
+  },
+  "& input": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  "& label": {
+    height: "11px",
+    display: "flex",
+    alignItems: "center",
+    fontSize: 14,
+    fontWeight: "bold",
+    color:"black",
+  },
 }
 
 export default function BranchMasterDT() {
@@ -79,7 +79,7 @@ export default function BranchMasterDT() {
 
         if (ifsccode === "") {
             newErrors.ifsccode = "* IFSC Code Required";
-        } else if (ifsccode.length != 11) {
+        } else if (ifsccode.length !== 11) {
             newErrors.ifsccode = "IFSC Must be 11 Characters";
         }
         return newErrors;
@@ -185,6 +185,17 @@ export default function BranchMasterDT() {
                 ...errors,
                 englishText: null
             })
+        }
+        if(englishText.length > 50){
+            setErrors({
+                englishText: "Maximum 50 Characters Allowed"
+            })
+        }
+        else {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                englishText: null,
+            }));
         }
 
         setEnglishText(newEnglishText);
